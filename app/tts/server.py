@@ -1,11 +1,9 @@
 # -*- coding: utf-8 -*-
 """大肥鱼 · 本地 TTS 服务（多参考音 / 热切换）
 
-与 `D:\蓝冰柠柚agent\qwen3tts_server.py` 的关系
-------------------------------------------------
-那套是蓝冰柠柚自己的服务（单参考音、启动时固定、指令写死成"嘲讽不耐烦"）。
-这里**另起一份**，只复用它的整体结构（流式 chunked / 48k PCM 输出 / 首块时间日志），
-不碰它、也不影响它：
+设计要点
+--------
+自建的一份本地服务，结构是「流式 chunked + 48k PCM 输出 + 首块时间日志」：
 
     · 多条参考音常驻，请求体里用 `voice` 选；不传就用 index.json 的 default
     · 每条参考音可以带自己的 `instruct` / `temperature`（情绪母带各管各的）
@@ -14,9 +12,9 @@
     · POST /tts_stream     → {"text": "...", "voice": "angry"} ⇒ audio/L16 流
     · POST /voice/default  → {"voice":"soft"} 切换默认（热切换，不重启）
 
-跑法（隔离 venv，和其它服务共用同一个环境）：
+跑法（建议独立 venv，装 faster-qwen3-tts / sherpa-onnx / soxr / numpy）：
 
-    "D:\voice-lab\qwen3tts-venv\Scripts\python.exe" app\tts\server.py
+    PET_TTS_MODEL=D:\models\qwen3tts-0.6B python app/tts/server.py
 """
 from __future__ import annotations
 
@@ -38,7 +36,7 @@ except Exception:
 
 HOST = os.environ.get("PET_TTS_HOST", "127.0.0.1")
 PORT = int(os.environ.get("PET_TTS_PORT", "8769"))
-MODEL_DIR = os.environ.get("PET_TTS_MODEL", r"D:\voice-lab\qwen3tts-0.6B")
+MODEL_DIR = os.environ.get("PET_TTS_MODEL", str(Path(__file__).resolve().parent / "models" / "qwen3tts-0.6B"))
 HERE = Path(__file__).resolve().parent
 VOICES_DIR = Path(os.environ.get("PET_TTS_VOICES", HERE / "voices"))
 OUT_SR = 48000

@@ -25,7 +25,7 @@ def default_model_dir() -> str:
     env = os.environ.get("PET_QWEN_ASR_DIR", "").strip()
     if env:
         return env
-    return os.path.join("D:" + os.sep, "voice-lab", "models", "Qwen3-ASR-0.6B")
+    return os.path.join(os.environ.get("APPDATA", ""), "大肥鱼Live2d桌宠", "asr", "qwen3-asr")
 
 
 def main() -> int:

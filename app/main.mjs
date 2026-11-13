@@ -192,7 +192,7 @@ async function ensureTts({ force = false } = {}) {
 function pickPython() {
   const cands = [
     path.join(process.env.LOCALAPPDATA || '', 'Programs', 'Python', 'Python311', 'python.exe'),
-    'D:/voice-lab/qwen3tts-venv/Scripts/python.exe',
+    // 也可以填自己的 venv：设置页「Python 解释器」或 PET_TTS_PYTHON
     'python',
   ]
   for (const c of cands) {

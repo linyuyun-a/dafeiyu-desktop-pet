@@ -12,6 +12,7 @@
 from __future__ import annotations
 
 import os
+import sys
 import threading
 import time
 
@@ -46,7 +47,7 @@ def _qwen_dir() -> str:
     env = os.environ.get("PET_QWEN_ASR_DIR", "").strip()
     if env:
         return env
-    return os.path.join("D:" + os.sep, "voice-lab", "models", "Qwen3-ASR-0.6B")
+    return os.path.join(default_dir(), "qwen3-asr")
 
 
 def state() -> dict:
@@ -88,7 +89,8 @@ def _qwen_python() -> str:
     env = os.environ.get("PET_ASR_QWEN_PY", "").strip()
     if env:
         return env
-    return os.path.join("D:" + os.sep, "voice-lab", "index-tts", ".venv", "Scripts", "python.exe")
+    # 没配 PET_ASR_QWEN_PY 就用当前解释器（Qwen3-ASR 只是备选引擎）
+    return sys.executable
 
 
 def _worker_script() -> str:

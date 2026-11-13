@@ -1,6 +1,6 @@
 /**
  * AstrBotBrain：**大肥鱼**的人格与记忆都在 AstrBot 里。
- * （`:8765` 的 LAPlatform 是蓝冰柚柠，另一个人，别接错。）
+ * （本项目只对接 AstrBot；换成别的大脑见设置页「接你自己的智能体」。）
  *
  * 接口（AstrBot ≥ 4.18 的 OpenAPI）：
  *   POST /api/v1/chat
