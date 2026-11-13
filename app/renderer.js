@@ -274,6 +274,8 @@ async function main() {
         state.mouth?.talk?.(ms)
       },
     })
+    // 名字在设置里可改，先按当前设置配一次
+    state.bubble.configure?.({ name: state.settings?.petName || '大肥鱼' })
     setInterval(() => { if (state.bubble?.visible) state.bubble.reposition() }, 200)
 
     // ---------- 声音：本地 TTS（app/tts/server.py）→ WebAudio 队列 → 口型 ----------
@@ -353,9 +355,9 @@ async function main() {
   })
   window.__say = (t) => speakReply(t)
   // 调试：直接往气泡塞一段文字（测滚动/排版用，不经过大脑）
-  window.__bubbleShow = (t, st = 'chat') => {
+  window.__bubbleShow = (t, st = 'chat', extra = {}) => {
     state.bubble?.lock?.(st, { force: true })
-    state.bubble?.show?.(String(t), { state: st, owner: st })
+    state.bubble?.show?.(String(t), { state: st, owner: st, ...extra })
     return { scrollable: !!document.getElementById('bubble')?.classList.contains('scrollable') }
   }
   window.__bubbleRect = () => {
@@ -2072,6 +2074,7 @@ function applyPassState(on) {
 function applySettings(next) {
   if (!next || typeof next !== 'object') return
   state.settings = { ...state.settings, ...next }
+  state.bubble?.configure?.({ name: state.settings.petName || '大肥鱼' })
 
   // zoom 现在是"内容倍率"，窗口恒定按 cap 开：只更新画布变换，不重排窗口
   const zoom = Number(state.settings.zoom)
@@ -3016,6 +3019,20 @@ function scheduleBubbleHide(text) {
 }
 
 const CHAT_BUBBLE_MAX = 150
+/** 当前心情的主轴 + 强度档位（0.33 / 0.66 分三档），供气泡标标签与装饰用 */
+function moodSnapshot() {
+  const m = state.mood?.snapshot?.() || {}
+  const KEYS = ['joy', 'shy', 'irk', 'sleepy', 'missing', 'clingy', 'bored']
+  let key = null
+  let top = 0
+  for (const k of KEYS) {
+    const v = Number(m[k] || 0)
+    if (v > top) { top = v; key = k }
+  }
+  const strength = top >= 0.66 ? 'high' : top >= 0.33 ? 'mid' : 'low'
+  return { key: strength === 'low' ? null : key, strength, value: top }
+}
+
 function chatRender() {
   // 语音开着时，气泡只显示「已经开口念到的那部分」（chatState.revealed）；
   // 关着就照旧显示全文（由 delta 驱动）。
@@ -3024,12 +3041,16 @@ function chatRender() {
   let shown = capReply(visibleText(src))
   if (shown.length > CHAT_BUBBLE_MAX) shown = '…' + shown.slice(-CHAT_BUBBLE_MAX)
   const proactive = chatState.source === 'proactive'
+  // 这句话的情绪快照：整条消息只取一次，中途不跳
+  const mood = moodSnapshot()
   if (shown) {
     state.bubble?.show(shown, {
       owner: proactive ? 'proactive' : 'chat',
-      // AstrBot 生成的话一律橙色系（chat 淡橙 / proactive 深橙），本地台词保持米白
       state: proactive ? 'proactive' : 'chat',
-      // 粘住：她说的这段话显示期间，点她/待机台词都顶不掉（只能等下一条或自动收起）
+      // 出处：她自己说的 → 粉泡（模板台词由 say() 标成 script → 蓝泡）
+      src: 'her',
+      mood: mood.key,
+      strength: mood.strength,
       sticky: true,
     })
   }

@@ -66,3 +66,26 @@ node scripts/fetch-core.mjs    # 单独补 Core
 
 - 本项目与 Live2D Inc.、网易云音乐、AstrBot 官方均无隶属关系。
 - 音乐与歌词在运行时通过用户自己的账号获取，仅供个人使用；请勿用于再分发。
+
+## 接你自己的智能体
+
+桌宠本身不带大脑：她说的话来自一个 AstrBot（或任何兼容它的 HTTP 服务）。
+
+1. 在跑 AstrBot 的机器上打开 `WebUI → 设置 → OpenAPI`，新建 API Key，权限至少勾 `chat`。
+2. 在桌宠目录建 `brain.config.json`（模板见 `brain.config.example.json`）：
+
+```json
+{
+  "brain": "astrbot",
+  "astrbotUrl": "http://你的服务器:6185",
+  "astrbotKey": "abk_xxxxxxxx",
+  "astrbotConfig": "桌宠版"
+}
+```
+
+3. 启动桌宠。它会调 `/api/v1/chat`，`username` 固定 `desktop_pet`，`session_id` 存在
+   `_data/stage-chat-state.json` —— 那就是她的「记忆槽」，换掉等于失忆。
+4. 想让人设生效：在 AstrBot 里**用 WebUI 的「复制配置文件」**复制一份（不要用 API 建，
+   会丢 `admins_id` 导致 chat 不响应），把人设写进去，再填进 `astrbotConfig`。
+
+没有服务也能跑：不填 Key 会自动回落到 mock（本地固定台词），气泡照常出现，只是不会真聊天。

@@ -50,6 +50,12 @@
         </div>
 
         <div class="field">
+          <div class="field-top"><span class="lbl">桌宠名称</span></div>
+          <input type="text" id="pet-name" maxlength="12" placeholder="大肥鱼" autocomplete="off">
+          <p class="hint">气泡上署名用。短句和预设台词不署名，只有她自己说的长句才显示。</p>
+        </div>
+
+        <div class="field">
           <div class="field-top"><span class="lbl">主题</span></div>
           <select id="theme">
             <option value="dark">深色（跟播放器一致）</option>
@@ -209,6 +215,23 @@
           <p class="hint">用你自己的账号扫码，cookie 只存在本机。有了账号会员歌才能放；不登录只能放免费曲。</p>
         </div>
       </div>
+
+      <div class="group">
+        <div class="field">
+          <div class="field-top"><span class="lbl">播完之后</span></div>
+          <select id="roam-src">
+            <option value="similar">相似歌曲（顺着这首往下，最贴）</option>
+            <option value="artist">同歌手（还是这个人，再换歌）</option>
+            <option value="daily">每日推荐（按口味）</option>
+            <option value="hot">热歌榜（永不空，最泛）</option>
+          </select>
+          <p class="hint">只在唱片机切到 <b>∞ 漫游</b> 时才生效；队列快放完时按这里选的源去补歌。</p>
+        </div>
+        <div class="field">
+          <label class="check"><input type="checkbox" id="deep-roam"> 深度漫游（链式相似，更贴但慢）</label>
+          <p class="hint">打开后每次补歌会多打几次「相似」，会等 8–10 秒。相似只有 5 首，链式才够听一段。</p>
+        </div>
+      </div>
     </section>
 
     <!-- ================= 模型 ================= -->
@@ -274,6 +297,25 @@
           <label class="check"><input type="checkbox" id="auto-start"> 开机自启（登录后自动启动）</label>
           <p class="hint">穿透时角色区不可点，舞台里会浮出「恢复鼠标」；也可按 <b>Ctrl+Alt+L</b> 找回，<b>Ctrl+Alt+Q</b> 退出。</p>
         </div>
+      </div>
+
+      <div class="group">
+        <h3>接你自己的智能体</h3>
+        <p class="hint">桌宠本身不带大脑：语言来自一个 AstrBot（或任何兼容它的 HTTP 服务）。换人设、换记忆，都在那边改。</p>
+        <ol class="steps">
+          <li>在跑 AstrBot 的机器上打开 <code>WebUI → 设置 → OpenAPI</code>，新建一个 API Key，权限至少勾 <code>chat</code>。</li>
+          <li>把地址和 Key 填进桌宠目录下的 <code>brain.config.json</code>：
+            <pre>{
+  "brain": "astrbot",
+  "astrbotUrl": "http://你的服务器:6185",
+  "astrbotKey": "abk_xxxxxxxx",
+  "astrbotConfig": "桌宠版"
+}</pre>
+          </li>
+          <li>重启桌宠。她会用这个 Key 调 <code>/api/v1/chat</code>，<code>username</code> 固定 <code>desktop_pet</code>，<code>session_id</code> 存在 <code>_data/stage-chat-state.json</code> —— 那就是她的"记忆槽"。</li>
+          <li>想让"大肥鱼"这个人设生效：在 AstrBot 里复制一份配置文件（<b>用 WebUI 的「复制配置文件」</b>，不要用 API 建），把人设写进去，再把它填到 <code>astrbotConfig</code>。</li>
+        </ol>
+        <p class="hint">没有服务也能用：留空 Key 会自动回落到 mock（本地固定台词），气泡照常出现，只是不会真聊天。</p>
       </div>
     </section>
 

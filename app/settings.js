@@ -86,6 +86,12 @@ function wireNav() {
   showPane(last, false)
 }
 
+const petNameEl = document.getElementById('pet-name')
+
+function syncPetName(v) {
+  if (petNameEl && petNameEl.value !== String(v ?? '')) petNameEl.value = String(v ?? '')
+}
+
 function paint() {
   const zoom = Number(settings.zoom) || 1
   setRange('#zoom', zoom)
@@ -112,6 +118,7 @@ function paint() {
   setCheck('#top', !!settings.alwaysOnTop)
   setCheck('#click-through', !!settings.clickThrough)
   setCheck('#auto-start', !!settings.autoStart)
+  syncPetName(settings.petName || '大肥鱼')
   const themeSel = $('#theme')
   const theme = settings.theme || 'dark'
   if (themeSel) themeSel.value = theme
@@ -146,6 +153,10 @@ function wire() {
       applyTheme(v)
       pushSettings({ theme: v })
     }
+  }
+
+  if (petNameEl) {
+    petNameEl.onchange = (e) => pushSettings({ petName: String(e.target.value || '').trim().slice(0, 12) || '大肥鱼' })
   }
 
   $('#zoom').oninput = (e) => {
@@ -209,6 +220,17 @@ function wire() {
     playerOn.checked = settings.player !== false
     playerOn.onchange = (e) => pushSettings({ player: e.target.checked })
   }
+  const roamSrc = $('#roam-src')
+  if (roamSrc) {
+    roamSrc.value = settings.roamSource || 'similar'
+    roamSrc.onchange = (e) => pushSettings({ roamSource: e.target.value })
+  }
+  const deepRoam = $('#deep-roam')
+  if (deepRoam) {
+    deepRoam.checked = !!settings.deepRoam
+    deepRoam.onchange = (e) => pushSettings({ deepRoam: e.target.checked })
+  }
+
   const musicState = $('#music-state')
   const qrBtn = $('#music-qr')
   const qrBox = $('#music-qr-box')

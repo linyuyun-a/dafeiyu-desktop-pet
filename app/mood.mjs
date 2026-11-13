@@ -124,7 +124,9 @@ export function createMood({ now = () => Date.now(), hour = () => new Date().get
       bump('missing', -0.2)
     } else if (ev.kind === 'idle') {
       const m = Number(ev.idleMin) || 0
-      if (m >= 3) bump('missing', m >= 45 ? 0.9 : m >= 15 ? 0.65 : 0.35)
+      // 「惦记」只由时间驱动，而别的轴点几下就能涨 —— 所以这里给得重：
+      // 3 分钟就已经明显，15 分钟接近满，45 分钟直接拉满。
+      if (m >= 3) bump('missing', m >= 45 ? 1.0 : m >= 15 ? 0.82 : 0.52)
       if (m >= 3) bump('clingy', -0.08)
       else bump('clingy', 0.02)
       if (m < 1) bump('bored', 0.02)
