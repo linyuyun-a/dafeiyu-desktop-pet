@@ -78,100 +78,189 @@ body { font: 12px/1.55 system-ui, "Segoe UI", "Microsoft YaHei", sans-serif; col
 #perf b { color: #8fd0ff; }
 #perf span { display: block; color: #9fb6d6; }
 
-/* ===== 对话气泡（漫画式短句）=====
-   外形参考：粗描边 + 米白底 + 两个「思考点」当尾巴；尺寸由 bubble.js 给。 */
+/* ===== 对话气泡（鱼泡 · 情绪决定边色）=====
+   --bc 是唯一的主色：边、尾巴、名称前缀、标签、角标都跟着它。
+     有情绪（她自己说） → 按 [data-mood] 取彩度（开心绿/害羞粉/不爽橙红/困灰蓝/惦记紫/黏人桃/闲着浅灰）
+     模板台词           → 蓝 #5CC3EF（这局不是她在表达情绪）
+     系统态             → 灰 #C4CFDA
+   底色始终奶油白（深色壁纸下深蓝灰），所以一圈彩边不会糊成一团。
+   尺寸与摆位由 src/stage/bubble.js 写，这里只管长相。 */
 #bubble {
-  /* --bs：随窗口缩放的统一比例（bubble.js setScale 写入），内边距/描边/尾巴都跟它走 */
+  /* --bs：随窗口缩放的统一比例（bubble.js setScale 写入） */
   --bs: 1;
+  --bc: #F2A45E; --bg-1: #FFFDF9; --bg-2: #FFF7EC; --bg-3: #FFEFDD; --line: #F0D3B4; --fg: #3A2F26; --dim: #9B8A79;
   position: fixed; z-index: 40; display: block;
-  min-width: calc(64px * var(--bs)); max-width: 268px;
-  padding: calc(9px * var(--bs)) calc(16px * var(--bs));
+  min-width: calc(76px * var(--bs)); max-width: 268px;
+  padding: calc(9px * var(--bs)) calc(15px * var(--bs)) calc(10px * var(--bs));
   border-radius: calc(22px * var(--bs));
-  background: var(--bb-bg, #fdfaf3);
-  color: var(--bb-fg, #23283a);
-  /* 描边取角色本身的天蓝（裙子亮片/尾鳍那一档），跟形象统一；AstrBot 说的话改成橙色系 */
-  border: calc(3px * var(--bs)) solid var(--bb-line, #5cc3ef);
-  box-shadow: 0 calc(8px * var(--bs)) calc(20px * var(--bs)) rgba(10, 18, 38, 0.3), 0 0 0 1px color-mix(in srgb, var(--bb-line, #5cc3ef) 30%, transparent);
-  line-height: 1.34; font-weight: 700; letter-spacing: 0.02em;
+  color: var(--fg);
+  font-weight: 500; letter-spacing: 0.01em; line-height: 1.62;
   text-align: center;
-  white-space: pre-wrap; word-break: break-word;
-  overflow-wrap: anywhere;
+  white-space: pre-wrap; word-break: break-word; overflow-wrap: anywhere;
   pointer-events: none;
   user-select: none; -webkit-user-select: none;
-  opacity: 0; transform: translateY(4px) scale(0.97);
-  transition: opacity 0.16s ease, transform 0.16s ease;
-  scrollbar-width: thin; scrollbar-color: rgba(70, 105, 165, 0.45) transparent;
+  opacity: 0; transform: translateY(6px) scale(0.94);
+  transform-origin: 50% 100%;
+  transition: opacity 0.2s ease, transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  scrollbar-width: thin; scrollbar-color: rgba(150, 130, 175, 0.4) transparent;
 }
 #bubble.on { opacity: 1; transform: none; }
-/* 内容超长、需要滚动时：气泡接管鼠标（否则 pointer-events:none 让滚轮直接落空），
-   并在底部留一条渐隐，提示"下面还有" */
+/* 卡片皮肤：背景/边框/投影都在这一层，入场时和文字一起浮现，尾巴的小泡不受影响 */
+#bubble .b-skin {
+  position: absolute; inset: calc(-3px * var(--bs)); z-index: 0;
+  border-radius: calc(22px * var(--bs));
+  background: linear-gradient(160deg, var(--bg-1), var(--bg-2) 58%, var(--bg-3));
+  border: calc(3px * var(--bs)) solid var(--bc);
+  box-shadow: 0 calc(10px * var(--bs)) calc(25px * var(--bs)) rgba(120, 96, 150, 0.20),
+    0 calc(2px * var(--bs)) calc(6px * var(--bs)) rgba(120, 96, 150, 0.10),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  pointer-events: none;
+}
+#bubble > .b-deco, #bubble > .b-head, #bubble > .b-body { position: relative; z-index: 1; }
+
+/* 三色出处 */
+#bubble[data-src="her"] {
+  --bg-1: #FFFDF9; --bg-2: #FFF7EC; --bg-3: #FFEFDD;
+  --fg: #3A2F26; --dim: #9B8A79;
+}
+#bubble[data-src="script"] {
+  --bc: #5CC3EF;
+  --bg-1: #FFFDF9; --bg-2: #F2FAFF; --bg-3: #E8F4FC;
+  --fg: #26333D; --dim: #8496A4;
+}
+#bubble[data-src="system"] {
+  --bc: #C4CFDA;
+  --bg-1: #F7F9FB; --bg-2: #EFF3F7; --bg-3: #EDF0F5;
+  --fg: #5C6675; --dim: #9AA3B0;
+}
+#bubble[data-state="error"] { --bc: #E09A9A; }
+
+/* 情绪 → 边色（浓淡由该轴强度决定，标签与角标同色） */
+#bubble[data-mood="joy"]     { --bc: #5FC9A0; }
+#bubble[data-mood="shy"]     { --bc: #E7A2C1; }
+#bubble[data-mood="irk"]     { --bc: #DF6F5C; }
+#bubble[data-mood="sleepy"]  { --bc: #8FB8C6; }
+#bubble[data-mood="missing"] { --bc: #BCA0DD; }
+#bubble[data-mood="clingy"]  { --bc: #F4B49C; }
+#bubble[data-mood="bored"]   { --bc: #BFC7D1; }
+
+/* 内容超长、需要滚动时：气泡接管鼠标，并在底部留渐隐提示「下面还有」 */
 #bubble.scrollable {
-  pointer-events: auto;
-  overscroll-behavior: contain;
-  cursor: default;
+  pointer-events: auto; overscroll-behavior: contain; cursor: default;
   -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 18px), rgba(0,0,0,0.15));
   mask-image: linear-gradient(to bottom, #000 calc(100% - 18px), rgba(0,0,0,0.15));
 }
-/* 表情包配图（AI 发图时）：图在上、字在下，等比缩到气泡宽度内 */
+#bubble.empty { display: none; }
+#bubble::-webkit-scrollbar { width: 6px; }
+#bubble::-webkit-scrollbar-thumb { background: rgba(150, 130, 175, 0.4); border-radius: 3px; }
+
+/* ---------- 内部结构 ---------- */
+#bubble .b-body { display: block; position: relative; }
+#bubble .b-str { display: block; }
+#bubble[data-len="long"] { text-align: left; }
+
+/* 名称行：她 + 长句才出现（短句/模板台词不署名） */
+#bubble .b-head {
+  display: flex; align-items: center; gap: calc(5px * var(--bs));
+  margin: 0 0 calc(5px * var(--bs));
+  font-size: calc(12px * var(--bs)); line-height: 1;
+}
+#bubble .b-head[hidden] { display: none; }
+#bubble .b-mark { color: var(--bc); font-size: calc(11px * var(--bs)); }
+#bubble .b-name { font-weight: 600; color: #6C5A72; letter-spacing: 0.02em; }
+#bubble .b-tag {
+  font-size: calc(10px * var(--bs)); color: #fff;
+  padding: calc(2px * var(--bs)) calc(7px * var(--bs));
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--bc) 78%, #000 12%);
+  font-weight: 500;
+}
+#bubble .b-tag[hidden] { display: none; }
+
+/* 右上角装饰：只在有情绪时出现，出现时闪一次（不循环） */
+#bubble .b-deco {
+  position: absolute; right: calc(10px * var(--bs)); top: calc(7px * var(--bs));
+  font-size: calc(11px * var(--bs)); line-height: 1; color: var(--bc);
+  pointer-events: none; opacity: 0.9;
+}
+#bubble .b-deco[hidden] { display: none; }
+#bubble[data-strength="high"] .b-deco { animation: bdeco 600ms ease-out 1; }
+@keyframes bdeco {
+  0% { opacity: 0; transform: scale(0.6) rotate(-12deg); }
+  55% { opacity: 1; transform: scale(1.18) rotate(4deg); }
+  100% { opacity: 0.9; transform: none; }
+}
+
+/* 情绪强档的一点小动作（都只动一次） */
+#bubble[data-mood="joy"][data-strength="high"] { animation: bpop 300ms ease-out 1; }
+@keyframes bpop { 0% { transform: translateY(0); } 40% { transform: translateY(-2px); } 100% { transform: none; } }
+#bubble[data-mood="shy"] { --line: #EDC9DC; }
+#bubble[data-mood="shy"][data-strength="high"] { animation: bshy 320ms ease-out 1; }
+@keyframes bshy { 0% { transform: scale(1); } 45% { transform: scale(0.978); } 100% { transform: none; } }
+#bubble[data-mood="irk"] { --line: #C9BFD9; }
+#bubble[data-mood="irk"][data-strength="high"] { animation: birk 240ms ease-in-out 1; }
+@keyframes birk { 0%,100% { transform: none; } 30% { transform: translateX(-1px); } 65% { transform: translateX(1px); } }
+#bubble[data-mood="sleepy"] { filter: saturate(0.92); }
+#bubble[data-mood="sleepy"][data-strength="high"] { animation: bdrop 320ms ease-out 1; }
+@keyframes bdrop { 0% { transform: translateY(-2px); } 100% { transform: none; } }
+#bubble[data-mood="bored"] .b-deco { animation: none; }
+
+/* 图片表情（AI 发图时）：图在上、字在下 */
 #bubble img.bubble-img {
-  display: block;
-  max-width: 100%;
+  display: block; max-width: 100%;
   max-height: calc(150px * var(--bs));
   margin: 0 auto calc(6px * var(--bs));
   border-radius: calc(12px * var(--bs));
-  object-fit: contain;
-  -webkit-user-drag: none;
+  object-fit: contain; -webkit-user-drag: none;
 }
-#bubble.empty { display: none; }
-#bubble::-webkit-scrollbar { width: 6px; }
-#bubble::-webkit-scrollbar-thumb { background: rgba(70, 105, 165, 0.4); border-radius: 3px; }
 
-/* 尾巴：两个由大到小的「思考点」，斜着指向角色 */
-#bubble::before, #bubble::after {
-  content: ""; position: absolute; border-radius: 50%;
-  background: var(--bb-bg, #fdfaf3); border: calc(3px * var(--bs)) solid var(--bb-line, #5cc3ef);
-  box-sizing: border-box;
+/* ---------- 鱼泡尾：三颗递减小泡，四向跟随 ---------- */
+/* 鱼泡尾：三颗小泡沿「左下 → 右上」斜着排，最大的那颗贴着气泡底边 */
+#bubble .b-tail {
+  position: absolute; display: block;
+  width: calc(30px * var(--bs)); height: calc(30px * var(--bs));
 }
-#bubble::before { width: calc(12px * var(--bs)); height: calc(12px * var(--bs)); }
-#bubble::after { width: calc(7px * var(--bs)); height: calc(7px * var(--bs)); border-width: calc(2px * var(--bs)); }
-#bubble[data-anchor="right"][data-side="above"]::before { left: calc(18px * var(--bs)); bottom: calc(-18px * var(--bs)); }
-#bubble[data-anchor="right"][data-side="above"]::after { left: calc(9px * var(--bs)); bottom: calc(-32px * var(--bs)); }
-/* 贴角模式（默认）：点点贴气泡框的**左下角**（选左侧时镜像到右下角） */
-#bubble[data-anchor="corner-right"][data-side="above"]::before { left: calc(16px * var(--bs)); bottom: calc(-16px * var(--bs)); }
-#bubble[data-anchor="corner-right"][data-side="above"]::after { left: calc(6px * var(--bs)); bottom: calc(-28px * var(--bs)); }
-#bubble[data-anchor="corner-left"][data-side="above"]::before { right: calc(16px * var(--bs)); bottom: calc(-16px * var(--bs)); }
-#bubble[data-anchor="corner-left"][data-side="above"]::after { right: calc(6px * var(--bs)); bottom: calc(-28px * var(--bs)); }
-/* 兜底居中挂在头顶：点点放在正下方、落在「框与头之间」的缝里 */
-#bubble[data-anchor="center"][data-side="above"]::before { left: 50%; margin-left: calc(-6px * var(--bs)); bottom: calc(-16px * var(--bs)); }
-#bubble[data-anchor="center"][data-side="above"]::after { left: 50%; margin-left: calc(-3.5px * var(--bs)); bottom: calc(-28px * var(--bs)); }
-#bubble[data-anchor="left"][data-side="above"]::before { right: calc(18px * var(--bs)); bottom: calc(-18px * var(--bs)); }
-#bubble[data-anchor="left"][data-side="above"]::after { right: calc(9px * var(--bs)); bottom: calc(-32px * var(--bs)); }
-#bubble[data-side="below"]::before { top: calc(-18px * var(--bs)); }
-#bubble[data-side="below"]::after { top: calc(-32px * var(--bs)); }
-#bubble[data-anchor="right"][data-side="below"]::before { left: calc(18px * var(--bs)); }
-#bubble[data-anchor="right"][data-side="below"]::after { left: calc(9px * var(--bs)); }
-#bubble[data-anchor="left"][data-side="below"]::before { right: calc(18px * var(--bs)); }
-#bubble[data-anchor="left"][data-side="below"]::after { right: calc(9px * var(--bs)); }
+#bubble .b-tail i {
+  position: absolute; display: block; border-radius: 50%;
+  background: var(--bg-2); border: calc(3px * var(--bs)) solid var(--bc);
+}
+#bubble .b-tail i:nth-child(1) { width: calc(9px * var(--bs)); height: calc(9px * var(--bs)); right: 0; top: 0; }
+#bubble .b-tail i:nth-child(2) { width: calc(6.5px * var(--bs)); height: calc(6.5px * var(--bs)); right: calc(8px * var(--bs)); top: calc(8px * var(--bs)); }
+#bubble .b-tail i:nth-child(3) { width: calc(4.5px * var(--bs)); height: calc(4.5px * var(--bs)); right: calc(15px * var(--bs)); top: calc(16px * var(--bs)); }
 
-/* 状态色：只改底色氛围，描边保持角色天蓝（不改边色） */
-#bubble[data-state="thinking"] { background: #f4f8fd; }
-#bubble[data-state="working"] { background: #f2f8ff; }
-#bubble[data-state="waiting"] { background: #fff9ee; }
-#bubble[data-state="success"] { background: #f2fbf4; }
-#bubble[data-state="error"] { background: #fdf3f3; }
-/* AstrBot 说的话（云端大脑生成）统一橙色系，和本地舞台台词（待机小动作那几句）分开：
-   - chat：你问她答，淡橙底 + 浅橙描边
-   - proactive：没人问她，她自己开口，橙底 + 深橙描边，明显一眼能认出来 */
-#bubble[data-state="chat"] {
-  --bb-bg: #fff6ec;
-  --bb-line: #f2a45e;
-  --bb-fg: #3a2a1c;
+/* 大气泡框最后浮现：先等三颗泡冒完（230ms），再用 260ms 弹进来 */
+/* 用 scale / translate 这两个独立属性，避开情绪动效对 transform 的占用 */
+
+/* 一颗一颗冒出来：气泡每次出现（.on 重新加上）时重新播一遍，说完过程中不重播 */
+@keyframes bTailPop {
+  0%   { opacity: 0; transform: scale(0.25); }
+  60%  { opacity: 1; transform: scale(1.12); }
+  100% { opacity: 1; transform: scale(1); }
 }
-#bubble[data-state="proactive"] {
-  --bb-bg: #ffe3c8;
-  --bb-line: #ec8b3c;
-  --bb-fg: #4b2a12;
+#bubble.tail-in .b-tail i { animation: bTailPop 300ms cubic-bezier(.34, 1.2, .64, 1) both; }
+/* 冒泡顺序要「从下往上」：最小的那颗先出现，最大的最后贴到气泡底边 */
+#bubble.tail-in .b-tail i:nth-child(3) { animation-delay: 40ms; }
+#bubble.tail-in .b-tail i:nth-child(2) { animation-delay: 130ms; }
+#bubble.tail-in .b-tail i:nth-child(1) { animation-delay: 220ms; }
+@media (prefers-reduced-motion: reduce) {
+  #bubble.tail-in .b-tail i { animation-duration: 1ms; animation-delay: 0ms; }
 }
+
+/* 挂在头顶：尾巴在气泡下方，斜向依旧是左下→右上 */
+#bubble[data-side="above"] .b-tail { top: 100%; margin-top: calc(-2px * var(--bs)); }
+#bubble[data-side="above"][data-anchor="corner-right"] .b-tail { left: calc(18px * var(--bs)); }
+#bubble[data-side="above"][data-anchor="corner-left"] .b-tail { right: calc(18px * var(--bs)); }
+#bubble[data-side="above"][data-anchor="right"] .b-tail { left: calc(20px * var(--bs)); }
+#bubble[data-side="above"][data-anchor="left"] .b-tail { right: calc(20px * var(--bs)); }
+#bubble[data-side="above"][data-anchor="center"] .b-tail { left: 50%; margin-left: calc(-15px * var(--bs)); }
+
+/* 挂在脚下：整串翻个身，尖头朝上指向她 */
+#bubble[data-side="below"] .b-tail { bottom: 100%; margin-bottom: calc(-2px * var(--bs)); transform: rotate(180deg); }
+#bubble[data-side="below"][data-anchor="corner-right"] .b-tail { left: calc(18px * var(--bs)); }
+#bubble[data-side="below"][data-anchor="corner-left"] .b-tail { right: calc(18px * var(--bs)); }
+#bubble[data-side="below"][data-anchor="right"] .b-tail { left: calc(20px * var(--bs)); }
+#bubble[data-side="below"][data-anchor="left"] .b-tail { right: calc(20px * var(--bs)); }
+#bubble[data-side="below"][data-anchor="center"] .b-tail { left: 50%; margin-left: calc(-15px * var(--bs)); }
 
 /* ---------- 窗口边框（设置里打开；拖边/拖角等比缩放） ---------- */
 #frame {

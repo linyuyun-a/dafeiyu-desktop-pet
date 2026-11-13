@@ -43,6 +43,71 @@ export function createBubble({ el, anchor, side = 'right', corner = false, onSpe
   imgEl.draggable = false
   imgEl.addEventListener('load', () => { if (visible) { layout(lastText); place() } })
 
+  // ---- 内部结构（样式全在 style.css 的 #bubble .b-* 里）----
+  //   ✦ 装饰 / 名称行（爱心 + 名称 + 情绪标签）/ 正文 / 三颗鱼泡尾
+  // 卡片"皮肤"单独一层：这样入场时可以只让框和文字浮现、尾巴的小泡先冒出来
+  const skinEl = document.createElement('span')
+  skinEl.className = 'b-skin'
+  const decoEl = document.createElement('span')
+  decoEl.className = 'b-deco'
+  const headEl = document.createElement('span')
+  headEl.className = 'b-head'
+  const markEl = document.createElement('span')
+  markEl.className = 'b-mark'
+  markEl.textContent = '♡'
+  const nameEl = document.createElement('span')
+  nameEl.className = 'b-name'
+  const tagEl = document.createElement('span')
+  tagEl.className = 'b-tag'
+  headEl.append(markEl, nameEl, tagEl)
+  const bodyEl = document.createElement('span')
+  bodyEl.className = 'b-body'
+  const strEl = document.createElement('span')
+  strEl.className = 'b-str'
+  bodyEl.append(imgEl, strEl)
+  const tailEl = document.createElement('span')
+  tailEl.className = 'b-tail'
+  tailEl.append(document.createElement('i'), document.createElement('i'), document.createElement('i'))
+  el.append(skinEl, decoEl, headEl, bodyEl, tailEl)
+
+  // 出处：her = 她自己说的（粉） / script = 模板台词（蓝） / system = 系统态（灰）
+  const SYS_STATES = new Set(['thinking', 'working', 'waiting', 'success', 'error'])
+  const MOOD_TAG = { joy: '开心', shy: '害羞', irk: '不爽', sleepy: '困', missing: '惦记', clingy: '黏人', bored: '闲着' }
+  const MOOD_DECO = { joy: '♡', shy: '❀', irk: '✧', sleepy: 'Zzz', missing: '·', clingy: '♡', bored: '·' }
+  let petName = '大肥鱼'
+
+  const inferSrc = (st) => (!st ? 'her' : SYS_STATES.has(st) ? 'system' : st === 'chat' || st === 'proactive' ? 'her' : 'script')
+
+  /** 按出处 + 情绪刷名称行/标签/装饰；文字长短决定名称行出不出 */
+  function applyMeta({ src, mood, strength, name } = {}) {
+    const kind = src || inferSrc(el.dataset.state)
+    const s = Math.max(0, Math.min(1, Number(strength) || 0))
+    const key = mood && MOOD_TAG[mood] ? mood : ''
+    el.dataset.src = kind
+    el.dataset.strength = s >= 0.66 ? 'high' : s >= 0.33 ? 'mid' : 'low'
+    if (key) el.dataset.mood = key
+    else delete el.dataset.mood
+    if (name) petName = String(name)
+
+    const len = Array.from(lastText).length
+    // 名称行：只在她自己说话、且是长句时署名（短句和模板台词不署名）
+    const showHead = kind === 'her' && len > 18
+    headEl.hidden = !showHead
+    if (showHead) nameEl.textContent = petName
+
+    // 情绪标签/装饰：她说话时中档就出；模板台词要强档才出（不假装有情绪）
+    const need = kind === 'her' ? 0.33 : 0.66
+    const on = !!key && s >= need
+    tagEl.hidden = !on
+    if (on) tagEl.textContent = MOOD_TAG[key]
+    decoEl.hidden = !on
+    if (on) {
+      decoEl.textContent = MOOD_DECO[key] || '✦'
+      // 换一个 data-k 让它重新闪一次（CSS 用 animation，不循环）
+      decoEl.dataset.k = String(Date.now())
+    }
+  }
+
   const viewport = () => ({ w: window.innerWidth, h: window.innerHeight })
 
   /** 按字数选字号 */
@@ -102,54 +167,30 @@ export function createBubble({ el, anchor, side = 'right', corner = false, onSpe
       x = side === 'right' ? vp.w - w - PAD : PAD
       y = PAD
     } else if (a) {
-      const offset = Math.max(4, Math.round(w * 0.06))
-      const gap = 6
-      const fitsRight = a.right + offset + w <= vp.w - gap
-      const fitsLeft = a.left - offset - w >= gap
-      // 先按设置里选的那一侧放；那一侧放不下再翻另一侧；两边都放不下面就居中挂在头顶。
-      // 窗口是「刚好包住角色」的，头侧往往真的没有气泡的宽度，居中兜底比硬贴边好看。
-      if (side === 'right' && fitsRight) x = a.right + offset
-      else if (side === 'left' && fitsLeft) x = a.left - offset - w
-      else if (fitsLeft) { side = 'left'; x = a.left - offset - w }
-      else if (fitsRight) { side = 'right'; x = a.right + offset }
-      else {
-        side = 'center'
-        // 气泡比窗口还宽时只能靠缩放，这里只保证不越界
-        x = (a.left + a.right) / 2 - w / 2
-      }
-      // 泡泡底边略高于头顶（留出点点尾巴的高度）
+      // 用户定的规则：永远挂在头顶正中，不往两侧摆。
+      // 头顶真放不下时只做两件事——缩字号、必要时内部滚动，绝不压脸、也不去两侧。
+      side = 'center'
+      x = (a.left + a.right) / 2 - w / 2
       y = a.top - h - 22
       if (y < 6) {
-        // 头顶上方放不下：先往她头两侧摆，绝不让气泡压住脸
-        const off = Math.max(4, Math.round(w * 0.06))
-        const sideY = Math.max(6, Math.min(vp.h - h - 6, a.top - h * 0.25))
-        const rightX = a.right + off
-        const leftX = a.left - off - w
-        if (rightX + w <= vp.w - 6) { side = 'right'; x = rightX; y = sideY }
-        else if (leftX >= 6) { side = 'left'; x = leftX; y = sideY }
-        else {
-          // 两侧也没地方（窗口太窄 / 放到最大）：先缩字号把它塞进头顶那点空里，
-          // 实在塞不下才裁切——绝不直接盖在她脸上。
-          // 两侧都摆不下时，宁可让她头顶被挡一点，也别把气泡压成两行高
-          const room = Math.round(vp.h * 0.38)
-          let fs = parseFloat(el.style.fontSize) || 14
-          let guard = 0
-          while (el.scrollHeight > room && fs > 11 && guard++ < 8) {
-            fs = Math.max(11, Math.round((fs - 1) * 10) / 10)
-            el.style.fontSize = `${fs}px`
-          }
-          if (el.scrollHeight > room) {
-            el.style.maxHeight = `${Math.round(room)}px`
-            el.style.overflowY = 'auto'
-            el.classList.add('scrollable')
-          } else {
-            el.style.maxHeight = ''
-            el.style.overflowY = 'visible'
-            el.classList.remove('scrollable')
-          }
-          h = el.offsetHeight || h
-          y = Math.max(6, a.top - h - 22)
+        const room = Math.round(vp.h * 0.38)
+        let fs = parseFloat(el.style.fontSize) || 14
+        let guard = 0
+        while (el.scrollHeight > room && fs > 11 && guard++ < 8) {
+          fs = Math.max(11, Math.round((fs - 1) * 10) / 10)
+          el.style.fontSize = `${fs}px`
         }
+        if (el.scrollHeight > room) {
+          el.style.maxHeight = `${Math.round(room)}px`
+          el.style.overflowY = 'auto'
+          el.classList.add('scrollable')
+        } else {
+          el.style.maxHeight = ''
+          el.style.overflowY = 'visible'
+          el.classList.remove('scrollable')
+        }
+        h = el.offsetHeight || h
+        y = Math.max(6, a.top - h - 22)
       }
     } else {
       x = vp.w / 2 - w / 2
@@ -164,11 +205,13 @@ export function createBubble({ el, anchor, side = 'right', corner = false, onSpe
     //   贴角模式：气泡在窗口顶部、角色在下面 → 点点朝下（above = 点点在气泡底边外侧）
     //   跟随模式：按气泡在头顶上方还是下方决定
     el.dataset.side = (corner || (a && y + h + 2 <= a.top)) ? 'above' : 'below'
+    // 气泡被顶到窗口最上沿时，尾巴朝上会被裁掉；这时把点点翻到下面（指向角色）
+    if (el.dataset.side === 'below' && y < 22) el.dataset.side = 'above'
   }
 
   return {
     /** 换文字（不闪不重建）；state 用来染色：thinking / working / waiting / success / error */
-    set(text, { state: st, image } = {}) {
+    set(text, { state: st, image, src, mood, strength, name } = {}) {
       const t = String(text ?? '')
       // st = undefined 表示"这次不改状态"；st = null 表示"清掉状态色"（普通回话要把主动开口的淡青底还原）
       if (st !== undefined) {
@@ -176,16 +219,22 @@ export function createBubble({ el, anchor, side = 'right', corner = false, onSpe
         else delete el.dataset.state
       }
       const img = image === undefined ? lastImage : String(image || '')
-      if (t === lastText && img === lastImage) { if (visible) place(); return }
+      const same = t === lastText && img === lastImage
       lastText = t
       lastImage = img
-      el.textContent = t
-      // textContent 会把图节点一起清掉，所以设完字再把图放回去（节点保留，src 复用缓存）
-      if (lastImage) {
-        if (imgEl.getAttribute('src') !== lastImage) imgEl.src = lastImage
-        el.prepend(imgEl)
+      if (!same) {
+        strEl.textContent = t
+        if (lastImage) {
+          if (imgEl.getAttribute('src') !== lastImage) imgEl.src = lastImage
+          imgEl.hidden = false
+        } else {
+          imgEl.hidden = true
+        }
+        el.classList.toggle('empty', t.length === 0 && !lastImage)
+        // 短句居中、长句左对齐（CSS 用 [data-len="long"] 切）
+        el.dataset.len = Array.from(t).length > 18 ? 'long' : 'short'
       }
-      el.classList.toggle('empty', t.length === 0 && !lastImage)
+      applyMeta({ src, mood, strength, name })
       if (visible) { layout(t); place() }
     },
     show(text, opts = {}) {
@@ -194,10 +243,46 @@ export function createBubble({ el, anchor, side = 'right', corner = false, onSpe
       // 粘住的台词同理：她还在说话/刚说完还没收起，本地台词不许抢
       if (stickyOwner && opts.owner !== stickyOwner) return
       if (opts.sticky) stickyOwner = opts.owner || 'agent'
+      // 只在「新一条」时播入场动画：隐藏→出现，或状态变了（thinking → chat）。
+      // 流式逐字会同一状态反复 show，不能每次都让气泡重播。
+      const wasVisible = visible
+      const prevState = el.dataset.state || ''
       const changed = text != null && String(text) !== lastText
       if (text != null) this.set(text, opts)
       visible = true
       el.classList.add('on')
+      // 入场顺序：先让尾巴的小泡从下往上冒，最后大气泡框浮现（见 style.css 里 230ms 的延迟）。
+      const fresh = !wasVisible || (opts.state && opts.state !== prevState)
+      if (fresh) {
+        el.classList.remove('tail-in')
+        void el.offsetWidth
+        el.classList.add('tail-in')
+        // 大气泡框最后浮现：先等尾巴三颗泡冒完（230ms），再用 260ms 弹进来。
+        // 用内联 transition 而不是 keyframes —— 情绪动效同样占着这个元素的 transform，
+        // 两套 animation 会互相顶掉（试过，框会立刻弹出来）。
+        const EASE = 'cubic-bezier(.34, 1.2, .64, 1)'
+        const parts = [skinEl, decoEl, headEl, bodyEl]
+        for (const n of parts) {
+          n.style.transition = 'none'
+          n.style.opacity = '0'
+        }
+        skinEl.style.scale = '0.94'
+        // 角标的「闪一次」也是 CSS animation，会盖掉内联 opacity —— 入场这一刻先按住
+        decoEl.style.animation = 'none'
+        requestAnimationFrame(() => {
+          for (const n of parts) {
+            n.style.transition = `opacity 260ms ${EASE} 230ms, scale 260ms ${EASE} 230ms`
+            n.style.opacity = '1'
+            n.style.scale = '1'
+            setTimeout(() => {
+              n.style.transition = ''
+              n.style.opacity = ''
+              n.style.scale = ''
+              if (n === decoEl) n.style.animation = ''
+            }, 760)
+          }
+        })
+      }
       layout(lastText)
       place()
       // 冒泡时让她动嘴：按字数估一个时长（含标点停顿），看起来像在念这句话
@@ -219,7 +304,7 @@ export function createBubble({ el, anchor, side = 'right', corner = false, onSpe
       if (lockOwner && owner !== lockOwner) return null
       const line = pickPhrase(key, lastKey === key ? lastText : '')
       lastKey = key
-      this.show(line, { state: key, owner })
+      this.show(line, { state: key, owner, src: 'script' })
       if (ms > 0) {
         clearTimeout(hideTimer)
         hideTimer = setTimeout(() => { if (lastKey === key) this.hide() }, ms)
@@ -234,6 +319,12 @@ export function createBubble({ el, anchor, side = 'right', corner = false, onSpe
     unlock(owner = 'agent') { if (lockOwner && owner === lockOwner) lockOwner = null },
     get locked() { return lockOwner },
     get sticky() { return stickyOwner },
+    /** 设置里改名/改风格时同步（现在只用到 name） */
+    configure(next = {}) {
+      if (next.name) petName = String(next.name)
+      applyMeta({})
+      if (visible) { layout(lastText); place() }
+    },
     /** 位置依赖角色位置，角色一动（拖窗口/换尺寸）就重排 */
     reposition() { if (visible) place() },
     /** 挂在头的左侧还是右侧（设置里可切） */
@@ -253,6 +344,6 @@ export function createBubble({ el, anchor, side = 'right', corner = false, onSpe
     get side() { return anchorSide },
     get visible() { return visible },
     get text() { return lastText },
-    state() { return { visible, text: lastText, state: el.dataset.state ?? null, w: el.offsetWidth, h: el.offsetHeight, fs: parseFloat(el.style.fontSize) || 0, scroll: el.style.overflowY === 'auto' } },
+    state() { return { visible, text: lastText, state: el.dataset.state ?? null, src: el.dataset.src ?? null, mood: el.dataset.mood ?? null, strength: el.dataset.strength ?? null, name: petName, w: el.offsetWidth, h: el.offsetHeight, fs: parseFloat(el.style.fontSize) || 0, scroll: el.style.overflowY === 'auto' } },
   }
 }
