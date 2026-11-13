@@ -383,6 +383,7 @@ const DEFAULTS = {
   padY: 0.02,            // 上下留白（0–0.2，占画布高度比例）；越小边框越贴角色
   bodyShape: 0,          // 体型：0 默认 / 0.4 体型1 / 1 体型2（Clothes2 参数，设置里拉条调）
   dragPhysics: true,     // 拖拽物理：拖动窗口时让模型自己的物理跟着甩（类似 VTS 的拖拽物理演算）
+  theme: 'dark',         // 设置页主题：dark | light | system
   autoStart: false,      // 开机自启（Windows 登录时启动舞台）
   proactive: 'few',      // 主动开口频率：off / few / normal / many
   awayTalk: true,        // 主人走开/回来时，她要不要嘀咕两句
@@ -1649,8 +1650,8 @@ function wireIpc() {
   }))
   ipcMain.on('shell:settings', () => openChild('settings', {
     file: 'settings.html',
-    width: 432, height: 760, minWidth: 360, minHeight: 420,
-    title: '设置 · Live2D Stage',
+    width: 700, height: 600, minWidth: 620, minHeight: 520,
+    title: '设置 · 大肥鱼',
   }))
   // ---------- 设置窗口 → 舞台窗口的 RPC ----------
   // 设置窗口不重复加载模型：它只发指令、拿快照，真正的状态都在舞台窗口里。

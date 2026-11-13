@@ -45,6 +45,47 @@ function debounce(fn, ms = 120) {
 const pushSettings = (patch) => shell.set(patch)
 const pushSettingsSoon = debounce((patch) => shell.set(patch))
 
+// ---------- 主题 ----------
+const SYSTEM_DARK = () => window.matchMedia?.('(prefers-color-scheme: dark)')?.matches ?? true
+
+function applyTheme(value) {
+  const mode = value || 'dark'
+  const resolved = mode === 'system' ? (SYSTEM_DARK() ? 'dark' : 'light') : mode
+  document.documentElement.dataset.theme = resolved === 'light' ? 'light' : 'dark'
+}
+
+// ---------- 左侧导航 ----------
+const PANES = ['look', 'behave', 'sound', 'music', 'model', 'advanced']
+let activePane = 'look'
+
+function showPane(name, animate = true) {
+  if (!PANES.includes(name)) name = 'look'
+  activePane = name
+  for (const el of document.querySelectorAll('.pane')) {
+    const mine = el.dataset.pane === name
+    el.hidden = !mine
+    el.classList.toggle('enter', mine && animate)
+    if (mine) { el.classList.remove('enter'); if (animate) { void el.offsetWidth; el.classList.add('enter') } }
+  }
+  for (const b of document.querySelectorAll('.nav-item')) {
+    const on = b.dataset.go === name
+    b.classList.toggle('on', on)
+    b.setAttribute('aria-pressed', on ? 'true' : 'false')
+  }
+  const panel = $('#panel')
+  if (panel) panel.scrollTop = 0
+  try { localStorage.setItem('settings:pane', name) } catch {}
+}
+
+function wireNav() {
+  for (const b of document.querySelectorAll('.nav-item')) {
+    b.onclick = () => showPane(b.dataset.go)
+  }
+  let last = 'look'
+  try { last = localStorage.getItem('settings:pane') || 'look' } catch {}
+  showPane(last, false)
+}
+
 function paint() {
   const zoom = Number(settings.zoom) || 1
   setRange('#zoom', zoom)
@@ -71,6 +112,10 @@ function paint() {
   setCheck('#top', !!settings.alwaysOnTop)
   setCheck('#click-through', !!settings.clickThrough)
   setCheck('#auto-start', !!settings.autoStart)
+  const themeSel = $('#theme')
+  const theme = settings.theme || 'dark'
+  if (themeSel) themeSel.value = theme
+  applyTheme(theme)
 }
 
 function setRange(sel, v) {
@@ -94,6 +139,15 @@ function setCheck(sel, on) {
 
 // ---------- 事件 ----------
 function wire() {
+  const themeSel = $('#theme')
+  if (themeSel) {
+    themeSel.onchange = (e) => {
+      const v = e.target.value
+      applyTheme(v)
+      pushSettings({ theme: v })
+    }
+  }
+
   $('#zoom').oninput = (e) => {
     const zoom = Number(e.target.value)
     $('#zoom-readout').textContent = `${Math.round(zoom * 100)}%`
@@ -307,7 +361,7 @@ async function loadModelLists() {
   if (exprBox && !exprBox.dataset.built) {
     exprBox.dataset.built = '1'
     const skip = new Set(['体型1', '体型2', '默认体型']) // 体型改成拉条了，不再占按钮
-    for (const name of (meta.exprs || []).filter((n) => !skip.has(n))) {
+    for (const name of [...new Set((meta.exprs || []).filter((n) => !skip.has(n)))]) {
       const btn = document.createElement('button')
       btn.className = 'chip'
       btn.textContent = name
@@ -327,7 +381,10 @@ async function loadModelLists() {
     const box = $(boxSel)
     if (!box || box.dataset.built) continue
     box.dataset.built = '1'
+    const seen = new Set()
     for (const p of poses.filter((x) => !!x.official === wantOfficial)) {
+      if (seen.has(p.name)) continue
+      seen.add(p.name)
       const btn = document.createElement('button')
       btn.className = 'chip'
       btn.textContent = p.name
@@ -346,6 +403,8 @@ async function loadModelLists() {
 
 async function boot() {
   settings = (await shell.get?.()) || {}
+  applyTheme(settings.theme || 'dark')
+  wireNav()
   paint()
   shell.onSettings?.((next) => { settings = next || settings; paint() })
   wire()
