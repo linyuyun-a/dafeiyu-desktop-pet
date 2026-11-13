@@ -29,6 +29,18 @@ npm run app -- --model "D:/path/to/your.model3.json"
 大脑配置：复制 `brain.config.example.json` 为 `brain.config.json`，填入你的 AstrBot 地址与 API Key
 （这个文件已被 `.gitignore` 忽略，不会进仓库）。
 
+## 声音（需要自备）
+
+语音合成用的四条**情绪母带**（`app/tts/voices/*.wav`）是从一段参考音克隆出来的，
+涉及原声权利，**不随仓库分发**。没有它们时桌宠照样能打字对话，只是不出声。
+
+想让她出声：
+
+1. 准备一段你自己的参考音（3–10 秒干净人声），以及它对应的文字；
+2. 用 `app/tts/server.py` 同目录的母带脚本（`_probe/make-masters.py` 里是做法）
+   按 soft / angry / sleepy / happy 四种语气各生成一条；
+3. 放到 `app/tts/voices/`，连同同名 `.txt`（参考音原文）与 `index.json`。
+
 ## 开发
 
 ```bash
