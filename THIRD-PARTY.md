@@ -30,7 +30,7 @@
 | 组件 | 许可 | 为什么不能直接用 |
 |---|---|---|
 | [DanteAlighieri13210914/pv-tool](https://github.com/DanteAlighieri13210914/pv-tool) | Non-Commercial，且明确禁止 embedding / bundling into any product | 只能借它的视觉思路（几何母题、边缘刻度、3 秒段落）自己实现 |
-| `D:\pv文字预设` 的剪映草稿 | 允许学习/修改/分享，禁止销售预设本身 | 仅作动画参考，未入库 |
+| 某剪映文字预设合集（本地） | 允许学习/修改/分享，禁止销售预设本身 | 仅作动画参考，未入库 |
 
 ## 明确**不**随仓库分发
 
