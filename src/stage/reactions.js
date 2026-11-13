@@ -1,0 +1,138 @@
+/**
+ * 分区反应规则（应用壳与验证台共用）。
+ *
+ * 三条硬规则（都是踩出来的）：
+ *   1. 切换，不叠加：同一个热区同一时刻只有一组反应在场；换组先把上一组临时层撤掉。
+ *   2. 两边都有的表情原地保留：腿「点击=加载」→「滑动=加载+脸红」时加载不能重建，否则动画从头播。
+ *   3. 换装 / 脱鞋 / 尾巴这类切换是**长期状态**：放在独立 source（switch），别的点击滑动都不许动它。
+ *
+ * 这一层只决定「谁上谁下」，不碰渲染与计时；真正的写入在 layers.js（beforeModelUpdate / beforePhysics）。
+ */
+
+/**
+ * 中文表情名 → 模型里的 exp3 名（我们这套模型的表情文件是 `expr_*`，不是中文）。
+ * 只在 defOf 里兜底用：规则表保留中文可读，找不到原名再按这张表翻一次。
+ */
+const EXPR_ALIAS = {
+  黑脸: 'expr_blackface',
+  脸红: 'expr_blush',
+  落泪: 'expr_cry',
+  '＞＜': 'expr_squint',
+  圈圈眼: 'expr_dizzy',
+  屑屑眼: 'expr_sneer',
+  爱心眼: 'expr_heart',
+  加载: 'expr_loading',
+  大牙: 'expr_tooth',
+}
+
+/** 规则表里混着的「姿势」名：这些由 poses 层执行，reactions 找不到表情属正常，不该报警 */
+const POSE_NAMES = new Set(['竖食指开', '脱鞋', '裙子切换', '护胯', '举手', '竖手指'])
+
+export const DEFAULT_REACTIONS = {
+  头: { tap: { toggle: '爱心眼' }, pet: { expr: ['＞＜', '脸红'] } },
+  胸: { tap: { toggle: '胸口衣服' }, pet: { expr: ['屑屑眼'] } },
+  // 摸腰 = 被挠痒（和摸脚同一套）：＞＜（眼睛挤起来笑）+ 脸红，动作由「痒痒的」补
+  腰: { tap: { expr: ['＞＜'] }, pet: { expr: ['＞＜', '脸红'] } },
+  裙摆: { tap: { toggle: '裙子切换' }, pet: { expr: ['黑脸', '屑屑眼', '竖食指开'] } },
+  腿: { tap: { expr: ['加载'] }, pet: { expr: ['加载', '脸红', '圈圈眼'] } },
+  // 摸脚 = 被挠痒：＞＜（眼睛挤起来笑）+ 脸红；嘴部的笑意由 mouth 情绪层补
+  脚: { tap: { toggle: '脱鞋' }, pet: { expr: ['＞＜', '脸红'] } },
+  // 手：摸手 = 不好意思（＞＜ + 脸红），点一下轻轻缩一下。
+  // 竖手指留在裙摆那套反应里，但手有了自己的热区，手不会被裙摆的矩形抢走
+  左手: { tap: { expr: ['＞＜'] }, pet: { expr: ['＞＜', '脸红'] } },
+  右手: { tap: { expr: ['＞＜'] }, pet: { expr: ['＞＜', '脸红'] } },
+  // 摸胯：黑脸 + 脸红（动作与气泡文案在 renderer 里配套）
+  胯: { tap: { expr: ['＞＜', '脸红'] }, pet: { expr: ['黑脸', '脸红'] } },
+  尾巴: { tap: { toggle: '尾巴开关' }, pet: { expr: ['＞＜'] } },
+}
+
+export function createReactions({
+  layers,
+  expressionDefs = [],
+  onEvent = () => {},
+  switchSource = 'switch',
+  reactionSource = 'reaction',
+  ttlMs = 6000,
+  fade = 0.3,
+  /** 临时反应撤掉后通知外面（让状态表情回来），避免和 agent 层叠成花脸 */
+  onClear = null,
+  /** 允许按区域名覆盖默认反应（应用里可做用户配置） */
+  reactions = null,
+} = {}) {
+  const active = { group: null, timer: 0 }
+  const table = reactions || DEFAULT_REACTIONS
+  const defOf = (name) =>
+    expressionDefs.find((e) => e.name === name) ||
+    (EXPR_ALIAS[name] ? expressionDefs.find((e) => e.name === EXPR_ALIAS[name]) : undefined)
+
+  function addExpression(name, source) {
+    const def = defOf(name)
+    if (!def) {
+      if (!POSE_NAMES.has(name)) onEvent({ type: 'warn', text: `没有表情：${name}` })
+      return false
+    }
+    // 用户互动表情优先：先摘掉 DSH 状态表情（屑屑眼等），否则两边都写 key3/5/6 会叠出怪眼型
+    layers.removeSource('agent')
+    // 层的键统一用模型里的真名（中文名只是规则表的可读写法）
+    const ok = layers.addExpression(def.name, def.params, { fade, source })
+    if (ok) onEvent({ type: 'added', name, source })
+    return ok
+  }
+
+  /** 撤掉当前这一组临时反应（switch 层不受影响） */
+  function clear(reason) {
+    if (active.timer) { clearTimeout(active.timer); active.timer = 0 }
+    const removed = layers.removeSource(reactionSource)
+    active.group = null
+    if (removed.length) onEvent({ type: 'removed', names: removed, reason })
+    // 互动结束：把当前 DSH 状态的表情接回来
+    try { onClear?.() } catch {}
+  }
+
+  function apply(region, kind) {
+    if (!region) return false
+    const rx = region.reaction?.[kind] || table[region.name]?.[kind]
+    if (!rx) {
+      onEvent({ type: 'warn', text: `${region.name} · ${kind} 没有配置反应（现有：${Object.keys(region.reaction || {}).join('/') || '空'}）` })
+      return false
+    }
+
+    // 切换型：独立层，长期保持；只有再点同一个热区才收回
+    if (rx.toggle) {
+      const key = defOf(rx.toggle)?.name || rx.toggle
+      const on = layers.hasExpression(key)
+      if (on) {
+        layers.removeExpression(key)
+        try { onClear?.() } catch {}
+      } else addExpression(rx.toggle, switchSource)
+      onEvent({ type: on ? 'removed' : 'added', names: on ? [rx.toggle] : undefined, name: on ? undefined : rx.toggle, source: switchSource, reason: on ? '切换关' : undefined, persist: true })
+      if (active.group) clear('切换互动')
+      active.group = null
+      onEvent({ type: 'group', text: `${region.name} · ${kind} → ${on ? '收回' : '打开'} ${rx.toggle}` })
+      return true
+    }
+
+    const wanted = [...(rx.expr || (rx.expression ? [rx.expression] : []))]
+    if (active.timer) { clearTimeout(active.timer); active.timer = 0 }
+    const keep = new Set(wanted.map((n) => defOf(n)?.name || n))
+    const removed = layers.removeSourceExcept(reactionSource, keep)
+    active.group = `${region.name}:${kind}`
+
+    const added = []
+    for (const name of wanted) if (addExpression(name, reactionSource)) added.push(name)
+    if (removed.length) onEvent({ type: 'removed', names: removed, reason: '切换动作组' })
+
+    const kept = wanted.filter((n) => !added.includes(n))
+    const shown = [...added, ...kept.map((n) => `${n}（续）`)].join(' + ')
+    onEvent({ type: 'group', text: `${region.name} · ${kind} → ${shown || '（无预设）'}` })
+    active.timer = setTimeout(() => clear('到时'), ttlMs)
+    return true
+  }
+
+  return {
+    apply,
+    clear,
+    get group() { return active.group },
+    table,
+  }
+}

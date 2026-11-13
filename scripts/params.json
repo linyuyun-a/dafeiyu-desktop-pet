@@ -1,0 +1,6214 @@
+{
+ "core": 100663297,
+ "canvas": [
+  null,
+  null
+ ],
+ "paramCount": 509,
+ "parts": 147,
+ "drawables": 715,
+ "params": [
+  {
+   "id": "Paramshuiyin7",
+   "name": "-----下面是按键-----",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "key1",
+   "name": "1. 黑脸",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    0,
+    1
+   ]
+  },
+  {
+   "id": "key2",
+   "name": "2. 落泪",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    0,
+    1
+   ]
+  },
+  {
+   "id": "key3",
+   "name": "3. 圈圈眼",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    0,
+    1
+   ]
+  },
+  {
+   "id": "key4",
+   "name": "4. 爱心眼",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    0,
+    1
+   ]
+  },
+  {
+   "id": "key5",
+   "name": "5. > <眼",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    0,
+    1
+   ]
+  },
+  {
+   "id": "key6",
+   "name": "6. 屑屑眼",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    0,
+    1
+   ]
+  },
+  {
+   "id": "key7",
+   "name": "7. 脸红",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    0,
+    1
+   ]
+  },
+  {
+   "id": "key8",
+   "name": "8. 加载",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    0,
+    1
+   ]
+  },
+  {
+   "id": "key9",
+   "name": "9. 大牙",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    0,
+    1
+   ]
+  },
+  {
+   "id": "key10",
+   "name": "10. 大钢盆",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": 0.5,
+   "keys": [
+    0,
+    0.5,
+    1
+   ]
+  },
+  {
+   "id": "key11",
+   "name": "11. 黑框眼镜",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    0,
+    1
+   ]
+  },
+  {
+   "id": "key12",
+   "name": "12. 单片眼镜",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    0,
+    1
+   ]
+  },
+  {
+   "id": "key13",
+   "name": "13. 流冷汗",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    0,
+    1
+   ]
+  },
+  {
+   "id": "Divider1",
+   "name": "■■■■■■■■■■■■■",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "Movement1",
+   "name": "1. 狗尾草",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    0,
+    1
+   ]
+  },
+  {
+   "id": "Movement2",
+   "name": "2. 抚胸",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    0,
+    1
+   ]
+  },
+  {
+   "id": "Movement3",
+   "name": "3. 竖食指",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    0,
+    1
+   ]
+  },
+  {
+   "id": "Divider3",
+   "name": "■■■■■■■■■■■■■",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "Clothes1",
+   "name": "1. 长短裙切换",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 1,
+   "step": 0.5,
+   "keys": [
+    0,
+    0.5,
+    0.5099999904632568,
+    1
+   ]
+  },
+  {
+   "id": "Clothes2",
+   "name": "2. 大小变",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": 0.4,
+   "keys": [
+    0,
+    0.4000000059604645,
+    1
+   ]
+  },
+  {
+   "id": "Clothes3",
+   "name": "3. 胸口衣服",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    0,
+    1
+   ]
+  },
+  {
+   "id": "Clothes4",
+   "name": "4. 鞋子",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    0,
+    1
+   ]
+  },
+  {
+   "id": "Clothes5",
+   "name": "5. 尾巴",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 1,
+   "step": 1,
+   "keys": [
+    0,
+    1
+   ]
+  },
+  {
+   "id": "Paramshuiyin8",
+   "name": "-----按键到此结束-----",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "Param2",
+   "name": "辅助参数",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "Param34",
+   "name": "大小变透明参数",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    0,
+    1
+   ]
+  },
+  {
+   "id": "Param",
+   "name": "大小变位置",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 1,
+   "step": 1,
+   "keys": [
+    0,
+    1
+   ]
+  },
+  {
+   "id": "ParamAngleX",
+   "name": "AngleX",
+   "type": 0,
+   "min": -30,
+   "max": 30,
+   "def": 0,
+   "step": 10,
+   "keys": [
+    -30,
+    -20,
+    -10,
+    0,
+    10,
+    20,
+    30
+   ]
+  },
+  {
+   "id": "ParamAngleY",
+   "name": "AngleY",
+   "type": 0,
+   "min": -30,
+   "max": 30,
+   "def": 0,
+   "step": 10,
+   "keys": [
+    -30,
+    -20,
+    -10,
+    0,
+    10,
+    20,
+    30
+   ]
+  },
+  {
+   "id": "ParamAngleZ",
+   "name": "AngleZ",
+   "type": 0,
+   "min": -30,
+   "max": 30,
+   "def": 0,
+   "step": 30,
+   "keys": [
+    -30,
+    0,
+    30
+   ]
+  },
+  {
+   "id": "AngleXbs",
+   "name": "角度 Xbs",
+   "type": 1,
+   "min": -30,
+   "max": 30,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "AngleYbs",
+   "name": "角度 Ybs",
+   "type": 1,
+   "min": -30,
+   "max": 30,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "AngleXbs3",
+   "name": "角度 Xbs +15",
+   "type": 0,
+   "min": -30,
+   "max": 30,
+   "def": 30,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "AngleXbs2",
+   "name": "角度 Xbs -15",
+   "type": 0,
+   "min": -30,
+   "max": 30,
+   "def": -30,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "AngleYbs2",
+   "name": "角度 Ybs",
+   "type": 0,
+   "min": -30,
+   "max": 30,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "ParamBodyAngleX",
+   "name": "胸腔　X",
+   "type": 0,
+   "min": -30,
+   "max": 30,
+   "def": 0,
+   "step": 30,
+   "keys": [
+    -30,
+    0,
+    30
+   ]
+  },
+  {
+   "id": "ParamBodyAngleY",
+   "name": "胸腔　Y",
+   "type": 0,
+   "min": -30,
+   "max": 30,
+   "def": 0,
+   "step": 30,
+   "keys": [
+    -30,
+    0,
+    30
+   ]
+  },
+  {
+   "id": "Param50",
+   "name": "Lean Y",
+   "type": 1,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    0,
+    1
+   ]
+  },
+  {
+   "id": "Param53",
+   "name": "Lean Y 2",
+   "type": 1,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    0,
+    1
+   ]
+  },
+  {
+   "id": "Param54",
+   "name": "Lean Y 3",
+   "type": 1,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    0,
+    1
+   ]
+  },
+  {
+   "id": "ParamBodyAngleZ",
+   "name": "胸腔　Z",
+   "type": 0,
+   "min": -30,
+   "max": 30,
+   "def": 0,
+   "step": 10,
+   "keys": [
+    -30,
+    -20,
+    -10,
+    0,
+    10,
+    20,
+    30
+   ]
+  },
+  {
+   "id": "HipAngleZ",
+   "name": "盆骨Z",
+   "type": 0,
+   "min": -30,
+   "max": 30,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "LEGAngleZ2",
+   "name": "双腿 Z",
+   "type": 0,
+   "min": -30,
+   "max": 30,
+   "def": 0,
+   "step": 30,
+   "keys": [
+    -30,
+    0,
+    30
+   ]
+  },
+  {
+   "id": "HipAngleX",
+   "name": "盆骨X",
+   "type": 0,
+   "min": -30,
+   "max": 30,
+   "def": 0,
+   "step": 30,
+   "keys": [
+    -30,
+    0,
+    30
+   ]
+  },
+  {
+   "id": "HipAngleY",
+   "name": "盆骨Y",
+   "type": 0,
+   "min": -30,
+   "max": 30,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "ShoulderY",
+   "name": "肩膀Y",
+   "type": 1,
+   "min": -30,
+   "max": 30,
+   "def": 0,
+   "step": 30,
+   "keys": [
+    -30,
+    0,
+    30
+   ]
+  },
+  {
+   "id": "ShoulderZ",
+   "name": "肩膀Z",
+   "type": 1,
+   "min": -30,
+   "max": 30,
+   "def": 0,
+   "step": 30,
+   "keys": [
+    -30,
+    0,
+    30
+   ]
+  },
+  {
+   "id": "ShoulderX",
+   "name": "肩膀X",
+   "type": 0,
+   "min": -30,
+   "max": 30,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "ShoulderYy",
+   "name": "肩头Y",
+   "type": 0,
+   "min": -30,
+   "max": 30,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "Divider19",
+   "name": "■■■■■身体物理■■■■",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "HipZ1",
+   "name": "盆骨 Z1",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "HipZ2",
+   "name": "盆骨 Z2",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "ParamBodyAngleX2",
+   "name": "□胸腔　X",
+   "type": 1,
+   "min": -30,
+   "max": 30,
+   "def": 0,
+   "step": 30,
+   "keys": [
+    -30,
+    0,
+    30
+   ]
+  },
+  {
+   "id": "ParamBodyAngleY2",
+   "name": "□胸腔　Y",
+   "type": 0,
+   "min": -30,
+   "max": 30,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "HipAngleX2",
+   "name": "□盆骨  X",
+   "type": 1,
+   "min": -30,
+   "max": 30,
+   "def": 0,
+   "step": 30,
+   "keys": [
+    -30,
+    0,
+    30
+   ]
+  },
+  {
+   "id": "ParamHipAngleZ",
+   "name": "□ 盆骨  Z",
+   "type": 1,
+   "min": -30,
+   "max": 30,
+   "def": 0,
+   "step": 30,
+   "keys": [
+    -30,
+    0,
+    30
+   ]
+  },
+  {
+   "id": "ParamHipAngleZ2",
+   "name": "□ 盆骨  Z 2",
+   "type": 0,
+   "min": -30,
+   "max": 30,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "HipAngleYUP",
+   "name": "□盆骨Yup",
+   "type": 0,
+   "min": -30,
+   "max": 30,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "HipAngleYDOWN",
+   "name": "□盆骨Ydown",
+   "type": 0,
+   "min": -30,
+   "max": 30,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "HipAngleXq",
+   "name": "盆骨Xq",
+   "type": 0,
+   "min": -30,
+   "max": 30,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "Param33",
+   "name": "并腿",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "ParamBodyAngleRX",
+   "name": "身体位移RX",
+   "type": 1,
+   "min": -30,
+   "max": 30,
+   "def": 0,
+   "step": 30,
+   "keys": [
+    -30,
+    0,
+    30
+   ]
+  },
+  {
+   "id": "ParamBodyAngleRY",
+   "name": "身体位移RY",
+   "type": 0,
+   "min": -30,
+   "max": 30,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "ParamBodyAngleRZ",
+   "name": "身体位移RZ",
+   "type": 0,
+   "min": -30,
+   "max": 30,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "AngleX",
+   "name": "OX",
+   "type": 0,
+   "min": -30,
+   "max": 30,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "AngleY",
+   "name": "OY",
+   "type": 0,
+   "min": -30,
+   "max": 30,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "AngleZ",
+   "name": "OZ",
+   "type": 0,
+   "min": -30,
+   "max": 30,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "PositionX",
+   "name": "OPX",
+   "type": 0,
+   "min": -30,
+   "max": 30,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "PositionY",
+   "name": "OPY",
+   "type": 0,
+   "min": -30,
+   "max": 30,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "PositionZ",
+   "name": "OPYZ",
+   "type": 0,
+   "min": -30,
+   "max": 30,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "LeanInput",
+   "name": "Lean Input",
+   "type": 0,
+   "min": -30,
+   "max": 30,
+   "def": 0,
+   "step": 30,
+   "keys": [
+    -30,
+    0,
+    30
+   ]
+  },
+  {
+   "id": "Emotion",
+   "name": "Emotion",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "Emotion2",
+   "name": "Emotion 过渡",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "IDLE",
+   "name": "IDLE",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "EyeSmile",
+   "name": "微笑",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "ParamEyeBallX",
+   "name": "眼珠 X",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "ParamEyeBallY",
+   "name": "眼珠 Y",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "PupilX",
+   "name": "瞳孔透视X",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "PupilY",
+   "name": "瞳孔透视Y",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "BrowInnerUp",
+   "name": "BrowInnerUp",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "Divider4",
+   "name": "■■■■■■■■右眼■■■■■■",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "RParamGlowA",
+   "name": "<光效A",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "RParamGlowB",
+   "name": "<光效B",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "RParamGlowC",
+   "name": "<光效C",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "ParamEyeROpen",
+   "name": "右眼  开闭",
+   "type": 0,
+   "min": 0,
+   "max": 1.5,
+   "def": 1,
+   "step": 0.2,
+   "keys": [
+    0,
+    0.20000000298023224,
+    1,
+    1.5
+   ]
+  },
+  {
+   "id": "ParamBrowRY",
+   "name": "右眉上下",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "ParamBrowRAngleSmoothing",
+   "name": "右眉 角度 过渡",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "ParamBrowRAngle",
+   "name": "右眉　角度",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "ParamBrowRY2",
+   "name": "右眉上下缓动",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "ParamBrowRY3",
+   "name": "右眉联动 x",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "ShockR",
+   "name": "Shock R",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "REyeSquint",
+   "name": "R-Eye Squint",
+   "type": 1,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    0,
+    1
+   ]
+  },
+  {
+   "id": "Divider5",
+   "name": "■■■■■■■■左眼■■■■■■",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "LParamGlowA",
+   "name": ">光效A",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "LParamGlowB",
+   "name": ">光效B",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "LParamGlowC",
+   "name": ">光效C",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "ParamEyeLOpen",
+   "name": "左眼　开闭",
+   "type": 0,
+   "min": 0,
+   "max": 1.5,
+   "def": 1,
+   "step": 0.2,
+   "keys": [
+    0,
+    0.20000000298023224,
+    1,
+    1.5
+   ]
+  },
+  {
+   "id": "ParamBrowLY",
+   "name": "左眉上下",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "ParamBrowLAngleSmoothing",
+   "name": "左眉 角度 过渡",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "ParamBrowLAngle",
+   "name": "左眉　角度",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "ParamBrowLY2",
+   "name": "左眉上下缓动",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "ParamBrowLY3",
+   "name": "左眉联动 x",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "ShockL",
+   "name": "Shock L",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "LEyeSquint",
+   "name": "L-Eye Squint",
+   "type": 1,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    0,
+    1
+   ]
+  },
+  {
+   "id": "Divider8",
+   "name": "■■■■■■■■嘴■■■■■■",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "ParamMouthForm",
+   "name": "嘴　变形",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "ParamMouthOpenY",
+   "name": "嘴　张开和闭合",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": 0.3,
+   "keys": [
+    0,
+    0.30000001192092896,
+    0.3499999940395355,
+    1
+   ]
+  },
+  {
+   "id": "JawOpen",
+   "name": "下巴开闭",
+   "type": 1,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    0,
+    1
+   ]
+  },
+  {
+   "id": "TongueOut",
+   "name": "伸舌头",
+   "type": 1,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": 0.3,
+   "keys": [
+    0,
+    0.30000001192092896,
+    0.3100000023841858,
+    1
+   ]
+  },
+  {
+   "id": "Divider31",
+   "name": "■■■■■■■■VB■■■■",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "MouthX",
+   "name": "MouthX",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "MouthSmile_L",
+   "name": "MouthSmile_L",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "MouthSmile_R",
+   "name": "MouthSmile_R",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "Press",
+   "name": "用力",
+   "type": 1,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "Mouthpucker",
+   "name": "撅嘴",
+   "type": 1,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    0,
+    1
+   ]
+  },
+  {
+   "id": "MouthFunnel",
+   "name": "漏斗嘴",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    0,
+    1
+   ]
+  },
+  {
+   "id": "MouthPuckerWiden",
+   "name": "嘴宽窄",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "CheeckPuff",
+   "name": "鼓脸",
+   "type": 1,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    0,
+    1
+   ]
+  },
+  {
+   "id": "CheeckPuff2",
+   "name": "鼓脸-变化",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "CheeckPuffR",
+   "name": "< 鼓脸",
+   "type": 1,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    0,
+    1
+   ]
+  },
+  {
+   "id": "CheeckPuffL",
+   "name": "> 鼓脸",
+   "type": 1,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    0,
+    1
+   ]
+  },
+  {
+   "id": "MouthPressLipOpen",
+   "name": "MouthPressLipOpen",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "MouthRollUpper",
+   "name": "MouthRollUpper",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "MouthRollLower",
+   "name": "MouthRollLower",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "NoseNeer",
+   "name": "NosePositionY",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "PoutOffsetXL",
+   "name": "努嘴位移 X>>",
+   "type": 0,
+   "min": 0,
+   "max": 30,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "PoutOffsetXR",
+   "name": "努嘴位移 X<<",
+   "type": 0,
+   "min": 0,
+   "max": 30,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "ParamSilence",
+   "name": "ParamSilence",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 1,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "ParamA",
+   "name": "A",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "ParamI",
+   "name": "I",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "ParamU",
+   "name": "U",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "ParamE",
+   "name": "E",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "ParamO",
+   "name": "O",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "Divider6",
+   "name": "<<<<<<物理■■■■■■",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "RShiftbuffer",
+   "name": "<变化缓冲",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "RColorshift",
+   "name": "<眼睛颜色",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "REyeball1",
+   "name": "<眼珠 1",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "REyeball2",
+   "name": "<眼珠 2",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "REyeball3",
+   "name": "<眼珠 3",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "REyeLashX1",
+   "name": "右眼睫毛X1",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "REyeLashX2",
+   "name": "右眼睫毛X2",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "REyes1",
+   "name": "眼眶1",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "REyes2",
+   "name": "眼眶2",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "RHighLight1",
+   "name": "右眼高光1",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "RHighLight2",
+   "name": "右眼高光2",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "RHighLight3",
+   "name": "右眼高光3",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "Divider7",
+   "name": "■■■■■■物理>>>>>>",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "LEyeball1",
+   "name": ">眼珠 1",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "LEyeball2",
+   "name": ">眼珠 2",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "LEyeball3",
+   "name": ">眼珠 3",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "LEyes1",
+   "name": "眼眶1",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "LEyes2",
+   "name": "眼眶2",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "LEyeLashX1",
+   "name": "左眼睫毛X1",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "LEyeLashX2",
+   "name": "左眼睫毛X2",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "LHighLight1",
+   "name": "左眼高光1",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "LHighLight2",
+   "name": "左眼高光2",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "LHighLight3",
+   "name": "左眼高光3",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "Divider15",
+   "name": "■■■ 口物理 ■■■",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "CheeksWiggleX",
+   "name": "脸盘抖动X",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "CheeksWiggleXR",
+   "name": "脸盘抖动X<",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "CheeksWiggleXL",
+   "name": "脸盘抖动X>",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "CheeksWiggleY",
+   "name": "脸盘抖动Y",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "LipPhysics1",
+   "name": "嘴唇物理1",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "LipPhysics2",
+   "name": "嘴唇物理2",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "LipPhysics3",
+   "name": "嘴唇物理3",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "ParamTongueUpDown",
+   "name": "舌头上下",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "ParamTongueWidth",
+   "name": "舌头宽窄",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "Divider11",
+   "name": "■■■■■■■■头发物理■■■",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "FrontHairZ",
+   "name": "前发Z",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "FrontHairX1",
+   "name": "前发X1",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "FrontHairX2",
+   "name": "前发X2",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "FrontHairX3",
+   "name": "前发X3",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "FrontHairX4",
+   "name": "前发X4",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "FrontHairY1",
+   "name": "前发Y1",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "FrontHairY2",
+   "name": "前发Y2",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "FrontHairY3",
+   "name": "前发Y3",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "FrontHairY4",
+   "name": "前发Y4",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "SideHairX1",
+   "name": "侧发X1",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "SideHairX2",
+   "name": "侧发X2",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "SideHairX3",
+   "name": "侧发X3",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "SideHairX4",
+   "name": "侧发X4",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "SideHairY1",
+   "name": "侧发Y1",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "SideHairY2",
+   "name": "侧发Y2",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "SideHairY3",
+   "name": "侧发Y3",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "SideHairY4",
+   "name": "侧发Y4",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "SideHairLX1",
+   "name": "侧发LX1",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "SideHairRX1",
+   "name": "侧发RX1",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "SideHairRX2",
+   "name": "侧发RX2",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "SideHairRX3",
+   "name": "侧发RX3",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "SideHairRBS",
+   "name": "侧发RBS",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "SideHairLX2",
+   "name": "侧发LX2",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "SideHairLX3",
+   "name": "侧发LX3",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "SideHairLBS",
+   "name": "侧发LBS",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "LateSideHairX1",
+   "name": "后侧发X1",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "LateSideHairX2",
+   "name": "后侧发X2",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "LateSideHairX3",
+   "name": "后侧发X3",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "LateSideHairX4",
+   "name": "后侧发X4",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "LateSideHairX5",
+   "name": "后侧发X5",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "LateSideHairXBS",
+   "name": "后侧发XBS",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "LateSideHairY1",
+   "name": "后侧发Y1",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "LateSideHairY2",
+   "name": "后侧发Y2",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "LateSideHairY3",
+   "name": "后侧发Y3",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "LateSideHairY4",
+   "name": "后侧发Y4",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "LateSideHairY5",
+   "name": "后侧发Y5",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "LateSideHairYbs",
+   "name": "后侧发Ybs",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "LateHairZ",
+   "name": "后发 Z",
+   "type": 0,
+   "min": -30,
+   "max": 30,
+   "def": 0,
+   "step": 30,
+   "keys": [
+    -30,
+    0,
+    30
+   ]
+  },
+  {
+   "id": "LateHairX1",
+   "name": "后发X1",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "LateHairX2",
+   "name": "后发X2",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "LateHairX3",
+   "name": "后发X3",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "LateHairX4",
+   "name": "后发X4",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "LateHairX5",
+   "name": "后发X5",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "LateHairY1",
+   "name": "后发Y1",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "LateHairY2",
+   "name": "后发Y2",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "LateHairY3",
+   "name": "后发Y3",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "LateHairY4",
+   "name": "后发Y4",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "LateHairY5",
+   "name": "后发Y5",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "ShortPonytailX1",
+   "name": "短马尾X1",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "ShortPonytailX2",
+   "name": "短马尾X2",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "ShortPonytailXBS",
+   "name": "短马尾XBS",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "ShortPonytailXBS2",
+   "name": "短马尾XBS2",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "ShortPonytailY",
+   "name": "短马尾Y",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "ShortPonytailY2",
+   "name": "短马尾Y2",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "ShortPonytailYBS",
+   "name": "短马尾YBS",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "ShortPonytailYBS2",
+   "name": "短马尾YBS2",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "Divider9",
+   "name": "■■■■■■■■左手臂■■■■",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "Param35",
+   "name": "手臂开关物理",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "Param44",
+   "name": "左臂Z",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "LArm",
+   "name": "左大臂",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "LForearm",
+   "name": "左小臂",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "LWrist",
+   "name": "左手腕",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "LHand",
+   "name": "左手指",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "LHand2",
+   "name": "左手指",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "LSleeveX1",
+   "name": "左袖子X1",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "LSleeveX2",
+   "name": "左袖子X2",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "LSleeveX3",
+   "name": "左袖子X3",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "LSleeveY",
+   "name": "左袖子Y1",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "LSleeveY2",
+   "name": "左袖子Y2",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "LSleeveY3",
+   "name": "左袖子Y3",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "LRibbonX1",
+   "name": "左飘带X1",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "LRibbonX2",
+   "name": "左飘带X2",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "LRibbonX3",
+   "name": "左飘带X3",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "LRibbonX4",
+   "name": "左飘带X4",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "LRibbonY1",
+   "name": "左飘带Y1",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "LRibbonY2",
+   "name": "左飘带Y2",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "LRibbonY3",
+   "name": "左飘带Y3",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "LRibbonY4",
+   "name": "左飘带Y4",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "Divider10",
+   "name": "■■■■■■■■右手臂■■■■",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "Param25",
+   "name": "右手Z",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "RArm",
+   "name": "右大臂",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "RForearm",
+   "name": "右小臂",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "RWrist",
+   "name": "右手腕",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "RHand",
+   "name": "右手指",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "RHand2",
+   "name": "右手指",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "RSleeveX1",
+   "name": "右袖子X1",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "RSleeveX2",
+   "name": "右袖子X2",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "RSleeveX3",
+   "name": "右袖子X3",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "RSleeveX4",
+   "name": "右袖子X4",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "RSleeveY1",
+   "name": "右袖子Y1",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "RSleeveY2",
+   "name": "右袖子Y2",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "RSleeveY3",
+   "name": "右袖子Y3",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "RRibbonX1",
+   "name": "右飘带X1",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "RRibbonX2",
+   "name": "右飘带X2",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "RRibbonX3",
+   "name": "右飘带X3",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "RRibbonX4",
+   "name": "右飘带X4",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "RRibbonY1",
+   "name": "右飘带Y1",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "RRibbonY2",
+   "name": "右飘带Y2",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "RRibbonY3",
+   "name": "右飘带Y3",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "RRibbonY4",
+   "name": "右飘带Y4",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "Divider18",
+   "name": "■■■■■■■■胸■■■■",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "ChestX1",
+   "name": "胸X1",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "ChestX2",
+   "name": "胸X2",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "ChestX3",
+   "name": "胸X3",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "ChestXBS",
+   "name": "胸XBS",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "ChestY1",
+   "name": "胸Y1",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "ChestY2",
+   "name": "胸Y2",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "ChestY3",
+   "name": "胸Y3",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "ChestY4",
+   "name": "胸↓",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "Divider12",
+   "name": "■■■■■■■■头配饰■■■■",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "Shine",
+   "name": "闪光",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": -1,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "ShineX",
+   "name": "闪光旋转",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "ShineBIG",
+   "name": "闪光大小",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "Hat_XA",
+   "name": "帽子 XA",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "Hat_XB",
+   "name": "帽子 XB",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "Hat_XC",
+   "name": "帽子 XC",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "Hat_YA",
+   "name": "帽子 YA",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "Hat_YB",
+   "name": "帽子 YB",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "Hat_YC",
+   "name": "帽子 YC",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "RBowX8",
+   "name": "<-配饰X1",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "RBowX5",
+   "name": "<-配饰X2",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "RBowX6",
+   "name": "<-配饰X3",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "RBowX7",
+   "name": "<-配饰X4",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "RBowX1",
+   "name": "<-配饰X1",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "RBowX2",
+   "name": "<-配饰X2",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "RBowX3",
+   "name": "<-配饰X3",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "RBowX4",
+   "name": "<-配饰X4",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "LBowX1",
+   "name": ">-配饰X1",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "LowX2",
+   "name": ">-配饰X2",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "LBowX3",
+   "name": ">-配饰X3",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "LBowX4",
+   "name": ">-配饰X4",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "RJewelry1",
+   "name": "< 耳环 A",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "RJewelry2",
+   "name": "< 耳环 B",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "RJewelry3",
+   "name": "< 耳环 C",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "LJewelry1",
+   "name": "> 耳环 A",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 0.3333,
+   "keys": [
+    -1,
+    -0.6666666269302368,
+    -0.3333333134651184,
+    0,
+    0.3333333432674408,
+    0.6666666865348816,
+    1
+   ]
+  },
+  {
+   "id": "LJewelry2",
+   "name": "> 耳环 B",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 0.3333,
+   "keys": [
+    -1,
+    -0.6666666269302368,
+    -0.3333333134651184,
+    0,
+    0.3333333432674408,
+    0.6666666865348816,
+    1
+   ]
+  },
+  {
+   "id": "LJewelry3",
+   "name": "> 耳环 C",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 0.3333,
+   "keys": [
+    -1,
+    -0.6666666269302368,
+    -0.3333333134651184,
+    0,
+    0.3333333432674408,
+    0.6666666865348816,
+    1
+   ]
+  },
+  {
+   "id": "Divider23",
+   "name": "■■■■■■■■■■■■",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "ribbonX1",
+   "name": "缎带X1",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "ribbonX2",
+   "name": "缎带X2",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "ribbonX3",
+   "name": "缎带X3",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "ribbonX4",
+   "name": "缎带X4",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "ribbonY1",
+   "name": "缎带Y1",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "ribbonY2",
+   "name": "缎带Y2",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "ribbonY3",
+   "name": "缎带Y3",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "ribbonY4",
+   "name": "缎带Y4",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "ribbonX5",
+   "name": "缎带X1",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "ribbonX7",
+   "name": "缎带X2",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "ribbonX6",
+   "name": "缎带X3",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "ribbonY5",
+   "name": "缎带Y1",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "ribbonY6",
+   "name": "缎带Y2",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "ribbonY7",
+   "name": "缎带Y3",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "Hat2pha",
+   "name": "帽子尖 PHA",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "Hat2phB",
+   "name": "帽子尖 PHB",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "Hat2phC",
+   "name": "帽子尖 PHC",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "Hat2phD",
+   "name": "帽子尖 PHD",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "Divider20",
+   "name": "■■■■■■■■裙子■■■■",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "SkirtX1",
+   "name": "裙X1",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 0.3333,
+   "keys": [
+    -1,
+    -0.6666666269302368,
+    -0.3333333134651184,
+    0,
+    0.3333333432674408,
+    0.6666666865348816,
+    1
+   ]
+  },
+  {
+   "id": "SkirtX2",
+   "name": "裙X2",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 0.3333,
+   "keys": [
+    -1,
+    -0.6666666269302368,
+    -0.3333333134651184,
+    0,
+    0.3333333432674408,
+    0.6666666865348816,
+    1
+   ]
+  },
+  {
+   "id": "SkirtX3",
+   "name": "裙X3",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 0.3333,
+   "keys": [
+    -1,
+    -0.6666666269302368,
+    -0.3333333134651184,
+    0,
+    0.3333333432674408,
+    0.6666666865348816,
+    1
+   ]
+  },
+  {
+   "id": "SkirtX4",
+   "name": "裙X4",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 0.3333,
+   "keys": [
+    -1,
+    -0.6666666269302368,
+    -0.3333333134651184,
+    0,
+    0.3333333432674408,
+    0.6666666865348816,
+    1
+   ]
+  },
+  {
+   "id": "SkirtSpecial",
+   "name": "裙X特殊",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "SkirtSpecial2",
+   "name": "裙X特殊2",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "SkirtY",
+   "name": "裙Y",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "SkirtY2",
+   "name": "裙Y2",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "SkirtY3",
+   "name": "裙Y3",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "SkirtY4",
+   "name": "裙Y4",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "SkirtY5",
+   "name": "裙Y5",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "SkirtYBS",
+   "name": "裙YBS",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "SkirtY6",
+   "name": "裙Y",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "SkirtY7",
+   "name": "裙Y2",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "SkirtY9",
+   "name": "裙Y3",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "SkirtY8",
+   "name": "裙Y4",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "SkirtLayerX1",
+   "name": "裙子层级X1",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 0.3333,
+   "keys": [
+    -1,
+    -0.6666666269302368,
+    -0.3333333134651184,
+    0,
+    0.3333333432674408,
+    0.6666666865348816,
+    1
+   ]
+  },
+  {
+   "id": "SkirtLayerX2",
+   "name": "裙子层级X2",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 0.3333,
+   "keys": [
+    -1,
+    -0.6666666269302368,
+    -0.3333333134651184,
+    0,
+    0.3333333432674408,
+    0.6666666865348816,
+    1
+   ]
+  },
+  {
+   "id": "SkirtLayerX3",
+   "name": "裙子层级X3",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "SkirtLayerX4",
+   "name": "裙子层级X4",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 0.3333,
+   "keys": [
+    -1,
+    -0.6666666269302368,
+    -0.3333333134651184,
+    0,
+    0.3333333432674408,
+    0.6666666865348816,
+    1
+   ]
+  },
+  {
+   "id": "SkirtLayerX5",
+   "name": "裙子层级X5",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "SkirtLayerX6",
+   "name": "裙子层级X6",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "SkirtLayerY1",
+   "name": "裙子层级Y1",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "SkirtLayerY2",
+   "name": "裙子层级Y2",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "SkirtLayerY3",
+   "name": "裙子层级Y3",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "SkirtLayerY4",
+   "name": "裙子层级Y4",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "SkirtLayerY5",
+   "name": "裙子层级Y5",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "SkirtLayerY6",
+   "name": "裙子层级Y6",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "Divider14",
+   "name": "■■■■■■■■上衣■■■■",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "LaceRX",
+   "name": "< 花边X1",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 0.3333,
+   "keys": [
+    -1,
+    -0.6666666269302368,
+    -0.3333333134651184,
+    0,
+    0.3333333432674408,
+    0.6666666865348816,
+    1
+   ]
+  },
+  {
+   "id": "LaceRX2",
+   "name": "< 花边X2",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 0.3333,
+   "keys": [
+    -1,
+    -0.6666666269302368,
+    -0.3333333134651184,
+    0,
+    0.3333333432674408,
+    0.6666666865348816,
+    1
+   ]
+  },
+  {
+   "id": "LaceRX3",
+   "name": "< 花边X3",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 0.3333,
+   "keys": [
+    -1,
+    -0.6666666269302368,
+    -0.3333333134651184,
+    0,
+    0.3333333432674408,
+    0.6666666865348816,
+    1
+   ]
+  },
+  {
+   "id": "LaceLX1",
+   "name": "> 花边X1",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 0.3333,
+   "keys": [
+    -1,
+    -0.6666666269302368,
+    -0.3333333134651184,
+    0,
+    0.3333333432674408,
+    0.6666666865348816,
+    1
+   ]
+  },
+  {
+   "id": "LaceLX2",
+   "name": "> 花边LX2",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 0.3333,
+   "keys": [
+    -1,
+    -0.6666666269302368,
+    -0.3333333134651184,
+    0,
+    0.3333333432674408,
+    0.6666666865348816,
+    1
+   ]
+  },
+  {
+   "id": "LaceLX3",
+   "name": "> 花边LX3",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 0.3333,
+   "keys": [
+    -1,
+    -0.6666666269302368,
+    -0.3333333134651184,
+    0,
+    0.3333333432674408,
+    0.6666666865348816,
+    1
+   ]
+  },
+  {
+   "id": "LaceX1",
+   "name": "缎带X1",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "LaceX2",
+   "name": "缎带X2",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "LaceX3",
+   "name": "缎带X3",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "LaceY1",
+   "name": "缎带Y1",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "LaceY2",
+   "name": "缎带Y2",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "LaceY3",
+   "name": "缎带Y3",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "Divider13",
+   "name": "■■■■■■■■兽耳■■■■",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "LControl",
+   "name": "< Control",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "RFlip",
+   "name": "< Flip x",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "RFlip2",
+   "name": "< Flip y",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "LEar1",
+   "name": "<兽耳PHA",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 0.3333,
+   "keys": [
+    -1,
+    -0.6666666269302368,
+    -0.3333333134651184,
+    0,
+    0.3333333432674408,
+    0.6666666865348816,
+    1
+   ]
+  },
+  {
+   "id": "LEar2",
+   "name": "<兽耳PHB",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 0.3333,
+   "keys": [
+    -1,
+    -0.6666666269302368,
+    -0.3333333134651184,
+    0,
+    0.3333333432674408,
+    0.6666666865348816,
+    1
+   ]
+  },
+  {
+   "id": "LEar3",
+   "name": "<兽耳PHC",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 0.3333,
+   "keys": [
+    -1,
+    -0.6666666269302368,
+    -0.3333333134651184,
+    0,
+    0.3333333432674408,
+    0.6666666865348816,
+    1
+   ]
+  },
+  {
+   "id": "RControl",
+   "name": "> Control",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "LFlip",
+   "name": "> Flip x",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "LFlip2",
+   "name": "> Flip y",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "REar1",
+   "name": ">兽耳PHA",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 0.3333,
+   "keys": [
+    -1,
+    -0.6666666269302368,
+    -0.3333333134651184,
+    0,
+    0.3333333432674408,
+    0.6666666865348816,
+    1
+   ]
+  },
+  {
+   "id": "REar2",
+   "name": ">兽耳PHB",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 0.3333,
+   "keys": [
+    -1,
+    -0.6666666269302368,
+    -0.3333333134651184,
+    0,
+    0.3333333432674408,
+    0.6666666865348816,
+    1
+   ]
+  },
+  {
+   "id": "REar3",
+   "name": ">兽耳PHC",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 0.3333,
+   "keys": [
+    -1,
+    -0.6666666269302368,
+    -0.3333333134651184,
+    0,
+    0.3333333432674408,
+    0.6666666865348816,
+    1
+   ]
+  },
+  {
+   "id": "Divider33",
+   "name": "■■■■■■■■动画■■■■",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "Param11",
+   "name": "呆滞",
+   "type": 0,
+   "min": 0,
+   "max": 8,
+   "def": 0,
+   "step": 8,
+   "keys": [
+    0,
+    8
+   ]
+  },
+  {
+   "id": "MicroGlows",
+   "name": "话筒光",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "SweatBurst1",
+   "name": "冒汗1",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    0,
+    1
+   ]
+  },
+  {
+   "id": "SweatBurst2",
+   "name": "冒汗1 开关",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    0,
+    1
+   ]
+  },
+  {
+   "id": "SweatBurst3",
+   "name": "冒汗2",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    0,
+    1
+   ]
+  },
+  {
+   "id": "SweatBurst4",
+   "name": "冒汗2 开关",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    0,
+    1
+   ]
+  },
+  {
+   "id": "SweatBurst5",
+   "name": "冒汗3",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "SweatBurst6",
+   "name": "冒汗3 开关",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "Sweat1",
+   "name": "流汗1",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "Sweat2",
+   "name": "流汗2",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "WingOpenClose",
+   "name": "翅膀开合",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "WingSpread",
+   "name": "翅膀舒展",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "FeatherPhysics1",
+   "name": "羽毛物理1",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "FeatherPhysics2",
+   "name": "羽毛物理2",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "WingRotation",
+   "name": "翅膀旋转",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "WingOpenClose2",
+   "name": "翅膀开合",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "WingSpread2",
+   "name": "翅膀舒展",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "FeatherPhysics3",
+   "name": "羽毛物理1",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "FeatherPhysics4",
+   "name": "羽毛物理2",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "WingRotation2",
+   "name": "翅膀旋转",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "Param140",
+   "name": "加载",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "Param137",
+   "name": "炸毛",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "Param139",
+   "name": "炸毛移动",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "Param138",
+   "name": "身体抖动",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "SHOCKEYE",
+   "name": "SHOCK EYE",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "Param135",
+   "name": "爱心UD",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "Param6",
+   "name": "爱心弹1",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "Param7",
+   "name": "爱心弹2",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "Param132",
+   "name": "泪花 A",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "Param133",
+   "name": "泪花 B",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "Angry",
+   "name": "生气",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "Param136",
+   "name": "钱",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "Angry2",
+   "name": "生气",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "Angry3",
+   "name": "生气",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "AniEyerolling",
+   "name": "蚊香眼",
+   "type": 0,
+   "min": 0,
+   "max": 30,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "Ani1",
+   "name": "动画1",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": -1,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "SWITCHA",
+   "name": "开关A",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "Ani2",
+   "name": "动画2",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "Param141",
+   "name": "闪光 1",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "Param142",
+   "name": "闪光 2",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "Divider24",
+   "name": "■■■■■■逸散的光点■■■■",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "F1Anikey",
+   "name": "花1动画开关",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "F2Anikey",
+   "name": "花2动画开关",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "F3Anikey",
+   "name": "花3动画开关",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "Colorflicker5",
+   "name": "1眼光显隐",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "Glintshift5",
+   "name": "1眼光移动",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "Colorflicker6",
+   "name": "2眼光显隐",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "Glintshift6",
+   "name": "2眼光移动",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "Colorflicker7",
+   "name": "3眼光显隐",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "Glintshift8",
+   "name": "3眼光移动",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "Colorflicker8",
+   "name": "4眼光显隐",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "Glintshift7",
+   "name": "4眼光移动",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "Divider25",
+   "name": "■■■■■■飘花特效■■■■",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "LittleFlower1",
+   "name": "小花飘落1",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "LittleFlower2",
+   "name": "小花显隐1",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "LittleFlower9",
+   "name": "小花左右",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "LittleFlower3",
+   "name": "小花飘落2",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "LittleFlower4",
+   "name": "小花显隐2",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "LittleFlower10",
+   "name": "小花左右",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "LittleFlower5",
+   "name": "小花飘落3",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "LittleFlower6",
+   "name": "小花显隐3",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "LittleFlower11",
+   "name": "花形变",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "LittleFlower13",
+   "name": "花旋转",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "LittleFlower12",
+   "name": "花左右",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "Divider28",
+   "name": "■■■■■■生气■■■■",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "Param12",
+   "name": "生气1",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "Param13",
+   "name": "生气2",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "AngryMove",
+   "name": "生气移动",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "AngryMove3",
+   "name": "生气显隐",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "AngryMove2",
+   "name": "生气伸缩",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "AngryMove4",
+   "name": "生气伸缩2",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "AngryMove5",
+   "name": "生气移动",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "AngryMove8",
+   "name": "生气显隐",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "AngryMove6",
+   "name": "生气伸缩",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "AngryMove7",
+   "name": "生气伸缩2",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "Divider16",
+   "name": "■■■■■■■■眼睛动画■■■■■■",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "Divider22",
+   "name": "■■■■■■■■动画■■■■",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "Param31",
+   "name": "泪花闪烁",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "Param32",
+   "name": "高光闪烁",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "Param27",
+   "name": "< 流泪-膨胀",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "Param28",
+   "name": "< 流泪-滴下1",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": 0.2,
+   "keys": [
+    0,
+    0.20000000298023224,
+    0.5,
+    1
+   ]
+  },
+  {
+   "id": "RCry",
+   "name": "<落泪",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": 0.05,
+   "keys": [
+    0,
+    0.05000000074505806,
+    0.5,
+    0.6000000238418579,
+    0.800000011920929,
+    0.8999999761581421,
+    0.949999988079071,
+    1
+   ]
+  },
+  {
+   "id": "RCryKey",
+   "name": "<落泪开关",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "RCry2",
+   "name": "<落泪 涌出",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "Param29",
+   "name": "> 流泪-膨胀",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "Param30",
+   "name": "> 流泪-滴下1",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": 0.2,
+   "keys": [
+    0,
+    0.20000000298023224,
+    0.5,
+    1
+   ]
+  },
+  {
+   "id": "LCry",
+   "name": ">落泪",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": 0.05,
+   "keys": [
+    0,
+    0.05000000074505806,
+    0.5,
+    0.6000000238418579,
+    0.800000011920929,
+    0.8999999761581421,
+    0.949999988079071,
+    1
+   ]
+  },
+  {
+   "id": "LCryKey",
+   "name": ">落泪开关",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 1,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "LCry3",
+   "name": ">落泪 涌出",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "Startwinkle",
+   "name": "星星闪烁",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "Startwinkle2",
+   "name": "星星闪烁2",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "Param55",
+   "name": "光1",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": 0.38,
+   "keys": [
+    0,
+    0.3799999952316284,
+    0.7699999809265137,
+    1
+   ]
+  },
+  {
+   "id": "Param56",
+   "name": "光2",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": 0.38,
+   "keys": [
+    0,
+    0.3799999952316284,
+    0.7699999809265137,
+    1
+   ]
+  },
+  {
+   "id": "Param58",
+   "name": "光3",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": 0.33,
+   "keys": [
+    0,
+    0.32999998331069946,
+    0.6899999976158142,
+    1
+   ]
+  },
+  {
+   "id": "Param57",
+   "name": "光4",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": 0.33,
+   "keys": [
+    0,
+    0.32999998331069946,
+    0.6899999976158142,
+    1
+   ]
+  },
+  {
+   "id": "Param52",
+   "name": "尾巴翻面",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "Param_Angle_Rotation84",
+   "name": "[0]尾巴",
+   "type": 0,
+   "min": -45,
+   "max": 45,
+   "def": 0,
+   "step": 45,
+   "keys": [
+    -45,
+    0,
+    45
+   ]
+  },
+  {
+   "id": "Param_Angle_Rotation85",
+   "name": "[1]尾巴",
+   "type": 0,
+   "min": -45,
+   "max": 45,
+   "def": 0,
+   "step": 15,
+   "keys": [
+    -45,
+    -30,
+    -15,
+    0,
+    15,
+    30,
+    45
+   ]
+  },
+  {
+   "id": "Param_Angle_Rotation86",
+   "name": "[2]尾巴",
+   "type": 0,
+   "min": -45,
+   "max": 45,
+   "def": 0,
+   "step": 15,
+   "keys": [
+    -45,
+    -30,
+    -15,
+    0,
+    15,
+    30,
+    45
+   ]
+  },
+  {
+   "id": "Param_Angle_Rotation87",
+   "name": "[3]尾巴",
+   "type": 0,
+   "min": -45,
+   "max": 45,
+   "def": 0,
+   "step": 7.5,
+   "keys": "…13帧"
+  },
+  {
+   "id": "Param_Angle_Rotation88",
+   "name": "[4]尾巴",
+   "type": 0,
+   "min": -45,
+   "max": 45,
+   "def": 0,
+   "step": 7.5,
+   "keys": "…13帧"
+  },
+  {
+   "id": "Param_Angle_Rotation89",
+   "name": "[5]尾巴",
+   "type": 1,
+   "min": -45,
+   "max": 45,
+   "def": 0,
+   "step": 45,
+   "keys": [
+    -45,
+    0,
+    45
+   ]
+  },
+  {
+   "id": "Param51",
+   "name": "草放大",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "Param45",
+   "name": "草物理1",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "Param46",
+   "name": "草物理2",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "Param47",
+   "name": "草物理3",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "Param48",
+   "name": "草物理4",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "Param49",
+   "name": "草物理5",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "Param37",
+   "name": "动画开关",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "Param38",
+   "name": "动画 双手开关",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "Param40",
+   "name": "竖手指 大臂无缝用",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    0,
+    1
+   ]
+  },
+  {
+   "id": "Param36",
+   "name": "R大臂z",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    0.49000000953674316,
+    1
+   ]
+  },
+  {
+   "id": "Param39",
+   "name": "大臂透视",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "Param41",
+   "name": "R小臂 Z",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 0.5,
+   "keys": [
+    -1,
+    -0.5,
+    -0.25999999046325684,
+    0,
+    0.10000000149011612,
+    0.30000001192092896,
+    0.5099999904632568,
+    0.699999988079071,
+    1
+   ]
+  },
+  {
+   "id": "Param42",
+   "name": "R手腕 Z",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 0.37,
+   "keys": [
+    -1,
+    -0.6299999952316284,
+    -0.30000001192092896,
+    0,
+    0.25,
+    0.5,
+    1
+   ]
+  },
+  {
+   "id": "Param43",
+   "name": "R 食指",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "Param62",
+   "name": "L 大臂z",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "Param59",
+   "name": "大臂透视",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "Param60",
+   "name": "L小臂 Z",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 0.5,
+   "keys": [
+    -1,
+    -0.5,
+    0,
+    0.10000000149011612,
+    0.30000001192092896,
+    0.699999988079071,
+    1
+   ]
+  },
+  {
+   "id": "Param61",
+   "name": "L手腕 Z",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "GemReflection",
+   "name": "宝石反光",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 0.28,
+   "keys": [
+    -1,
+    -0.7199999690055847,
+    -0.550000011920929,
+    -0.2199999988079071,
+    0.1599999964237213,
+    0.5,
+    0.6699999570846558,
+    1
+   ]
+  },
+  {
+   "id": "GemHighlightx",
+   "name": "宝石高光 x",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "GemHighlighty",
+   "name": "宝石高光 y",
+   "type": 1,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": 1,
+   "keys": [
+    -1,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "KiraA",
+   "name": "闪光 A",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "KiraB",
+   "name": "闪光 B",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "KiraC",
+   "name": "闪光 C",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "KiraD",
+   "name": "闪光 D",
+   "type": 0,
+   "min": -1,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  },
+  {
+   "id": "ParamBreath",
+   "name": "呼吸",
+   "type": 0,
+   "min": 0,
+   "max": 1,
+   "def": 0,
+   "step": null,
+   "keys": []
+  }
+ ]
+}

@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>对话记录</title>
+    <link rel="stylesheet" href="./history.css" />
+  </head>
+  <body>
+    <header id="head">
+      <div id="title">对话记录 <span id="count"></span></div>
+      <div id="ops">
+        <input id="q" type="search" placeholder="搜一搜…" spellcheck="false" />
+        <button id="btn-older" title="加载更早">更早</button>
+      </div>
+    </header>
+
+    <main id="list">
+      <div id="empty" class="empty hidden">还没有聊过天。</div>
+    </main>
+
+    <footer id="foot">
+      <button id="btn-export">导出 txt</button>
+      <button id="btn-clear" class="danger">清空</button>
+      <span class="grow"></span>
+      <span id="hint">Esc 关闭</span>
+    </footer>
+
+    <script src="./history.js" type="module"></script>
+  </body>
+</html>

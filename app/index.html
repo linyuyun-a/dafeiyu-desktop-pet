@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Live2D Stage</title>
+<link rel="stylesheet" href="./style.css">
+<script type="importmap">
+{ "imports": {
+  "pixi.js": "/vendor8/pixi.js/dist/pixi.mjs",
+  "untitled-pixi-live2d-engine/cubism": "/vendor8/untitled-pixi-live2d-engine/dist/cubism.es.js",
+  "@pixi/sound": "/vendor8/@pixi/sound/lib/index.mjs"
+} }
+</script>
+</head>
+<body>
+  <div id="stage"></div>
+
+  <!-- 角色说的话 / DSH 当前在干什么，都走这个气泡 -->
+  <div id="bubble" class="empty"></div>
+
+  <!-- 窗口边框（设置里打开）：淡蓝高亮 + 八个把手，拖边/拖角等比缩放 -->
+  <div id="frame" class="hidden" aria-hidden="true"></div>
+
+  <!-- 和她说点什么：双击舞台打开，Enter 发送，Esc 关闭并打断 -->
+  <form id="chatbar" class="hidden" autocomplete="off">
+    <input id="chat-input" type="text" maxlength="300" placeholder="和她说点什么…（Enter 发送 / Esc 关闭）" />
+    <button id="chat-send" type="submit" title="发送">↵</button>
+    <button id="chat-close" type="button" title="关闭（Esc）">✕</button>
+  </form>
+
+  <div id="tools" class="hidden">
+    <button class="tool" id="tool-look" title="换装（直接点选）">装扮</button>
+    <button class="tool" id="tool-speak" title="让她自己说一句">说话</button>
+    <button class="tool" id="tool-settings" title="设置（独立窗口）">设置</button>
+    <button class="tool" id="tool-quit" title="退出">退出</button>
+  </div>
+
+  <div id="look-panel" class="hidden"></div>
+
+  <script src="./renderer.js" type="module"></script>
+</body>
+</html>

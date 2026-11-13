@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <title>chat</title>
+    <style>
+      html, body { margin: 0; padding: 0; background: transparent; overflow: hidden; }
+      body {
+        /* 和主窗口输入条一致的深色毛玻璃 */
+        font: 13px/1.4 "Microsoft YaHei UI", system-ui, sans-serif;
+        -webkit-user-select: none; user-select: none;
+      }
+      #bar {
+        display: flex; align-items: center; gap: 8px;
+        height: 48px; box-sizing: border-box;
+        padding: 0 8px 0 14px;
+        border-radius: 14px;
+        background: rgba(22, 26, 34, 0.9);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        box-shadow: 0 10px 26px rgba(0, 0, 0, 0.45);
+        color: #e8eef9;
+        -webkit-app-region: no-drag;
+      }
+      #input {
+        flex: 1; min-width: 0;
+        background: transparent; border: 0; outline: none;
+        color: #e8eef9; font: inherit;
+        -webkit-user-select: text; user-select: text;
+      }
+      #input::placeholder { color: rgba(232, 238, 249, 0.45); }
+      button {
+        flex: 0 0 auto;
+        width: 34px; height: 34px; border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        background: rgba(255, 255, 255, 0.06);
+        color: #dbe7f7; cursor: pointer; font-size: 14px;
+      }
+      button:hover { background: rgba(255, 255, 255, 0.14); }
+      #mic.rec { background: rgba(242, 120, 110, 0.9); border-color: rgba(255, 170, 160, 0.95); }
+      #mic.busy { opacity: 0.5; cursor: default; }
+    </style>
+  </head>
+  <body>
+    <form id="bar" autocomplete="off">
+      <input id="input" placeholder="和她说点什么…（Enter 发送 / Esc 关闭）" />
+      <button id="mic" type="button" title="按住说话">🎤</button>
+      <button id="send" type="submit" title="发送">↵</button>
+      <button id="close" type="button" title="关闭（Esc）">✕</button>
+    </form>
+    <script src="./chat.js"></script>
+  </body>
+</html>

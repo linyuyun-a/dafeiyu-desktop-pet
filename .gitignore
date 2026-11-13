@@ -1,0 +1,32 @@
+# ---- 依赖与产物 ----
+node_modules/
+dist/
+out/
+tmp/
+*.log
+
+# ---- 运行数据（聊天记录、cookie、缓存、截图）----
+_data/
+_probe/
+_research/
+_scaffold/
+
+# ---- 版权受限：不入库、不随包分发 ----
+# Live2D Cubism Core（专有许可）：用 `npm run core` 自行下载
+vendor/
+assets/core/
+# 皮套模型：版权归原作者，用户自备 model3.json
+assets/model/
+
+# ---- 密钥 ----
+brain.config.json
+
+# ---- 系统 / 编辑器 ----
+.DS_Store
+Thumbs.db
+*.tmp
+_t.txt
+
+# ---- 声音母带：由参考音克隆生成，涉及原声权利，不入库 ----
+# 需要时用你自己的参考音重新生成（见 README「声音」一节）
+app/tts/voices/*.wav

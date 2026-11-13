@@ -1,0 +1,281 @@
+/* 应用壳：整窗透明，角色浮在桌面上 */
+/* 覆盖层不可选中：气泡是角色在「说话」，不是可复制的正文；拖窗口/划过时也不该拉出一片蓝色选区。
+   设置窗口与编辑器是普通窗口，走各自 CSS，不受这里影响。 */
+html, body {
+  margin: 0; padding: 0; width: 100%; height: 100%; background: transparent; overflow: hidden;
+  user-select: none; -webkit-user-select: none; cursor: default;
+}
+body { font: 12px/1.55 system-ui, "Segoe UI", "Microsoft YaHei", sans-serif; color: #e8eef8; }
+
+#stage { position: fixed; inset: 0; touch-action: none; cursor: grab; }
+#stage.dragging { cursor: grabbing; }
+#stage canvas { display: block; width: 100%; height: 100%; }
+
+/* 右键唤出的工具条：角色铺满窗口后，✥ 是唯一的「搬窗口」入口 */
+#tools {
+  position: fixed; right: 8px; top: 8px; display: flex; gap: 6px; padding: 5px;
+  background: rgba(16, 19, 26, 0.92); border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px; box-shadow: 0 10px 28px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(12px); z-index: 30;
+}
+#tools.hidden { display: none; }
+#tools .tool {
+  height: 28px; min-width: 54px; padding: 0 10px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.12);
+  background: #151a24; color: #dbe7f7; font: 12px/1 system-ui, sans-serif; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+#tools .tool:hover { border-color: rgba(120, 180, 255, 0.7); color: #fff; }
+#tools .tool.small { width: 26px; height: 26px; align-self: center; font-size: 13px; opacity: 0.7; }
+
+/* 装扮面板：右键「装扮」直接点选，不用下拉框 */
+#look-panel {
+  position: fixed; right: 8px; top: 46px; width: 248px; padding: 9px 10px 7px;
+  background: rgba(16, 19, 26, 0.94); border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px; box-shadow: 0 14px 34px rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(12px); z-index: 60;
+  font: 12px/1.2 system-ui, sans-serif; color: #dbe7f7;
+  max-height: 78vh; overflow: auto;
+}
+#look-panel.hidden { display: none; }
+#look-panel .row { display: flex; align-items: center; gap: 6px; margin: 0 0 6px; }
+#look-panel .row > .label { width: 44px; flex: none; color: #8ea6c6; font-size: 11px; }
+#look-panel .opts { display: flex; flex-wrap: wrap; gap: 4px; }
+#look-panel .opt {
+  padding: 3px 8px; border-radius: 7px; cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.12); background: #151a24; color: #c9d8ee;
+  font: 11px/1.5 system-ui, sans-serif;
+}
+#look-panel .opt:hover { border-color: rgba(120, 180, 255, 0.65); color: #fff; }
+#look-panel .opt.on { background: #2b6cb8; border-color: #5aa1ea; color: #fff; }
+#look-panel .sep { height: 1px; margin: 4px 2px 7px; background: rgba(255, 255, 255, 0.08); }
+#look-panel .acts { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px; }
+#look-panel .act {
+  flex: 1 1 auto; min-width: 56px; height: 26px; border-radius: 8px; cursor: pointer; white-space: nowrap; padding: 0 6px;
+  border: 1px solid rgba(255, 255, 255, 0.14); background: #1b2331; color: #dbe7f7;
+  font: 11px/1 system-ui, sans-serif;
+}
+#look-panel .act:hover { border-color: rgba(120, 180, 255, 0.7); color: #fff; }
+#look-panel .hint { color: #7f95b2; font-size: 10px; padding: 2px 2px 0; }
+
+/* 右键设置面板已搬到独立窗口（settings.html），覆盖层不再有面板 */
+
+#toast {
+  position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%);
+  background: rgba(16, 19, 26, 0.9); border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px; padding: 6px 12px; font-size: 11px; opacity: 0;
+  transition: opacity 0.25s; pointer-events: none;
+}
+#toast.show { opacity: 1; }
+
+/* 性能浮层（F3）：常驻统计的可视化出口，不参与点击 */
+#perf {
+  position: fixed; left: 8px; top: 8px; z-index: 9999;
+  padding: 6px 8px; border-radius: 8px;
+  background: rgba(8, 12, 20, 0.82); color: #cfe0ff;
+  font: 11px/1.5 ui-monospace, Consolas, monospace;
+  pointer-events: none; white-space: nowrap;
+}
+#perf b { color: #8fd0ff; }
+#perf span { display: block; color: #9fb6d6; }
+
+/* ===== 对话气泡（漫画式短句）=====
+   外形参考：粗描边 + 米白底 + 两个「思考点」当尾巴；尺寸由 bubble.js 给。 */
+#bubble {
+  /* --bs：随窗口缩放的统一比例（bubble.js setScale 写入），内边距/描边/尾巴都跟它走 */
+  --bs: 1;
+  position: fixed; z-index: 40; display: block;
+  min-width: calc(64px * var(--bs)); max-width: 268px;
+  padding: calc(9px * var(--bs)) calc(16px * var(--bs));
+  border-radius: calc(22px * var(--bs));
+  background: var(--bb-bg, #fdfaf3);
+  color: var(--bb-fg, #23283a);
+  /* 描边取角色本身的天蓝（裙子亮片/尾鳍那一档），跟形象统一；AstrBot 说的话改成橙色系 */
+  border: calc(3px * var(--bs)) solid var(--bb-line, #5cc3ef);
+  box-shadow: 0 calc(8px * var(--bs)) calc(20px * var(--bs)) rgba(10, 18, 38, 0.3), 0 0 0 1px color-mix(in srgb, var(--bb-line, #5cc3ef) 30%, transparent);
+  line-height: 1.34; font-weight: 700; letter-spacing: 0.02em;
+  text-align: center;
+  white-space: pre-wrap; word-break: break-word;
+  overflow-wrap: anywhere;
+  pointer-events: none;
+  user-select: none; -webkit-user-select: none;
+  opacity: 0; transform: translateY(4px) scale(0.97);
+  transition: opacity 0.16s ease, transform 0.16s ease;
+  scrollbar-width: thin; scrollbar-color: rgba(70, 105, 165, 0.45) transparent;
+}
+#bubble.on { opacity: 1; transform: none; }
+/* 内容超长、需要滚动时：气泡接管鼠标（否则 pointer-events:none 让滚轮直接落空），
+   并在底部留一条渐隐，提示"下面还有" */
+#bubble.scrollable {
+  pointer-events: auto;
+  overscroll-behavior: contain;
+  cursor: default;
+  -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 18px), rgba(0,0,0,0.15));
+  mask-image: linear-gradient(to bottom, #000 calc(100% - 18px), rgba(0,0,0,0.15));
+}
+/* 表情包配图（AI 发图时）：图在上、字在下，等比缩到气泡宽度内 */
+#bubble img.bubble-img {
+  display: block;
+  max-width: 100%;
+  max-height: calc(150px * var(--bs));
+  margin: 0 auto calc(6px * var(--bs));
+  border-radius: calc(12px * var(--bs));
+  object-fit: contain;
+  -webkit-user-drag: none;
+}
+#bubble.empty { display: none; }
+#bubble::-webkit-scrollbar { width: 6px; }
+#bubble::-webkit-scrollbar-thumb { background: rgba(70, 105, 165, 0.4); border-radius: 3px; }
+
+/* 尾巴：两个由大到小的「思考点」，斜着指向角色 */
+#bubble::before, #bubble::after {
+  content: ""; position: absolute; border-radius: 50%;
+  background: var(--bb-bg, #fdfaf3); border: calc(3px * var(--bs)) solid var(--bb-line, #5cc3ef);
+  box-sizing: border-box;
+}
+#bubble::before { width: calc(12px * var(--bs)); height: calc(12px * var(--bs)); }
+#bubble::after { width: calc(7px * var(--bs)); height: calc(7px * var(--bs)); border-width: calc(2px * var(--bs)); }
+#bubble[data-anchor="right"][data-side="above"]::before { left: calc(18px * var(--bs)); bottom: calc(-18px * var(--bs)); }
+#bubble[data-anchor="right"][data-side="above"]::after { left: calc(9px * var(--bs)); bottom: calc(-32px * var(--bs)); }
+/* 贴角模式（默认）：点点贴气泡框的**左下角**（选左侧时镜像到右下角） */
+#bubble[data-anchor="corner-right"][data-side="above"]::before { left: calc(16px * var(--bs)); bottom: calc(-16px * var(--bs)); }
+#bubble[data-anchor="corner-right"][data-side="above"]::after { left: calc(6px * var(--bs)); bottom: calc(-28px * var(--bs)); }
+#bubble[data-anchor="corner-left"][data-side="above"]::before { right: calc(16px * var(--bs)); bottom: calc(-16px * var(--bs)); }
+#bubble[data-anchor="corner-left"][data-side="above"]::after { right: calc(6px * var(--bs)); bottom: calc(-28px * var(--bs)); }
+/* 兜底居中挂在头顶：点点放在正下方、落在「框与头之间」的缝里 */
+#bubble[data-anchor="center"][data-side="above"]::before { left: 50%; margin-left: calc(-6px * var(--bs)); bottom: calc(-16px * var(--bs)); }
+#bubble[data-anchor="center"][data-side="above"]::after { left: 50%; margin-left: calc(-3.5px * var(--bs)); bottom: calc(-28px * var(--bs)); }
+#bubble[data-anchor="left"][data-side="above"]::before { right: calc(18px * var(--bs)); bottom: calc(-18px * var(--bs)); }
+#bubble[data-anchor="left"][data-side="above"]::after { right: calc(9px * var(--bs)); bottom: calc(-32px * var(--bs)); }
+#bubble[data-side="below"]::before { top: calc(-18px * var(--bs)); }
+#bubble[data-side="below"]::after { top: calc(-32px * var(--bs)); }
+#bubble[data-anchor="right"][data-side="below"]::before { left: calc(18px * var(--bs)); }
+#bubble[data-anchor="right"][data-side="below"]::after { left: calc(9px * var(--bs)); }
+#bubble[data-anchor="left"][data-side="below"]::before { right: calc(18px * var(--bs)); }
+#bubble[data-anchor="left"][data-side="below"]::after { right: calc(9px * var(--bs)); }
+
+/* 状态色：只改底色氛围，描边保持角色天蓝（不改边色） */
+#bubble[data-state="thinking"] { background: #f4f8fd; }
+#bubble[data-state="working"] { background: #f2f8ff; }
+#bubble[data-state="waiting"] { background: #fff9ee; }
+#bubble[data-state="success"] { background: #f2fbf4; }
+#bubble[data-state="error"] { background: #fdf3f3; }
+/* AstrBot 说的话（云端大脑生成）统一橙色系，和本地舞台台词（待机小动作那几句）分开：
+   - chat：你问她答，淡橙底 + 浅橙描边
+   - proactive：没人问她，她自己开口，橙底 + 深橙描边，明显一眼能认出来 */
+#bubble[data-state="chat"] {
+  --bb-bg: #fff6ec;
+  --bb-line: #f2a45e;
+  --bb-fg: #3a2a1c;
+}
+#bubble[data-state="proactive"] {
+  --bb-bg: #ffe3c8;
+  --bb-line: #ec8b3c;
+  --bb-fg: #4b2a12;
+}
+
+/* ---------- 窗口边框（设置里打开；拖边/拖角等比缩放） ---------- */
+#frame {
+  position: fixed; inset: 0; z-index: 70; pointer-events: none;
+  border: 2px solid rgba(112, 186, 255, 0.92);
+  border-radius: 10px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35), inset 0 0 18px rgba(96, 170, 255, 0.22);
+}
+#frame.hidden { display: none; }
+#frame .fh { position: absolute; pointer-events: auto; }
+#frame .fh.n, #frame .fh.s { left: 16px; right: 16px; height: 12px; cursor: ns-resize; }
+#frame .fh.n { top: 0; }
+#frame .fh.s { bottom: 0; }
+#frame .fh.e, #frame .fh.w { top: 16px; bottom: 16px; width: 12px; cursor: ew-resize; }
+#frame .fh.e { right: 0; }
+#frame .fh.w { left: 0; }
+#frame .fh.nw, #frame .fh.ne, #frame .fh.sw, #frame .fh.se {
+  width: 20px; height: 20px;
+}
+#frame .fh.nw { left: 0; top: 0; cursor: nwse-resize; }
+#frame .fh.ne { right: 0; top: 0; cursor: nesw-resize; }
+#frame .fh.sw { left: 0; bottom: 0; cursor: nesw-resize; }
+#frame .fh.se { right: 0; bottom: 0; cursor: nwse-resize; }
+/* 角上补一个亮块，透明背景下也能看出抓手 */
+#frame .fh.nw::after, #frame .fh.ne::after, #frame .fh.sw::after, #frame .fh.se::after {
+  content: ""; position: absolute; inset: 5px; border-radius: 3px;
+  background: rgba(112, 186, 255, 0.55);
+}
+
+/* ---------- 聊天输入条：双击舞台出现，Enter 发送，Esc 关闭并打断 ---------- */
+#chatbar {
+  position: fixed;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  width: min(420px, calc(100vw - 32px));
+  display: flex;
+  gap: 6px;
+  padding: 6px;
+  border-radius: 14px;
+  background: rgba(18, 22, 30, 0.82);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35), inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(10px);
+  z-index: 60;
+}
+#chatbar.hidden { display: none; }
+#chat-input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #eaf2ff;
+  font: 14px/1.4 system-ui, "Microsoft YaHei", sans-serif;
+  padding: 8px 10px;
+}
+#chat-input::placeholder { color: rgba(234, 242, 255, 0.45); }
+#chat-send {
+  border: 0;
+  border-radius: 9px;
+  padding: 0 12px;
+  background: rgba(120, 180, 255, 0.22);
+  color: #cfe3ff;
+  font-size: 15px;
+  cursor: pointer;
+}
+#chat-send:hover { background: rgba(120, 180, 255, 0.34); }
+
+#chat-close {
+
+  border: 0;
+
+  border-radius: 9px;
+
+  padding: 0 10px;
+
+  background: rgba(255, 255, 255, 0.06);
+
+  color: #9fb2c8;
+
+  font-size: 13px;
+
+  cursor: pointer;
+
+}
+
+#chat-close:hover { background: rgba(255, 120, 120, 0.24); color: #ffd7d7; }
+
+/* 右键面板底部的状态块（今天摸了哪 / 当前心情） */
+#look-panel .status { padding: 4px 2px 2px; }
+#look-panel .status .line { font-size: 11px; line-height: 1.5; color: #cfe0f5; white-space: nowrap; }
+#look-panel .status .line.dim { color: #8fa3bd; font-variant-numeric: tabular-nums; }
+/* 余额 / 今日已用 */
+#look-panel .status .line.money {
+  display: flex; justify-content: space-between; gap: 8px;
+  color: #eaf2ff; font-variant-numeric: tabular-nums;
+}
+/* 峰谷：峰=橙、谷=绿；倒计时同时用同色，扫一眼就知道现在贵不贵 */
+#look-panel .status .line.peak {
+  display: flex; align-items: baseline; gap: 6px;
+  font-variant-numeric: tabular-nums; margin-bottom: 2px;
+}
+#look-panel .status .line.peak .cd { font-size: 12px; letter-spacing: .3px; }
+#look-panel .status .line.peak.is-peak { color: #f2a45e; }
+#look-panel .status .line.peak.is-valley { color: #6fcf97; }
+#look-panel .status .line.peak.is-peak .cd { color: #ffc98f; }
+#look-panel .status .line.peak.is-valley .cd { color: #9ef0bd; }

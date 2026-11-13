@@ -1,0 +1,6 @@
+{
+  "brain": "astrbot",
+  "astrbotUrl": "https://你的服务器:6185",
+  "astrbotKey": "abk_把 API Key 填这里",
+  "platformUrl": "http://127.0.0.1:8765"
+}

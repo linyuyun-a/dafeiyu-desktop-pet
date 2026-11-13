@@ -1,0 +1,40 @@
+{
+  "name": "deepseek-pet",
+  "version": "0.1.0",
+  "description": "DeepSeek 桌宠（大肥鱼）· Electron + Pixi v8 + untitled-pixi-live2d-engine",
+  "main": "app/main.mjs",
+  "author": "liu",
+  "license": "UNLICENSED",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "app": "electron app/main.mjs",
+    "stage": "node scripts/serve.mjs",
+    "shot": "node scripts/shot.mjs",
+    "pack": "node scripts/pack.mjs",
+    "core": "node scripts/fetch-core.mjs",
+    "assets": "node scripts/prepare-assets.mjs",
+    "dev": "electron-vite dev",
+    "build": "electron-vite build",
+    "preview": "electron-vite preview",
+    "typecheck:node": "tsc --noEmit -p tsconfig.node.json",
+    "typecheck:web": "tsc --noEmit -p tsconfig.web.json",
+    "typecheck": "npm run typecheck:node && npm run typecheck:web",
+    "postinstall": "node scripts/patch-engine.mjs && node scripts/patch-core6.mjs"
+  },
+  "dependencies": {
+    "easy-live2d": "1.0.0",
+    "NeteaseCloudMusicApi": "^4.32.0",
+    "pixi.js": "^8.22.0",
+    "untitled-pixi-live2d-engine": "^1.4.0"
+  },
+  "devDependencies": {
+    "@electron/packager": "^20.3.0",
+    "@types/node": "^24.10.1",
+    "electron": "^45.2.2",
+    "electron-vite": "^6.0.0",
+    "sharp": "^0.35.5",
+    "typescript": "^5.9.3",
+    "vite": "^8.3.5"
+  }
+}

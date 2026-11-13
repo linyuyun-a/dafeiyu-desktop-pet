@@ -1,0 +1,29 @@
+{
+  "default": "soft",
+  "voices": {
+    "soft": {
+      "audio": "soft.wav",
+      "text": "soft.txt",
+      "temperature": 1.05,
+      "instruct": "语气温和、亲近，情绪只有轻微起伏，语速自然，不拖尾音。"
+    },
+    "angry": {
+      "audio": "angry.wav",
+      "text": "angry.txt",
+      "temperature": 1.2,
+      "instruct": "带一点火气，语速偏快，但不要吼；情绪有起伏，句尾收住。"
+    },
+    "sleepy": {
+      "audio": "sleepy.wav",
+      "text": "sleepy.txt",
+      "temperature": 1.15,
+      "instruct": "困倦、含糊，语速偏慢，气息轻，句尾往下落。"
+    },
+    "happy": {
+      "audio": "happy.wav",
+      "text": "happy.txt",
+      "temperature": 1.2,
+      "instruct": "兴奋、上扬，语速偏快，像抢着说话，尾音带笑。"
+    }
+  }
+}

@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>设置 · Live2D Stage</title>
+<link rel="stylesheet" href="./settings.css">
+</head>
+<body class="settings">
+<main id="panel">
+
+  <section>
+    <h3>角色大小（窗口等比例跟随）</h3>
+    <div class="row"><input type="range" id="zoom" min="0.3" max="3" step="0.05"><span id="zoom-readout" class="readout"></span></div>
+    <div class="hint">角色、窗口、气泡按同一比例联动；也可以打开「窗口边框」直接拖边/角缩放</div>
+  </section>
+
+  <section>
+    <h3>窗口</h3>
+    <div class="row"><label><input type="checkbox" id="border"> 显示窗口边框（拖边/角缩放）</label></div>
+    <div class="row"><span class="lbl">上下留白</span><input type="range" id="pad-y" min="0" max="0.18" step="0.01"><span id="pad-y-readout" class="readout"></span></div>
+    <div class="row"><button id="win-center">居中</button></div>
+    <div class="row"><label><input type="checkbox" id="drag-physics"> 拖拽物理（拖动时让模型自己跟着甩）</label></div>
+    <div class="hint">打开后显示淡蓝边框与把手，拖四边或四角等比缩放；<b>左键或中键拖角色</b>搬窗口。</div>
+  </section>
+
+  <section>
+    <h3>跟随</h3>
+    <div class="row"><label><input type="checkbox" id="gaze"> 眼 / 头 / 身体跟随鼠标</label></div>
+    <div class="row"><span class="lbl">强度</span><input type="range" id="strength" min="0" max="1" step="0.05"></div>
+    <div class="row"><span class="lbl">转头幅度</span><input type="range" id="head-gain" min="0.5" max="2" step="0.05"><span id="head-gain-readout" class="readout"></span></div>
+    <div class="row"><span class="lbl">抚摸晃动</span><input type="range" id="pet-gain" min="0" max="3" step="0.1"></div>
+  </section>
+
+  <section>
+    <h3>待机动作</h3>
+    <div class="row"><label><input type="checkbox" id="idle"> 不互动时自己在动</label></div>
+    <div class="row"><span class="lbl">频率</span><input type="range" id="idle-speed" min="0.5" max="2.5" step="0.1"><span id="idle-speed-readout" class="readout"></span></div>
+    <div class="hint">常驻换重心 + 每隔几秒来一段小动作（伸懒腰 / 东张西望 / 打瞌睡 / 理头发…），偶尔配一句小台词</div>
+  </section>
+
+  <section>
+    <h3>主动说话</h3>
+    <div class="row"><span class="lbl">频率</span>
+      <select id="proactive">
+        <option value="off">不说</option>
+        <option value="few">少（20–40 分钟一次）</option>
+        <option value="normal">一般（8–15 分钟）</option>
+        <option value="many">多（4–8 分钟）</option>
+      </select>
+    </div>
+    <div class="row"><span class="lbl">勿扰</span>
+      <input type="time" id="quiet-from"><span class="lbl">至</span><input type="time" id="quiet-to">
+    </div>
+    <div class="row"><label><input type="checkbox" id="away-talk"> 我走开 / 回来时她会嘀咕两句</label></div>
+    <div class="hint">没人理她时，由 AstrBot 现场生成一句（不是本地台词库）；这个时段内、你正在打字、她正在说话时都不会开口。右键「说话」可以手动催一句。</div>
+  </section>
+
+  <section>
+    <h3>声音</h3>
+    <div class="row"><label><input type="checkbox" id="voice"> 让她出声（本地 TTS）</label></div>
+    <div class="row"><span class="lbl">地址</span><input type="text" id="tts-url" placeholder="http://127.0.0.1:8769"></div>
+    <div class="row"><span class="lbl">Python</span><input type="text" id="tts-python" placeholder="留空自动找（含 faster-qwen3-tts 的 python.exe）"></div>
+    <div class="row"><span class="lbl">工作联动</span><select id="work-link">
+      <option value="full">动作 + 短句</option>
+      <option value="motion">只做动作（不说话）</option>
+      <option value="off">关</option>
+    </select></div>
+    <div class="hint">她在你跑任务时跟着「想 / 忙 / 等你确认 / 收工 / 出错」做反应。数据来自 DSH 的 dsh-pet 插件状态（只读本机回环，不出网）。</div>
+    <div class="row"><span class="lbl">语音转文字</span><select id="asr-engine"><option value="sensevoice">SenseVoice（快，不占显存）</option><option value="qwen3">Qwen3-ASR（准，吃显存、慢几秒）</option></select></div>
+    <div class="row"><span class="lbl">状态</span><span id="tts-state" class="readout">未检查</span><button id="tts-restart" class="mini">启动 / 重启服务</button></div>
+    <div class="hint">语音在本地跑（app/tts/server.py，Qwen3-TTS + 四条情绪母带），不出网。冷启动 40–90 秒；失败时她只是不出声，打字照常。日志在 _data/tts.log。</div>
+  </section>
+
+  <section>
+    <h3>音乐</h3>
+    <div class="row"><label class="lbl"><input type="checkbox" id="player-on" /> 她点歌时弹出「唱片机」小窗</label></div>
+    <div class="hint">关掉之后她照样能放歌，只是不弹窗（只出声）。</div>
+    <div class="row"><span class="lbl">网易云账号</span><span id="music-state" class="readout">未登录</span><button id="music-qr" class="mini">扫码登录</button><button id="music-logout" class="mini">退出</button></div>
+    <div id="music-qr-box" class="hidden" style="text-align:center;padding:8px 0 4px"><img id="music-qr-img" alt="扫码" style="width:200px;height:200px;border-radius:10px" /><div class="hint" id="music-qr-tip">在手机网易云里扫这个码</div></div>
+    <div class="hint">用你自己的账号扫码（cookie 只存在本机 userData）。有了账号，会员歌才能放；不登录只能放免费曲。</div>
+  </section>
+
+  <section>
+    <h3>对话气泡</h3>
+    <div class="row"><label><input type="checkbox" id="bubble-on"> 显示气泡</label></div>
+    <div class="hint">漫画式：固定贴着右上角。字少用大字，字多自动缩字、框变大，撑满就滚动</div>
+  </section>
+
+  <section>
+    <h3>模型表情 / 动作</h3>
+    <div class="row"><span class="lbl">体型</span><input type="range" id="body-shape" min="0" max="1" step="0.01"><span id="body-shape-readout" class="readout"></span></div>
+    <div class="hint">0 = 默认体型，0.4 ≈ 体型1，1 = 体型2（原包三个体型表达式改成连续拉条）</div>
+    <div class="row"><button id="mode-normal" class="wide">回到常态（清空表情）</button></div>
+    <div class="hint">表情（原包全部表情，点一下叠加、再点一下取消）</div>
+    <div id="expr-list" class="chips"></div>
+    <div class="hint">官方动作（模型自带的 motion3，名字照原样）</div>
+    <div id="pose-list" class="chips"></div>
+    <div class="hint">我们的预设（用官方参数拼的，不是原包动作）</div>
+    <div id="pose-custom" class="chips"></div>
+    <div class="hint">点角色<b>额头</b>也会在 常态 / 爱心眼 / 眼镜 之间循环</div>
+  </section>
+
+  <section>
+    <h3>模型</h3>
+    <div class="row"><button id="choose-model" class="wide">更换 Live2D 模型（.model3.json）</button></div>
+    <div class="hint">发布包不带模型：选你自己拥有的 .model3.json 即可；模型版权归原作者，禁止二次分发</div>
+  </section>
+
+  <section>
+    <h3>动作与发布</h3>
+    <div class="row"><button id="open-editor" class="wide">打开动作编辑器</button></div>
+    <div class="row"><button id="patch-export" class="wide">导出改动补丁</button></div>
+    <div class="hint">补丁只含姿势/台词/反应/热区，<b>不含模型本体</b>；发布时发这个文件，下载者用自己的原模型加载</div>
+  </section>
+
+  <section>
+    <h3>窗口行为</h3>
+    <div class="row"><label><input type="checkbox" id="top"> 置顶</label></div>
+    <div class="row"><label><input type="checkbox" id="click-through"> 穿透模式（鼠标穿过）</label></div>
+    <div class="row"><label><input type="checkbox" id="auto-start"> 开机自启（登录后自动启动舞台）</label></div>
+    <div class="hint">穿透时角色区不可点，舞台里会浮出「恢复鼠标」按钮；也可按 <b>Ctrl+Alt+L</b> 找回，<b>Ctrl+Alt+Q</b> 退出</div>
+  </section>
+
+  <section class="footer">
+    <button id="open-harness">验证台</button>
+    <button id="quit">退出</button>
+  </section>
+
+  <div class="hint">设置里打开「窗口边框」后可拖边/角缩放 · 拖角色移动窗口 · 空白处右键唤出工具条</div>
+  <div id="status" class="status"></div>
+</main>
+<script src="./settings.js" type="module"></script>
+</body>
+</html>
