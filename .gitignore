@@ -21,6 +21,10 @@ assets/model/
 # ---- 密钥 ----
 brain.config.json
 
+# ---- Python 缓存 ----
+__pycache__/
+*.pyc
+
 # ---- 系统 / 编辑器 ----
 .DS_Store
 Thumbs.db
