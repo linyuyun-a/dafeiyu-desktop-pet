@@ -4,6 +4,9 @@
 **大脑**接 [AstrBot](https://github.com/AstrBotDevs/AstrBot) 的人格与记忆，
 **嘴**是本地 TTS（Qwen3-TTS 克隆 + 情绪母带），**耳朵**是本地 ASR（SenseVoice）。
 
+> 角色 **大肥鱼（DeepSeek-chan）** 的皮套由 **神宫凉子**（原画及拆分）与 **霓虹猫_NeonNeko**（Live2D 建模）制作，
+> 按作者的使用须知免费配布。本项目只做「外壳」，**不随仓库分发模型文件**——来源、署名与原因见 [CREDITS.md](CREDITS.md)。
+
 ## 已实现
 
 - Live2D 渲染 / 透明窗口 / 按轮廓的鼠标穿透 / 拖动与缩放
@@ -25,7 +28,9 @@ npm run core         # 下载 Live2D Cubism Core（专有许可，不随仓库�
 npm run app -- --model "D:/path/to/your.model3.json"
 ```
 
-**模型需要自备**：本仓库不含任何 Live2D 模型（皮套版权归原作者）。
+**模型需要自备**：本仓库不含任何 Live2D 模型。皮套是大肥鱼的，作者是 **神宫凉子**（原画/拆分）与 **霓虹猫_NeonNeko**（建模）；
+作者的使用须知允许个人创作与二次创作，但**不允许重新分发完整模型文件**，所以这里只给接入方式，不给文件——
+请到作者发布页获取，然后 `--model` 指过去（详见 [CREDITS.md](CREDITS.md)）。
 首次运行也可以让它引导你选择 `.model3.json`。
 
 大脑配置：复制 `brain.config.example.json` 为 `brain.config.json`，填入你的 AstrBot 地址与 API Key
@@ -54,7 +59,8 @@ node scripts/fetch-core.mjs    # 单独补 Core
 ## 许可
 
 代码以 **MIT** 发布，见 [LICENSE](LICENSE)。
-第三方组件，以及明确不随仓库分发的内容（Live2D Core / 模型），见 [THIRD-PARTY.md](THIRD-PARTY.md)。
+第三方组件，以及明确不随仓库分发的内容（Live2D Core / 模型），见 [THIRD-PARTY.md](THIRD-PARTY.md)；
+角色与皮套的署名、来源与使用限制见 [CREDITS.md](CREDITS.md)。
 
 ## 声明
 
