@@ -305,8 +305,9 @@ function swapCover(src) {
 
 /** 纯音乐时用歌曲信息当"歌词"：歌名 → 歌手 → 专辑，每 6 秒一行，循环铺满整首。 */
 function infoLines(sg, dur) {
-  const seq = [sg?.name, sg?.artists]
-    .map((x) => String(x || '').trim())
+  const cut = (x) => { const t = String(x || '').trim(); return t.length > 16 ? t.slice(0, 16) + '…' : t }
+  const seq = [sg?.name, String(sg?.artists || '').split(' / ')[0]]
+    .map(cut)
     .filter((x, i, a) => x && a.indexOf(x) === i)
   if (!seq.length) seq.push('纯音乐')
   const out = []
@@ -348,16 +349,10 @@ async function loadLyric(id) {
     pv.setLyrics(infoLines(song, Number(audio?.duration) > 20 ? Number(audio.duration) : 180))
   }
 
-  // 纯音乐：交给可视化层；有词则让给 JIZURA 的 PV
-  vizResize()
-  await bootViz()
-  vizScene?.setTitle(song?.name || '', song?.artists || '')
-  // 纯音乐 → 几何构成层（模仿日式 PV 的硬边几何），有词 → 交给 JIZURA 的 PV
-  vizModeSet('geo2')
-  void bootFx().then((r) => r?.setSong({ ...(song || {}), bpm: fxAudio.bpm, energy: fxAudio.energy }))
-  setVizOn(instrumental)
-
-  $('lyrics')?.classList.toggle('vizon', instrumental)
+  // 视觉层：自制动效（viz / FX）已停用 —— 纯音乐也交给 JIZURA 模板反复演歌曲信息。
+  // 想再打开自绘层，把下面两行换成 vizResize() + bootViz() + vizModeSet(...) + setVizOn(instrumental)。
+  setVizOn(false)
+  $('lyrics')?.classList.remove('vizon')
   if (instrumental) coverHue(song?.pic || '')
 }
 
@@ -368,7 +363,13 @@ async function loadLyric(id) {
 function isInstrumental(list) {
   if (!list || !list.length) return true
   const junk = /纯音乐|请欣赏|暂无歌词|没有歌词|instrumental|no lyrics|♪|^\s*$/i
-  const real = list.filter((l) => l && String(l.text || '').trim() && !junk.test(String(l.text).trim()))
+  const real = list.filter((l) => {
+    const t = String(l.text || '').trim()
+    if (!t || junk.test(t)) return false
+    // 「0.0」「……」这类纯数字/纯标点也是脏数据，别当歌词演
+    if (/^[\d\s\p{P}\p{S}]+$/u.test(t)) return false
+    return true
+  })
   return real.length === 0
 }
 
@@ -541,7 +542,12 @@ function paint() {
   const playing = !audio.paused && !audio.ended
   disc.classList.toggle('spinning', playing)
   discWrap.classList.toggle('playing', playing)
-  $('play').textContent = playing ? '⏸' : '▶'
+  const pb = $('play')
+  if (pb) {
+    pb.innerHTML = playing
+      ? `<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6.5" y="5" width="4" height="14" rx="1.6"/><rect x="13.5" y="5" width="4" height="14" rx="1.6"/></svg>`
+      : `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7.6 4.9v14.2c0 .9 1 1.4 1.7 1l11-7.1c.7-.4.7-1.5 0-1.9l-11-7.1c-.7-.5-1.7 0-1.7 1z"/></svg>`
+  }
   window.player?.reportState?.({ playing, id: song?.id || 0 })
 }
 
@@ -591,6 +597,51 @@ audio.addEventListener('ended', () => {
   paint()
   window.player?.ended?.()
 })
+
+// ---------- 播放模式：顺序 / 列表循环 / 随机 ----------
+const MODES = [
+  { id: 'order', title: '顺序播放（到结尾停）', svg: 'M4 9h10M4 15h10M12 6l3 3-3 3M12 12l3 3-3 3' },
+  { id: 'loop', title: '列表循环', svg: 'M4 11a4 4 0 0 1 4-4h9M19 13a4 4 0 0 1-4 4H6M15 4l3 3-3 3M9 20l-3-3 3-3' },
+  { id: 'shuffle', title: '随机播放', svg: 'M4 7h3l9 10h3M4 17h3l9-10h3M16 4l3 3-3 3M16 14l3 3-3 3' },
+]
+let playMode = 'loop'
+let roamOn = false
+let roamPrev = 'loop'
+function paintMode() {
+  const roam = $('roam')
+  if (roam) { roam.classList.toggle('on', roamOn); roam.title = roamOn ? '漫游中：快放完就自动补歌（再点关闭）' : '漫游：按设置里的源自动续播' }
+  const m = MODES.find((x) => x.id === playMode) || MODES[1]
+  const btn = $('mode')
+  if (!btn) return
+  btn.className = 'mode-' + m.id
+  btn.title = m.title
+  btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+    stroke-linecap="round" stroke-linejoin="round"><path d="${m.svg}"/></svg>`
+}
+async function loadMode() {
+  try {
+    const r = await window.player?.getMode?.()
+    if (r?.mode) playMode = r.mode
+  } catch {}
+  paintMode()
+}
+$('mode')?.addEventListener('click', async () => {
+  if (roamOn) { roamOn = false; playMode = roamPrev }
+  const i = MODES.findIndex((x) => x.id === playMode)
+  playMode = MODES[(i + 1) % MODES.length].id
+  paintMode()
+  try { await window.player?.setMode?.(playMode) } catch {}
+})
+// 漫游是独立开关：开=接管（记下原模式），关=还原
+$('roam')?.addEventListener('click', async () => {
+  if (!roamOn) { roamPrev = playMode; roamOn = true; playMode = 'roam' }
+  else { roamOn = false; playMode = roamPrev }
+  paintMode()
+  try { await window.player?.setMode?.(playMode) } catch {}
+})
+void loadMode()
+// 调试口：window.__setMode('roam')
+window.__setMode = async (m) => { playMode = m; roamOn = m === 'roam'; paintMode(); try { await window.player?.setMode?.(m) } catch {}; return playMode }
 
 // ---------- 交互 ----------
 $('prev').addEventListener('click', () => window.player?.prev?.())
@@ -876,7 +927,7 @@ function renderTracks(p, list) {
     du.textContent = fmt(Math.round((s.duration || 0) / 1000))
     const play = document.createElement('button')
     play.className = 'tr-b'
-    play.textContent = '▶'
+    play.innerHTML = `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7.6 4.9v14.2c0 .9 1 1.4 1.7 1l11-7.1c.7-.4.7-1.5 0-1.9l-11-7.1c-.7-.5-1.7 0-1.7 1z"/></svg>`
     play.title = '播放这首（整个歌单进队列）'
     play.addEventListener('click', (e) => {
       e.stopPropagation()

@@ -252,3 +252,50 @@ export async function playlistTracks(id, limit = 500) {
     fee: Number(s.fee || 0),
   }))
 }
+
+// ---------- 漫游：续播源 ----------
+
+const toSong = (s) => ({
+  id: Number(s.id),
+  name: String(s.name || ''),
+  artists: (s.ar || s.artists || []).map((a) => a.name).filter(Boolean).join(' / '),
+  album: String(s.al?.name || s.album?.name || ''),
+  pic: String(s.al?.picUrl || s.album?.picUrl || ''),
+  duration: Number(s.dt || s.duration || 0),
+  fee: Number(s.fee || 0),
+})
+
+/** 相似歌曲：官方只给 5 首，这是最准的一档 */
+export async function similarSongs(id, limit = 5) {
+  const body = await call('simi_song', { id: Number(id), limit })
+  return (body?.songs || []).map(toSong)
+}
+
+/** 同歌手热门：先保证「还是这个人」 */
+export async function artistTopSongs(artistId, limit = 50) {
+  const body = await call('artist_top_song', { id: Number(artistId) })
+  let songs = (body?.songs || []).map(toSong)
+  if (!songs.length) {
+    const b2 = await call('artist_songs', { id: Number(artistId), limit, offset: 0, order: 'hot' })
+    songs = (b2?.songs || []).map(toSong)
+  }
+  return songs.slice(0, limit)
+}
+
+/** 一首歌的歌手 id（同歌手续播用） */
+export async function songArtistId(id) {
+  const body = await call('song_detail', { ids: String(id) })
+  return Number(body?.songs?.[0]?.ar?.[0]?.id || 0)
+}
+
+/** 每日推荐（按口味，需要登录） */
+export async function dailyRecommend() {
+  const body = await call('recommend_songs')
+  return (body?.data?.dailySongs || []).map(toSong)
+}
+
+/** 云音乐热歌榜（兜底，永不空） */
+export async function hotChart(limit = 200) {
+  const body = await call('playlist_track_all', { id: 3778678, limit, offset: 0, timestamp: Date.now() })
+  return (body?.songs || []).map(toSong)
+}

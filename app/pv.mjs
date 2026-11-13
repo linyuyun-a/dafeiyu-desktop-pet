@@ -62,6 +62,24 @@ export function createPv({ canvas, log = null } = {}) {
   if (!ctx) return null
 
   const renderer = new J.Renderer()
+  // JIZURA 的方案是按"自己的底色"配的字色：白底方案的字是深色，
+  // 直接铺到深色唱片机上会看不见。build() 时算一次底色亮度，浅底就在画布上垫一层纸。
+  let paper = null
+  function schemeBg(id) {
+    const st = (globalThis.J && globalThis.J.STYLES && globalThis.J.STYLES[id]) || null
+    const sc = st && st.schemes && st.schemes[0]
+    return sc ? { bg: sc.bg, ink: sc.ink || sc.fg } : null
+  }
+  function readLum(hex) {
+    const m = /^#?([0-9a-f]{6})$/i.exec(String(hex || ''))
+    if (!m) return 0.5
+    const n = parseInt(m[1], 16)
+    const c = [(n >> 16) & 255, (n >> 8) & 255, n & 255].map((v) => {
+      const x = v / 255
+      return x <= 0.03928 ? x / 12.92 : Math.pow((x + 0.055) / 1.055, 2.4)
+    })
+    return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]
+  }
   let plan = null
   let styleId = 'ocean'
   let lyricLines = []
@@ -103,7 +121,13 @@ export function createPv({ canvas, log = null } = {}) {
     scale = (targetW / plan.W) * dpr
     canvas.width = Math.round(plan.W * scale)
     canvas.height = Math.round(plan.H * scale)
-    log?.(`[pv] plan 完成 ${aspect} ${plan.W}x${plan.H} scale=${scale.toFixed(2)} 用时 ${Math.round(performance.now() - t0)}ms 行数 ${lyricLines.length}`)
+    // 判据不是"方案底色亮不亮"，而是"字色在我们的深底上还看得见吗"：
+    // JIZURA 的字色是按它自己底色配的，深字色铺到深蓝上就等于隐形。
+    const sch = schemeBg(styleId)
+    const inkLum = sch ? readLum(sch.ink || sch.bg) : 0.5
+    const darkInk = inkLum < 0.4
+    paper = darkInk ? { bg: sch?.bg || '#F7F2E8' } : null
+    log?.(`[pv] plan 完成 ${aspect} ${plan.W}x${plan.H} scale=${scale.toFixed(2)} 用时 ${Math.round(performance.now() - t0)}ms 行数 ${lyricLines.length}${paper ? ' 深字→垫纸' : ''}`)
   }
 
   return {
@@ -150,6 +174,19 @@ export function createPv({ canvas, log = null } = {}) {
       if (!plan || !visible) return false
       if (!(t >= 0) || !isFinite(t)) return false
       try {
+        if (paper) {
+          const r = 14 * scale
+          const pad = 8 * scale
+          ctx.save()
+          ctx.clearRect(0, 0, canvas.width, canvas.height)
+          ctx.beginPath()
+          ctx.roundRect(pad, pad, canvas.width - pad * 2, canvas.height - pad * 2, r)
+          ctx.fillStyle = paper.bg
+          ctx.globalAlpha = 0.94
+          ctx.fill()
+          ctx.globalAlpha = 1
+          ctx.restore()
+        }
         renderer.frame(ctx, plan, t, { transparent: true, scale, fast: false })
         return true
       } catch (e) {

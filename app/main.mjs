@@ -363,6 +363,7 @@ async function autoShrinkTextures(modelFile) {
 
 
 const DEFAULTS = {
+  petName: '大肥鱼',
   width: 520,
   height: 760,
   x: null,          // 窗口位置（首次启动按屏幕右上角摆）
@@ -1396,6 +1397,72 @@ let nowPlaying = null
 // 播放队列：一首歌也能成队（index 0 / length 1），这样 ⏮⏭ 永远有明确语义
 let queue = []
 let queueIndex = -1
+// 漫游：队列快到头时按「设置里选的源」补歌；缓存 + 串行 + 退避，别把接口打疼
+const roamCache = new Map()   // key -> { at, songs }
+const ROAM_TTL = 24 * 3600 * 1000
+let roamBusy = false
+let roamCooldownUntil = 0
+const sleepMs = (ms) => new Promise((r) => setTimeout(r, ms))
+
+function roamKey(kind, id) { return kind + ':' + id }
+
+async function roamPick(kind, song) {
+  const key = roamKey(kind, song?.id || 0)
+  const hit = roamCache.get(key)
+  if (hit && Date.now() - hit.at < ROAM_TTL) return hit.songs
+  if (Date.now() < roamCooldownUntil) return []
+  let songs = []
+  try {
+    if (kind === 'similar') songs = await ncm.similarSongs(song.id, 5)
+    else if (kind === 'artist') {
+      const aid = await ncm.songArtistId(song.id)
+      if (aid) songs = await ncm.artistTopSongs(aid, 50)
+    } else if (kind === 'daily') songs = await ncm.dailyRecommend()
+    else if (kind === 'hot') songs = await ncm.hotChart(200)
+  } catch (e) {
+    const msg = String(e?.message || '')
+    flog('[roam] 取源失败', kind, msg.slice(0, 80))
+    if (/-460|风险|频繁/.test(msg)) roamCooldownUntil = Date.now() + 2 * 60 * 1000
+    return []
+  }
+  roamCache.set(key, { at: Date.now(), songs })
+  return songs
+}
+
+/** 把「没听过的」歌补进队列；返回补了几首 */
+async function roamRefill() {
+  if (roamBusy) return 0
+  const song = nowPlaying
+  if (!song?.id) return 0
+  roamBusy = true
+  try {
+    const want = Math.max(1, Number(settings.roamSource ? 1 : 1))
+    const have = new Set(queue.map((s) => s.id))
+    const sources = []
+    const first = settings.roamSource || 'similar'
+    sources.push(first)
+    if (settings.deepRoam) sources.push('similar', 'artist')
+    sources.push('artist', 'daily', 'hot')
+    let added = 0
+    for (const kind of sources) {
+      const list = await roamPick(kind, song)
+      for (const s of list) {
+        if (!s?.id || have.has(s.id) || s.id === song.id) continue
+        have.add(s.id)
+        queue.push(s)
+        added++
+        if (added >= (settings.deepRoam ? 24 : 8)) break
+      }
+      if (added >= (settings.deepRoam ? 24 : 8)) break
+      await sleepMs(1600)   // 串行 + 间隔
+    }
+    if (added) {
+      flog('[roam] 补歌', added, '首，来源', first, settings.deepRoam ? '(深度)' : '')
+      try { playerWin?.webContents.send('player:queue', { pos: { i: queueIndex, n: queue.length } }) } catch {}
+    }
+    return added
+  } finally { roamBusy = false }
+}
 
 // 歌单缓存：进唱片机先给上次的，再后台刷；10 分钟内不重复请求
 let playlistsCache = { at: 0, uid: 0, items: [] }
@@ -1540,14 +1607,37 @@ function enqueueSong(song) {
   return { ok: true, size: queue.length }
 }
 
-async function nextTrack() { return playAt(queueIndex + 1) }
+// 播放模式：order 顺序（到结尾就停）/ loop 列表循环 / shuffle 随机
+let playMode = 'loop'
+function pickShuffle() {
+  if (queue.length < 2) return queueIndex
+  let i = queueIndex
+  while (i === queueIndex) i = Math.floor(Math.random() * queue.length)
+  return i
+}
+async function nextTrack() {
+  if (playMode === 'roam' && queueIndex >= queue.length - 1) {
+    await roamRefill()
+  }
+  if (!queue.length) return { ok: false, error: '队列是空的' }
+  if (playMode === 'shuffle') return playAt(pickShuffle())
+  const i = queueIndex + 1
+  if (i >= queue.length) {
+    if (playMode === 'loop') return playAt(0)
+    return { ok: false, error: '队列到头了' }
+  }
+  return playAt(i)
+}
 async function prevTrack() {
   // 播过 3 秒就先回到这首开头（和大多数播放器一致）
   if (nowPlaying && nowPlaying.startedAt && Date.now() - nowPlaying.startedAt > 3000) {
     try { playerWin?.webContents.send('player:seek', { at: 0 }) } catch {}
     return { ok: true, restart: true }
   }
-  return playAt(queueIndex - 1)
+  if (playMode === 'shuffle') return playAt(pickShuffle())
+  const i = queueIndex - 1
+  if (i < 0) return playMode === 'loop' ? playAt(queue.length - 1) : { ok: false, error: '已经是第一首' }
+  return playAt(i)
 }
 
 function hidePlayer() {
@@ -1856,6 +1946,13 @@ function wireIpc() {
   ipcMain.on('player:next', () => { void nextTrack() })
   ipcMain.on('player:prev', () => { void prevTrack() })
   ipcMain.on('player:ended', () => { void nextTrack() })
+  ipcMain.handle('player:get-mode', () => ({ mode: playMode }))
+  ipcMain.handle('player:set-mode', (_e, m) => {
+    playMode = ['order', 'loop', 'shuffle', 'roam'].includes(m) ? m : 'loop'
+    settings.musicMode = playMode
+    saveSettings?.()
+    return { mode: playMode }
+  })
   ipcMain.handle('music:queue', () => ({ items: queue, index: queueIndex }))
   ipcMain.handle('music:playlists', async (_e, arg) => {
     try {

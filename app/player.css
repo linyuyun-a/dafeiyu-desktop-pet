@@ -150,17 +150,36 @@ body {
 }
 #seek:disabled { opacity: 0.4; cursor: default; }
 
-#controls { display: flex; align-items: center; gap: 8px; margin-top: 10px; margin-bottom: 2px; z-index: 2; }
+#controls { display: flex; align-items: center; gap: 12px; margin-top: 10px; margin-bottom: 2px; z-index: 2; }
+/* 只留图标：无底、无框；hover 提亮 + 轻微放大，play 是唯一实心圆。 */
 #controls button {
-  width: 34px; height: 30px; border-radius: 10px; cursor: pointer;
-  border: 1px solid var(--line); background: rgba(255, 255, 255, 0.05); color: var(--ink);
-  font-size: 13px;
+  display: grid; place-items: center;
+  width: 36px; height: 36px; padding: 0;
+  border: 0; border-radius: 50%;
+  background: transparent; color: rgba(219, 232, 244, 0.72);
+  cursor: pointer;
+  transition: color .16s ease, transform .12s cubic-bezier(.16,1,.3,1), opacity .16s ease;
 }
-#controls button { transition: transform 0.12s cubic-bezier(0.16, 1, 0.3, 1), background 0.16s ease; }
-#controls button:hover:not(:disabled) { background: rgba(111, 211, 255, 0.16); }
-#controls button:active:not(:disabled) { transform: scale(0.97); }
-#controls button:disabled { opacity: 0.3; cursor: default; }
-#play { width: 44px !important; font-size: 15px !important; }
+#controls button svg { width: 20px; height: 20px; display: block; }
+#controls button:hover:not(:disabled) { color: #fff; transform: scale(1.06); }
+#controls button:active:not(:disabled) { transform: scale(0.94); }
+#controls button:disabled { opacity: .25; cursor: default; }
+#controls button:focus { outline: none; }
+#play {
+  width: 48px !important; height: 48px !important; margin: 0 4px;
+  background: linear-gradient(180deg, #86e0ff, #35a6da) !important;
+  color: #05131d !important;
+  box-shadow: 0 6px 18px rgba(53, 166, 218, .38), inset 0 1px 0 rgba(255,255,255,.5);
+}
+#play svg { width: 20px; height: 20px; }
+#play:hover:not(:disabled) { background: linear-gradient(180deg, #9ce7ff, #45b4e6) !important; transform: none; }
+#play:active:not(:disabled) { transform: scale(.96); }
+#mode svg, #roam svg { width: 18px; height: 18px; }
+#mode.mode-loop svg, #mode.mode-shuffle svg { color: #6FD3FF; }
+#roam .ring { display: none; }
+#roam.on { color: #6FD3FF; }
+#roam.on svg { color: #6FD3FF; }
+#more svg { width: 18px; height: 18px; }
 #volWrap {
   margin-left: auto; display: flex; align-items: center; gap: 6px; color: var(--dim);
   padding: 4px 6px; border-radius: 10px; cursor: pointer;
@@ -185,14 +204,12 @@ body {
 
 /* ---------- 右上角：形象与配色 ---------- */
 #headBtns { display: flex; align-items: center; gap: 6px; -webkit-app-region: no-drag; }
-#more {
-  width: 22px; height: 22px; border-radius: 8px; border: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.04); color: var(--dim); cursor: pointer; line-height: 1;
-  font-size: 13px; padding: 0;
-}
-#more:hover { color: #fff; background: rgba(255, 255, 255, 0.1); }
+#more { width: 30px !important; color: var(--dim) !important; font-size: 14px !important; line-height: 1; }
+#more:hover { color: #fff !important; }
+#mode svg { width: 15px; height: 15px; display: block; margin: 0 auto; }
+#mode.mode-loop svg, #mode.mode-shuffle svg, #mode.mode-roam svg { color: #6FD3FF; }
 #morePanel {
-  position: absolute; left: 50%; transform: translateX(-50%); bottom: 116px; z-index: 8;
+  position: absolute; left: 50%; transform: translateX(-50%); bottom: 96px; z-index: 8;
   width: min(460px, calc(100% - 28px));
   padding: 12px 14px;
   border-radius: 16px; border: 1px solid var(--line);

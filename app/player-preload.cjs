@@ -16,6 +16,8 @@ contextBridge.exposeInMainWorld('player', {
   reportState: (state) => ipcRenderer.send('player:state', state),
   resize: (size) => ipcRenderer.send('player:resize', size),
   poster: (on) => ipcRenderer.send('player:poster', !!on),
+  getMode: () => ipcRenderer.invoke('player:get-mode'),
+  setMode: (m) => ipcRenderer.invoke('player:set-mode', m),
   next: () => ipcRenderer.send('player:next'),
   prev: () => ipcRenderer.send('player:prev'),
   ended: () => ipcRenderer.send('player:ended'),
