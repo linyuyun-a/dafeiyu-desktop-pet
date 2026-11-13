@@ -162,6 +162,8 @@ async function autoStyleFor(song) {
       if (info) window.player?.setAnalysis?.(song.id, info)
     }
     if (!pvAuto) return
+    fxAudio = { bpm: info?.bpm || 0, energy: info?.energy || 0 }
+    fx?.setSong({ ...song, bpm: fxAudio.bpm, energy: fxAudio.energy })
     const id = pvMod.pickStyle({ bpm: info?.bpm || 0, energy: info?.energy || 0, text: songText(song), mood: pvMood })
     if (id !== pvStyle) {
       pvStyle = id
@@ -352,6 +354,7 @@ async function loadLyric(id) {
   vizScene?.setTitle(song?.name || '', song?.artists || '')
   // 纯音乐 → 几何构成层（模仿日式 PV 的硬边几何），有词 → 交给 JIZURA 的 PV
   vizModeSet('geo2')
+  void bootFx().then((r) => r?.setSong({ ...(song || {}), bpm: fxAudio.bpm, energy: fxAudio.energy }))
   setVizOn(instrumental)
 
   $('lyrics')?.classList.toggle('vizon', instrumental)
@@ -405,6 +408,8 @@ function renderLyric() {
 const viz = { on: false, cv: null, ctx: null, dpr: 1, w: 0, h: 0, dust: [], hue: 200, glow: 0 }
 let vizScene = null
 let vizMod = null
+let fx = null
+let fxAudio = { bpm: 0, energy: 0 }
 let vizBeat = 0
 let vizLastBass = 0
 
@@ -428,8 +433,25 @@ function vizResize() {
   viz.h = cv.clientHeight || 560
   viz.ctx = cv.getContext('2d')
   // 画布的像素尺寸只由场景自己管（这里再改一次会让 2d 上下文复位、画面全黑）
-  vizScene?.resize(viz.w, viz.h, viz.dpr)
+  if (vizScene) vizScene.resize(viz.w, viz.h, viz.dpr)
+  else if (viz.ctx) {
+    cv.width = Math.round(viz.w * viz.dpr)
+    cv.height = Math.round(viz.h * viz.dpr)
+    viz.ctx.setTransform(viz.dpr, 0, 0, viz.dpr, 0, 0)
+  }
   setVizOn(viz.on)
+}
+
+async function bootFx() {
+  if (fx) return fx
+  try {
+    const m = await import('./fx/index.mjs')
+    fx = m.createFx({ log: (x) => console.log(x) })
+    console.log('[fx] ready', fx.list.map((f) => f.id).join(','))
+  } catch (e) {
+    console.warn('[fx] 加载失败', e.message)
+  }
+  return fx
 }
 
 function vizModeSet(m) {
@@ -439,7 +461,7 @@ function vizModeSet(m) {
 function setVizOn(on) {
   viz.on = !!on
   $('card')?.classList.toggle('viz-on', viz.on)
-  if (!viz.on) viz.ctx?.clearRect(0, 0, viz.w * viz.dpr, viz.h * viz.dpr)
+  if (!viz.on) viz.ctx?.clearRect(0, 0, viz.w, viz.h)
 }
 
 /** 从专辑封面取一个主色（hue），给光晕和环形频谱用 */
@@ -482,7 +504,23 @@ function coverHue(src) {
 window.__vizMode = (m) => { vizScene?.setMode?.(m); return vizScene?.mode }
 
 function drawViz(t, bass, mids) {
-  if (!viz.on || !vizScene) return
+  if (!viz.on) return
+  if (fx) {
+    if (bass > vizLastBass + 0.12) vizBeat = 1
+    vizBeat *= 0.92
+    vizLastBass = vizLastBass * 0.7 + bass * 0.3
+    const card = $('card')?.getBoundingClientRect()
+    const metaB = $('meta')?.getBoundingClientRect()
+    const progT = $('prog')?.getBoundingClientRect()
+    if (!card || !metaB || !progT) return
+    const top = metaB.bottom - card.top + 10
+    const bottom = progT.top - card.top - 10
+    const clip = { x: 0, y: top, w: viz.w, h: Math.max(60, bottom - top) }
+    viz.ctx?.clearRect(0, 0, viz.w, viz.h)
+    fx.draw(viz.ctx, { t, hue: viz.hue, clip, bass, mid: mids, w: viz.w, h: viz.h })
+    return
+  }
+  if (!vizScene) return
   // 拍点：低频突然抬起就是一下（简版 onset）
   if (bass > vizLastBass + 0.12) vizBeat = 1
   vizBeat *= 0.92

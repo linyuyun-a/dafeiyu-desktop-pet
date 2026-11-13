@@ -19,6 +19,19 @@
 |---|---|---|
 | [852wa/JIZURA](https://github.com/852wa/JIZURA) | MIT | 歌词文字 PV 引擎。`scripts/build-jizura.mjs` 从上游 `src/` 按依赖顺序拼接，产物头部保留 MIT 声明与上游 commit。 |
 
+## 随仓库内联的动效运行时（`app/fx/vendor/fifi/`）
+
+| 组件 | 许可 | 说明 |
+|---|---|---|
+| [huiq777/fifi-video](https://github.com/huiq777/fifi-video) | MIT | 手绘墨线 / 纸纹等 Canvas 动效运行时。原样复制 `lib.js` `timeline.js` `xk.js` `xm-core.js` `xm-ds.js` `xm-doodle.js` `xm-tex.js`，未修改；同目录保留上游 `LICENSE`。由 `app/fx/index.mjs` 调用。 |
+
+**只看不抄**（许可不允许把代码打包进本项目，仅作视觉参考）：
+
+| 组件 | 许可 | 为什么不能直接用 |
+|---|---|---|
+| [DanteAlighieri13210914/pv-tool](https://github.com/DanteAlighieri13210914/pv-tool) | Non-Commercial，且明确禁止 embedding / bundling into any product | 只能借它的视觉思路（几何母题、边缘刻度、3 秒段落）自己实现 |
+| `D:\pv文字预设` 的剪映草稿 | 允许学习/修改/分享，禁止销售预设本身 | 仅作动画参考，未入库 |
+
 ## 明确**不**随仓库分发
 
 | 组件 | 原因 |

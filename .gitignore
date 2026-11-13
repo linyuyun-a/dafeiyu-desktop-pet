@@ -13,7 +13,7 @@ _scaffold/
 
 # ---- 版权受限：不入库、不随包分发 ----
 # Live2D Cubism Core（专有许可）：用 `npm run core` 自行下载
-vendor/
+/vendor/
 assets/core/
 # 皮套模型：版权归原作者，用户自备 model3.json
 assets/model/
