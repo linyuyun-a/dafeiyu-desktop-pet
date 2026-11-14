@@ -36,6 +36,12 @@
 | 显卡 | 集显也能跑；要用本地 TTS 建议有 NVIDIA 显卡（6 GB 以上显存） |
 | 磁盘 | 仓库约 40 MB；模型自备；TTS 模型约 1.5 GB |
 
+## 下载
+
+不装 Node 也能用：[Releases](https://github.com/linyuyun-a/dafeiyu-desktop-pet/releases) 里有 Windows x64 压缩包（约 350 MB，自带 Electron 与 Cubism Core，**不含皮套**）。
+
+解压到**短路径**（例如 `D:dafeiyu`）再双击 —— exe 完整路径超过约 65 个字符时 Windows 下会静默退出。首次运行会让你选模型。
+
 ## 快速开始
 
 ```bash
