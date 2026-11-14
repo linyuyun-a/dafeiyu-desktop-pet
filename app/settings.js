@@ -222,8 +222,10 @@ function wire() {
   }
   const roamSrc = $('#roam-src')
   if (roamSrc) {
+    const mt = $('#music-talk'); if (mt) mt.checked = settings.musicTalk !== false
     roamSrc.value = settings.roamSource || 'similar'
     roamSrc.onchange = (e) => pushSettings({ roamSource: e.target.value })
+    $('#music-talk')?.addEventListener('change', (e) => pushSettings({ musicTalk: e.target.checked }))
   }
   const deepRoam = $('#deep-roam')
   if (deepRoam) {

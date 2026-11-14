@@ -397,6 +397,7 @@ const DEFAULTS = {
   ttsAutoStart: true,    // 启动时自动拉起本地语音服务（launch.ps1 起独立进程组，16–25s 就绪）
   player: true,          // 她点歌时弹「唱片机」小窗（关掉就只出声、不弹窗）
   pvStyle: 'ocean',      // 歌词 PV 配色（深海/夕焼/报纸/酸绿/墨朱）
+  musicTalk: true,       // 她会不会对正在放的歌嘀咕一句（12 分钟一次、同一首只说一次）
   ttsPython: '',         // 指向装了 faster-qwen3-tts 的 python.exe；空 = 自动找
   model: null,           // 启动时由 resolveModel() 决定（发布版没有模型，要用户选）
   workLink: 'full',      // 工作联动：off / motion（只动作）/ full（动作+短句）
@@ -1121,6 +1122,16 @@ function proactiveNudge({ kind = 'alone', awayMin = 0, extra = null } = {}) {
       `说一句很短的——别用系统腔，别解释技术原因；可以说「这首暂时没有」「换个别的吧」，也可以直接推荐一首你手上有把握的。${tail}）`
     )
   }
+  if (kind === 'music') {
+    const nm = String(extra?.name || '').slice(0, 40)
+    const ar = String(extra?.artists || '').split(' / ')[0].slice(0, 24)
+    const why = extra?.reason === 'ended' ? '刚刚放完这一首，自动接着放下一首' : '刚刚换到这一首'
+    return (
+      `（旁白：唱片机${why}，现在放的是《${nm}》${ar ? '，' + ar : ''}。${clock}${wearing}${mood}` +
+      `你在心里嘀咕一句——像自言自语，不是介绍曲目；可以评价一句调子/情绪，也可以顺着这个气氛说点别的。` +
+      `不要报歌名歌手，不要说"正在播放"，不要说"我可以帮你"。只一两句话。${tail}真不想说就只回 [[silent]]。）`
+    )
+  }
   if (kind === 'balance') {
     const b = balanceState
     const money = '¥' + Number(b?.total || 0).toFixed(2)
@@ -1569,7 +1580,38 @@ async function ensurePlayerWindow() {
   return playerWin
 }
 
+// 「她对正在放的歌说一句」：门控都在这一处，playSong / player:ended 只负责报告事件
+const musicTalk = { lastAt: 0, hourAt: [], songIds: new Set() }
+function musicTalkAllowed(song, playedMs) {
+  if (settings.musicTalk === false) return 'off'
+  if (inNightHours()) return 'night'
+  if (chatStreaming) return 'busy'
+  if (!brain) return 'nobrain'
+  const now = Date.now()
+  if (now - musicTalk.lastAt < 12 * 60 * 1000) return 'cooldown'
+  musicTalk.hourAt = musicTalk.hourAt.filter((t) => now - t < 3600 * 1000)
+  if (musicTalk.hourAt.length >= 2) return 'hourly'
+  const id = String(song?.id || '')
+  if (id && musicTalk.songIds.has(id)) return 'repeat'
+  if (playedMs != null && playedMs < 20000) return 'tooshort'
+  return null
+}
+async function maybeMusicComment(song, reason, playedMs) {
+  const why = musicTalkAllowed(song, playedMs)
+  if (why) { flog('[music-talk] 跳过：' + why); return { ok: false, error: why } }
+  const id = String(song?.id || '')
+  if (id) musicTalk.songIds.add(id)
+  musicTalk.lastAt = Date.now()
+  musicTalk.hourAt.push(musicTalk.lastAt)
+  // 说话时把音乐压一下，2.2 秒后恢复（她开口别被伴奏盖住）
+  try { playerWin?.webContents.send('player:duck', 0.28) } catch {}
+  setTimeout(() => { try { playerWin?.webContents.send('player:duck', 1) } catch {} }, 4200)
+  flog('[music-talk]', reason, song?.name || '')
+  return runProactive({ kind: 'music', extra: { name: song?.name, artists: song?.artists, reason } })
+}
+
 async function playSong(song, opts = {}) {
+  const prevStartedAt = nowPlaying?.startedAt || 0
   if (opts.replaceQueue) setQueue([song])
   if (!queue.length) setQueue([song])
   nowPlaying = { id: song.id, name: song.name, artists: song.artists || '', album: song.album || '', pic: song.pic || '', dur: song.dur || song.duration || 0, at: Date.now(), startedAt: Date.now(), playing: true }
@@ -1588,14 +1630,18 @@ async function playSong(song, opts = {}) {
   }
   flog('[music] 播放', nowPlaying.name, nowPlaying.artists)
   try { win?.webContents.send('music:now', nowPlaying) } catch {}
+  if (opts.talk !== false) {
+    const playedMs = prevStartedAt ? Date.now() - prevStartedAt : null
+    void maybeMusicComment(nowPlaying, opts.reason || 'switch', playedMs)
+  }
   return { ok: true, song: nowPlaying, pos: { i: queueIndex, n: queue.length } }
 }
 
 /** 从队列里播第 i 首（越界返回 false，不抛） */
-async function playAt(i) {
+async function playAt(i, opts = {}) {
   if (!Number.isInteger(i) || i < 0 || i >= queue.length) return { ok: false, error: '队列到头了' }
   queueIndex = i
-  return playSong(queue[i])
+  return playSong(queue[i], opts)
 }
 
 /** 加进队尾，不打断当前这首 */
@@ -1615,18 +1661,18 @@ function pickShuffle() {
   while (i === queueIndex) i = Math.floor(Math.random() * queue.length)
   return i
 }
-async function nextTrack() {
+async function nextTrack(opts = {}) {
   if (playMode === 'roam' && queueIndex >= queue.length - 1) {
     await roamRefill()
   }
   if (!queue.length) return { ok: false, error: '队列是空的' }
-  if (playMode === 'shuffle') return playAt(pickShuffle())
+  if (playMode === 'shuffle') return playAt(pickShuffle(), opts)
   const i = queueIndex + 1
   if (i >= queue.length) {
-    if (playMode === 'loop') return playAt(0)
+    if (playMode === 'loop') return playAt(0, opts)
     return { ok: false, error: '队列到头了' }
   }
-  return playAt(i)
+  return playAt(i, opts)
 }
 async function prevTrack() {
   // 播过 3 秒就先回到这首开头（和大多数播放器一致）
@@ -1945,7 +1991,12 @@ function wireIpc() {
   })
   ipcMain.on('player:next', () => { void nextTrack() })
   ipcMain.on('player:prev', () => { void prevTrack() })
-  ipcMain.on('player:ended', () => { void nextTrack() })
+  ipcMain.on('player:ended', () => {
+    const finished = nowPlaying ? { ...nowPlaying } : null
+    const playedMs = finished?.startedAt ? Date.now() - finished.startedAt : null
+    if (finished && playedMs && playedMs > 120000) void maybeMusicComment(finished, 'ended', playedMs)
+    void nextTrack({ reason: 'ended', talk: false })
+  })
   ipcMain.handle('player:get-mode', () => ({ mode: playMode }))
   ipcMain.handle('player:set-mode', (_e, m) => {
     playMode = ['order', 'loop', 'shuffle', 'roam'].includes(m) ? m : 'loop'

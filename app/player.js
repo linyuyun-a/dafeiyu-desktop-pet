@@ -699,7 +699,7 @@ window.player?.onQueue?.((p) => {
   queuePos = p.pos
   paintQueue()
 })
-$('vol').addEventListener('input', (e) => { audio.volume = Number(e.target.value) / 100 })
+$('vol').addEventListener('input', (e) => { baseVol = Number(e.target.value) / 100; applyVolume() })
 // 音量条平时收起，鼠标进控制条才展开（用 class 驱动，比 :hover 稳，键盘 focus 也能展开）
 {
   const wrap = $('volWrap')
@@ -712,6 +712,11 @@ $('vol').addEventListener('input', (e) => { audio.volume = Number(e.target.value
   wrap?.addEventListener('focusout', () => setTimeout(shut, 0))
 }
 audio.volume = 0.8
+// 她开口时压低音乐（main 发 0.28，4.2 秒后回 1）
+let duck = 1
+function applyVolume() { audio.volume = Math.max(0, Math.min(1, baseVol * duck)) }
+let baseVol = 0.8
+window.player.onDuck?.((v) => { duck = v > 0 && v < 1 ? v : 1; applyVolume() })
 // 键盘：空格播放暂停、←→ ±5 秒、↑↓ 音量（焦点在输入框里时让开）
 const isTyping = () => {
   const el = document.activeElement

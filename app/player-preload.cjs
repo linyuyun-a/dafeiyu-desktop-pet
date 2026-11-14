@@ -33,6 +33,12 @@ contextBridge.exposeInMainWorld('player', {
   },
   playlists: (force) => ipcRenderer.invoke('music:playlists', { force: !!force }),
   playSong: (song) => ipcRenderer.send('player:play-song', song),
+  // 她开口时把音乐压一下（main 里发 0.28 / 1）
+  onDuck: (fn) => {
+    const h = (_e, v) => fn(Number(v) || 1)
+    ipcRenderer.on('player:duck', h)
+    return () => ipcRenderer.removeListener('player:duck', h)
+  },
   enqueue: (song) => ipcRenderer.send('player:enqueue-song', song),
   getStyle: () => ipcRenderer.invoke('player:get-style'),
   setStyle: (id) => ipcRenderer.send('player:set-style', id),
