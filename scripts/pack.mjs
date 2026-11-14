@@ -13,6 +13,7 @@ import { existsSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { packager } from '@electron/packager'
+import { slimApp } from './slim.mjs'
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const OUT = path.join(ROOT, 'dist')
@@ -129,6 +130,10 @@ async function main() {
   await rm(path.join(pubDir, 'model'), { recursive: true, force: true })
   await rm(path.join(pubDir, 'resources', 'app', 'model'), { recursive: true, force: true })
   console.log(`[pack] 发布版（不含模型）：${path.join(pubDir, `${APP_NAME}.exe`)}`)
+
+  // ③ 瘦身：pixi 只留单文件 bundle、locales 只留 en-US/zh-CN、删 sourcemap
+  await slimApp(appDir)
+  await slimApp(pubDir)
 }
 
 main().catch((e) => {
