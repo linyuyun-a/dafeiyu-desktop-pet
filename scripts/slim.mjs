@@ -10,7 +10,7 @@
 // 用法：
 //   npm run slim                       # 默认处理 dist 下的构建
 //   npm run slim -- "D:\大肥鱼桌宠"     # 处理指定目录（比如手工同步过去的那份）
-import { rm, readdir, stat } from 'node:fs/promises'
+import { rm, readdir, stat, readFile } from 'node:fs/promises'
 import { existsSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -53,6 +53,7 @@ async function resolveTargets(arg) {
 
 export async function slimApp(appRoot) {
   const total0 = await dirSize(appRoot)
+  const appDir = path.join(appRoot, "resources", "app")
   console.log(`\n[slim] ${appRoot}  当前 ${mb(total0)}`)
 
   // 1) pixi.js：只留 dist/pixi.mjs
@@ -102,6 +103,19 @@ export async function slimApp(appRoot) {
   if (existsSync(nm)) await walk(nm)
   if (pruned) console.log(`   *.map/*.d.ts   省 ${mb(pruned)}`)
 
+  // 4) devDependencies：只删 package.json 里列在 devDependencies 的顶层包，
+  //    不去碰传递依赖（否则 pac-proxy-agent 这类运行时依赖会被误删）
+  const nmRoot = path.join(appDir, "node_modules")
+  if (existsSync(nmRoot)) {
+    const before = await dirSize(nmRoot)
+    const pkg = JSON.parse(await readFile(path.join(ROOT, "package.json"), "utf8"))
+    const dev = Object.keys(pkg.devDependencies || {})
+    for (const name of dev) {
+      const p = path.join(nmRoot, name)
+      if (existsSync(p)) await rm(p, { recursive: true, force: true }).catch(() => {})
+    }
+    console.log(`   devDeps        ${mb(before)} → ${mb(await dirSize(nmRoot))}`)
+  }
   const total1 = await dirSize(appRoot)
   console.log(`[slim] 合计 ${mb(total0)} → ${mb(total1)}（省 ${mb(total0 - total1)}）`)
 }
