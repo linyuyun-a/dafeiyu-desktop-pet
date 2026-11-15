@@ -19,6 +19,7 @@
     "preview": "electron-vite preview",
     "shot": "node scripts/shot.mjs",
     "slim": "node scripts/slim.mjs",
+    "check": "node scripts/check.mjs",
     "stage": "node scripts/serve.mjs",
     "sync": "node scripts/sync.mjs",
     "typecheck": "npm run typecheck:node && npm run typecheck:web",
