@@ -290,6 +290,7 @@ const ttsCtrls = new Map()   // id -> AbortController（一句一个请求，允
 // 常驻一个 python worker（app/tts/kws.py）：采麦 → sherpa-onnx → 命中打一行 JSON。
 // 不引 sherpa-onnx-node：那是原生模块，要 electron-rebuild + 跨 ABI，还会把包体撑大。
 let kwsChild = null
+let kwsWatchdog = null
 let sayToBrain = null   // 由 setupIpc 里的 brainSay 赋值，供 KWS 会话调用
 let kwsState = 'off'        // off / starting / ready / failed
 let kwsPaused = false
@@ -378,6 +379,16 @@ async function ensureKws({ force = false } = {}) {
   try {
     child = spawn(py, args, { cwd: ROOT, env: childEnv(py), windowsHide: true })
     kwsChild = child
+    flog('[kws] spawn pid=' + child.pid)
+    // 看门狗：15 秒还没 ready 就说明卡住了（模型加载正常只要 1-2 秒），打日志 + 杀重来一次
+    clearTimeout(kwsWatchdog)
+    kwsWatchdog = setTimeout(() => {
+      if (kwsChild !== child || kwsState === 'ready') return
+      flog('[kws] 15 秒没有 ready，重启一次（state=' + kwsState + '）')
+      try { child.kill() } catch {}
+      if (kwsChild === child) { kwsChild = null; kwsState = 'starting' }
+      void ensureKws({ force: true })
+    }, 15000)
   } catch (e) {
     flog('[kws] spawn 失败', String(e?.message || e))
     kwsState = 'failed'
@@ -394,7 +405,7 @@ async function ensureKws({ force = false } = {}) {
       if (!line) continue
       let ev = null
       try { ev = JSON.parse(line) } catch { continue }
-      if (ev.type === 'ready') { kwsState = 'ready'; kwsReport({ device: ev.device }) }
+      if (ev.type === 'ready') { kwsState = 'ready'; flog('[kws] ready device=' + ev.device + ' idle=' + ev.idle); kwsReport({ device: ev.device }) }
       else if (ev.type === 'wake') onWakeWord(ev.keyword)
       else if (ev.type === 'session') { wakeSession = true; kwsReport({ session: true }) }
       else if (ev.type === 'speech') onWakeSpeech(ev)
@@ -406,6 +417,7 @@ async function ensureKws({ force = false } = {}) {
   child.stderr.on('data', (d) => flog('[kws]', d.toString('utf8').trim().slice(0, 200)))
   child.on('error', (e) => { flog('[kws] spawn 错误', String(e?.message || e)) })
   child.on('exit', (code, sig) => {
+    flog('[kws] exit pid=' + child.pid + ' code=' + code + ' sig=' + (sig || '') + ' current=' + (kwsChild === child) + ' state=' + kwsState)
     // 只认「当前这个」子进程的退出：重启时会先 kill 旧的，旧进程的 exit 事件
     // 如果无条件写 kwsState，就会把新进程的 ready 覆盖成 failed（踩过）。
     if (kwsChild !== child) return
