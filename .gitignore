@@ -34,3 +34,6 @@ _t.txt
 # ---- 声音母带：由参考音克隆生成，涉及原声权利，不入库 ----
 # 需要时用你自己的参考音重新生成（见 README「声音」一节）
 app/tts/voices/*.wav
+
+# KWS 模型（36 MB，自备：见 docs/设计-唤醒词.md）
+app/tts/kws-models/
