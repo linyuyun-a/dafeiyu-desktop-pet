@@ -144,9 +144,14 @@ def main():
             return
         pcm = (np.clip(audio, -1, 1) * 32767).astype(np.int16).tobytes()
         try:
-            r = asr_mod.transcribe(pcm, "sensevoice")
+            # asr.py 的公开 API 是 transcribe_pcm16(pcm, sample_rate, engine)
+            r = asr_mod.transcribe_pcm16(pcm, SR, "sensevoice")
         except Exception as e:
             emit({"type": "speech", "text": "", "error": str(e)})
+            return
+        if not r.get("ok"):
+            print(f"[kws] ASR 失败：{r.get('error')}", file=sys.stderr, flush=True)
+            emit({"type": "speech", "text": "", "error": str(r.get("error"))})
             return
         text = (r.get("text") or "").strip()
         if len(text) < 1:
