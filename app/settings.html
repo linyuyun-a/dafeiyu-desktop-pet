@@ -186,6 +186,7 @@
             <option value="sensevoice">SenseVoice（快，不占显存）</option>
             <option value="qwen3">Qwen3-ASR（准，吃显存、慢几秒）</option>
           </select>
+          <p class="hint" id="asr-hint">只内置这两种**本地**模型，模型文件要自己放（见 README）。两个都没装也能用：长按说话会提示"没装模型"，打字不受影响。想接别的语音识别，得改 <code>app/tts/asr.py</code>。</p>
         </div>
       </div>
     </section>

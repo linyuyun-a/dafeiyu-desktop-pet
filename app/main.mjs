@@ -2148,8 +2148,18 @@ function wireIpc() {
   ipcMain.handle('chatwin:asr', async (_e, pcmB64) => {
     const body = Buffer.from(String(pcmB64 || ''), 'base64')
     if (!body.length) return { ok: false, error: 'empty' }
+    const want = settings.asrEngine === 'qwen3' ? 'qwen3' : 'sensevoice'
+    // 先问一下有没有模型：没装就直说，别让她把"没听清"当成你说得轻
     try {
-      const q = settings.asrEngine === 'qwen3' ? '?engine=qwen3' : '?engine=sensevoice'
+      const h = await fetch(new URL('/asr/health', TTS_URL)).then((r) => r.json()).catch(() => null)
+      const mine = h?.engines?.find((e) => e.name === want)
+      if (h && mine && mine.exists === false) {
+        const label = want === 'qwen3' ? 'Qwen3-ASR' : 'SenseVoice'
+        return { ok: false, error: `这台机器没装 ${label} 模型（可选功能，不影响打字）` }
+      }
+    } catch {}
+    try {
+      const q = want === 'qwen3' ? '?engine=qwen3' : '?engine=sensevoice'
       const r = await fetch(new URL('/asr' + q, TTS_URL), {
         method: 'POST',
         headers: { 'Content-Type': 'application/octet-stream' },

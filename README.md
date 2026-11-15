@@ -123,15 +123,26 @@ python -m venv .venv
 4. 启动桌宠，它会在 `127.0.0.1:8769` 起服务（设置页「声音」能看状态，冷启动 40–90 秒）。
    没有 GPU 或不想跑：设置里关掉「让她出声」即可。
 
-## 耳朵（ASR，可选）
+## 耳朵（ASR，可选，只支持两种本地模型）
 
-默认 SenseVoice（CPU，15 秒音频约 0.7 秒）：
+**先说清楚：这里只内置两种本地语音识别——SenseVoice 和 Qwen3-ASR，模型文件都要你自己放。**
+一个都不装也完全能用：桌宠照常打字聊天，只是「长按说话」会提示"没装模型"，打字不受影响。
+如果你用的是别的 ASR（云端接口、Windows 自带听写、自己的 Whisper 服务），
+本程序**目前不会用它们**——要接需要改 `app/tts/asr.py`（约 40 行，加一个 loader）。
+
+### SenseVoice（默认，CPU，15 秒音频约 0.7 秒）
 
 1. 从 [sherpa-onnx releases](https://github.com/k2-fsa/sherpa-onnx/releases) 下 `sherpa-onnx-sense-voice-*` 模型包；
 2. 把 `model.int8.onnx` 与 `tokens.txt` 放进 `%APPDATA%\大肥鱼Live2d桌宠\asr\sensevoice\`；
-3. 设置页「声音 → 语音转文字」选 SenseVoice。
+3. 设置页「声音 → 语音转文字」选 SenseVoice（默认就是它）。
 
-想更准可以换 Qwen3-ASR（吃显存），模型目录用 `PET_QWEN_ASR_DIR` 指定。
+### Qwen3-ASR（可选，吃显存、慢几秒、更准）
+
+把模型放进 `%APPDATA%\大肥鱼Live2d桌宠\asr\qwen3-asr\`（目录可用 `PET_QWEN_ASR_DIR` 改），
+在设置页切到 Qwen3-ASR 即可。
+
+> 下拉框只列这两项，是因为它们都由 `app/tts/asr.py` 直接加载；换成别的引擎不会自动识别，需要写代码接。
+> 检查有没有装好：`curl http://127.0.0.1:8769/asr/health`，`exists: false` 就是没装。
 
 ## 开发
 
