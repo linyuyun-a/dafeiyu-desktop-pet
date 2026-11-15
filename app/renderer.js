@@ -2947,6 +2947,12 @@ function scanTags(buf) {
       if (kw) {
         console.log('[play]', kw)
         window.shell?.musicPlay?.({ keyword: kw })?.then?.((r) => {
+          if (r && r.ok === false && r.error === 'ambiguous') {
+            // 命中多个歌单：别替用户挑，让她开口问
+            console.log('[play] 歌单有歧义：', (r.options || []).join(' / '))
+            window.shell?.proactiveForce?.({ kind: 'musicpick', extra: { options: r.options || [] } })?.catch?.(() => {})
+            return
+          }
           if (r && r.ok === false) {
             console.warn('[play] 没放成：', r.error || '')
             // 搜不到别用系统腔告诉她：让 AstrBot 用她自己的话圆回来（换一首 / 说这首没有）
@@ -3018,7 +3024,7 @@ function scheduleBubbleHide(text) {
   holdBubble(Math.min(AUTO_HIDE_MAX, AUTO_HIDE_MIN + Math.floor((len / 30) * 1000)))
 }
 
-const CHAT_BUBBLE_MAX = 150
+const CHAT_BUBBLE_MAX = 260
 /** 当前心情的主轴 + 强度档位（0.33 / 0.66 分三档），供气泡标标签与装饰用 */
 function moodSnapshot() {
   const m = state.mood?.snapshot?.() || {}
@@ -3039,7 +3045,8 @@ function chatRender() {
   const src = flowOn() && chatState.revealed ? chatState.revealed : chatState.buf
   // 先收拾（去 markdown / 去来源行）再封顶：嘴上只留一百字，全文在「记录」里
   let shown = capReply(visibleText(src))
-  if (shown.length > CHAT_BUBBLE_MAX) shown = '…' + shown.slice(-CHAT_BUBBLE_MAX)
+  // 超长从「开头」截：以前取尾部，字一过线会整段换掉，看着像"刚才那句没了"
+  if (shown.length > CHAT_BUBBLE_MAX) shown = shown.slice(0, CHAT_BUBBLE_MAX - 1) + '…'
   const proactive = chatState.source === 'proactive'
   // 这句话的情绪快照：整条消息只取一次，中途不跳
   const mood = moodSnapshot()
@@ -3109,6 +3116,7 @@ function resetFlow() {
   f.qEnd = 0
   f.items = []
   f.active = -1
+  f.waitFrom = 0
   chatState.revealed = ''
 }
 
@@ -3239,6 +3247,16 @@ function revealActive() {
 /** 120ms 一跳：等首块、逐字放字、排下一句、判断「整段念完」 */
 function tickFlow() {
   const f = state.ttsFlow
+  if (f && window.__flowDebug) {
+    const it = f.active >= 0 ? f.items[f.active] : null
+    const rec = { t: Math.round(performance.now()), act: f.active, n: f.items.length,
+      shown: it ? it.shown | 0 : -1, len: it ? it.text.length : -1,
+      started: it ? !!it.started : null, ended: it ? !!it.ended : null,
+      bytes: it ? it.bytes : -1, dur: it ? Math.round(it.durMs) : -1,
+      revealed: chatState.revealed.length, buf: chatState.buf.length }
+    ;(window.__flowLog = window.__flowLog || []).push(rec)
+    if (window.__flowLog.length > 600) window.__flowLog.shift()
+  }
   if (!f || !f.items.length) return
   if (f.active < 0) {
     const first = f.items[0]
@@ -3249,10 +3267,40 @@ function tickFlow() {
   if (!item) return
   // 还没开念：等首块音频 / 等「2.5 秒兜底」标记
   if (!item.started) {
-    if (item.chunks.length || item.ready || item.ended || item.failed) startItem(f.active)
+    if (item.chunks.length || item.ready || item.ended || item.failed) { f.waitFrom = 0; startItem(f.active) }
+    // 合成没回来（服务挂了 / 这一句卡在队列里）也不能让字停住：
+    // 等 3 秒就直接开念——没声音也要把字先写出来，这是用户看到的「说话」
+    else {
+      if (!f.waitFrom) f.waitFrom = performance.now()
+      if (performance.now() - f.waitFrom > 3000) {
+        console.warn('[flow] 这句 3 秒没等到音频，先显示文字')
+        f.waitFrom = 0
+        item.ready = true
+        startItem(f.active)
+      }
+    }
     return
   }
   revealActive()
+  // 看门狗：如果 2.5 秒一个字都没多出来、但音频还在放，就直接把这句补齐。
+  // （真实原因通常是 durMs 被一个离谱的 bytes 值撑大，或某个 end 事件丢了）
+  {
+    const shownNow = item.shown || 0
+    if (f.stuckAt && shownNow > (f.stuckLen || 0)) { f.stuckAt = 0; f.stuckLen = 0 }
+    // 不再要求「音频还在放」：最常见的卡住恰恰是最后一两句的 end 丢了、
+    // 音频停了但 flow 没走完，于是字永远停在半句（用户看到的就是「说到一半没了」）
+    const moreText = visibleText(chatState.buf).length > visibleText(chatState.revealed).length + 1
+    if (!f.stuckAt && shownNow < item.text.length && moreText) {
+      f.stuckAt = performance.now(); f.stuckLen = shownNow
+    }
+    if (f.stuckAt && performance.now() - f.stuckAt > 2500) {
+      console.warn('[flow] 逐字卡住，补齐这一句', shownNow, '/', item.text.length)
+      item.shown = item.text.length
+      chatState.revealed = revealedText(f)
+      chatRender()
+      f.stuckAt = 0; f.stuckLen = 0
+    }
+  }
   // 语音队列可能在网络空隙里瞬间报 0，别急着跳下一句：要连续安静 200ms 才算这句真的念完
   if (item.ended && !state.voice?.playing) {
     if (!f.idleAt) f.idleAt = performance.now()
@@ -3308,12 +3356,21 @@ function routeTts(kind, p) {
     item.bytes += Math.round(String(p.pcm || '').length * 0.75)
     if (item.started) state.voice?.push(p.pcm)
     else item.chunks.push(p.pcm)
+    // 用「音频分片到达」顺带把字推一下：计时器在窗口被遮挡时会被 Chromium 节流，
+    // 光靠 setInterval 推字会出现"声音在走、字不动"。IPC 不受节流，这里补一脚。
+    if (item.started) {
+      const now = performance.now()
+      if (now - (f.lastDraw || 0) > 80) { f.lastDraw = now; revealActive(); chatRender() }
+    }
     return
   }
   if (kind === 'end') {
     item.ended = true
+    if (item.started) { revealActive(); chatRender() }
     // 真实时长到手：用它校准「逐字」的速度，长句不会再出现「字跑在声音前面」
-    const realMs = (item.bytes / 2 / 48000) * 1000
+    // 但要夹住上限：一旦 bytes 归属出错（比如把整段的音频记到这一句上），
+    // realMs 会变成几十秒，气泡就"卡住不动"——最慢也要 2.5 字/秒
+    const realMs = Math.min((item.bytes / 2 / 48000) * 1000, item.text.length * 400)
     if (realMs > 300) item.durMs = Math.max(200, realMs)
     return
   }
@@ -3437,6 +3494,17 @@ function onBrainEvent(ev) {
       const f = ensureFlow()
       f.buf = chatState.buf
       pumpSentences(true)       // 尾巴也切出来；气泡寿命等它念完再算
+      // 兜底：整轮结束后 9 秒还没补齐，就直接显示全文（宁可字比声音快，也不能半句卡死）
+      clearTimeout(chatState.patchTimer)
+      chatState.patchTimer = setTimeout(() => {
+        const full = visibleText(chatState.buf)
+        if (visibleText(chatState.revealed).length + 1 < full.length) {
+          console.warn('[flow] 整轮结束仍未补齐，直接显示全文')
+          chatState.revealed = ''
+          chatRender()
+          scheduleBubbleHide()
+        }
+      }, 9000)
     } else {
       chatRender()
       scheduleBubbleHide()
