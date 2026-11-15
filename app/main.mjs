@@ -290,6 +290,7 @@ const ttsCtrls = new Map()   // id -> AbortController（一句一个请求，允
 // 常驻一个 python worker（app/tts/kws.py）：采麦 → sherpa-onnx → 命中打一行 JSON。
 // 不引 sherpa-onnx-node：那是原生模块，要 electron-rebuild + 跨 ABI，还会把包体撑大。
 let kwsChild = null
+let sayToBrain = null   // 由 setupIpc 里的 brainSay 赋值，供 KWS 会话调用
 let kwsState = 'off'        // off / starting / ready / failed
 let kwsPaused = false
 let kwsPauseTimer = null
@@ -435,7 +436,10 @@ async function onWakeSpeech(ev) {
   flog('[kws] 听到：', text)
   kwsReport({ heard: text })
   try { win?.webContents.send('pet:say', { text: '「' + text + '」', state: 'thinking' }) } catch {}
-  try { await brainSay(text) } catch (e) { flog('[kws] brainSay 失败', String(e?.message || e)) }
+  try {
+    if (!sayToBrain) { flog('[kws] 大脑还没准备好，这句先记下：', text); return }
+    await sayToBrain(text)
+  } catch (e) { flog('[kws] brainSay 失败', String(e?.message || e)) }
 }
 
 function onSessionEnd(why) {
@@ -2396,6 +2400,7 @@ function wireIpc() {
   })
   ipcMain.on('chat:close-window', () => { try { historyWin?.close() } catch {} })
 
+  sayToBrain = brainSay   // 函数声明会提升，这里登记给 KWS 用
   ipcMain.handle('brain:say', async (_e, text) => brainSay(text))
   // ---------- 独立输入条窗口 ----------
   ipcMain.on('chatwin:say', (_e, text) => { void brainSay(text) })
