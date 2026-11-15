@@ -119,6 +119,8 @@ def main():
         "last_voice": 0.0,
         "last_text": 0.0,
         "loud_run": 0,
+        "noise": 0.01,
+        "rms_last": 0.0,
         "voiced": False,
         "buf": [],             # 当前这一句的音频块
         "silence": 0.0,        # 句尾静音累计
@@ -147,6 +149,10 @@ def main():
             emit({"type": "speech", "text": "", "error": str(e)})
             return
         text = (r.get("text") or "").strip()
+        if len(text) < 1:
+            print(f"[kws] 识别为空 dur={r.get('dur')} rms={S.get('rms_last', 0):.4f}", file=sys.stderr, flush=True)
+        else:
+            S["last_text"] = time.time()
         emit({"type": "speech", "text": text, "ms": r.get("ms"), "dur": r.get("dur")})
         if text and any(b in text for b in BYE):
             end_session("bye")
@@ -250,7 +256,15 @@ def main():
                 if S["mode"] in ("session", "call"):
                     # 会话：只做 VAD + 攒这句音频，不再跑唤醒词
                     blk = data.reshape(-1)
-                    lv = rms(blk) > 0.02
+                    r = rms(blk)
+                    S["rms_last"] = r
+                    th = max(0.008, min(0.05, S["noise"] * 2.5))
+                    lv = r > th
+                    if not lv:  # 只在安静时更新噪声基线
+                        S["noise"] = S["noise"] * 0.98 + r * 0.02
+                    S["dbg"] = S.get("dbg", 0) + 1
+                    if S["dbg"] % 20 == 0:
+                        print(f"[kws] rms={r:.4f} th={th:.4f} noise={S['noise']:.4f} mode={S['mode']} voiced={S['voiced']}", file=sys.stderr, flush=True)
                     S["loud_run"] = (S["loud_run"] + 1) if lv else 0
                     loud = lv and (S["loud_run"] >= 2 or S["buf"])
                     now = time.time()

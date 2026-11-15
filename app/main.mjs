@@ -1942,6 +1942,7 @@ async function showPlayer() {
 function wireIpc() {
   ipcMain.handle('shell:get', () => ({ ...settings, token, port: srv?.port || null }))
   ipcMain.handle('shell:set', async (_e, patch = {}) => {
+    flog('[settings] 保存：', Object.keys(patch || {}).join(','), '→', JSON.stringify(patch).slice(0, 160))
     settings = { ...settings, ...patch }
     if (patch.width || patch.height) {
       win?.setContentSize(Math.round(settings.width), Math.round(settings.height))
