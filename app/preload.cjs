@@ -94,6 +94,7 @@ contextBridge.exposeInMainWorld('shell', {
     return () => ipcRenderer.removeListener('kws:state', h)
   },
   kwsFake: (w) => ipcRenderer.invoke('kws:fake', w),
+  kwsCall: (on) => ipcRenderer.invoke('kws:call', on),
   kwsStatus: () => ipcRenderer.invoke('kws:status'),
   kwsSet: (patch) => ipcRenderer.invoke('kws:set', patch),
   openHistory: () => ipcRenderer.invoke('history:open'),  // ---- 音乐 / 唱片机 ----

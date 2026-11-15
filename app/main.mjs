@@ -273,16 +273,24 @@ let kwsChild = null
 let kwsState = 'off'        // off / starting / ready / failed
 let kwsPaused = false
 let kwsPauseTimer = null
+let wakeSession = false       // 唤醒会话进行中（说 10 秒没话就由 python 结束）
 
+// 唤醒应答：都要短（<=6 字），否则会盖住主人紧接着说的第一句
 const WAKE_REPLIES = [
+  '在。',
   '嗯？',
   '在呢。',
-  '唔……叫本鲸？',
-  '听着呢。',
   '怎么了？',
-  '嗯，本鲸在。',
-  '叫我做什么？',
+  '嗯。',
+  '叫本鲸？',
+  '来了。',
+  '听着呢。',
+  '说。',
+  '嗯，在。',
+  '什么事？',
+  '唔？',
 ]
+const BYE_REPLIES = ['好，那我先不说啦。', '嗯，有事再叫我。', '那我先安静着。']
 
 function kwsReport(extra = {}) {
   try { win?.webContents.send('kws:state', { state: kwsState, ...extra }) } catch {}
@@ -361,6 +369,10 @@ async function ensureKws({ force = false } = {}) {
       try { ev = JSON.parse(line) } catch { continue }
       if (ev.type === 'ready') { kwsState = 'ready'; kwsReport({ device: ev.device }) }
       else if (ev.type === 'wake') onWakeWord(ev.keyword)
+      else if (ev.type === 'session') { wakeSession = true; kwsReport({ session: true }) }
+      else if (ev.type === 'speech') onWakeSpeech(ev)
+      else if (ev.type === 'session_end') onSessionEnd(ev.why)
+      else if (ev.type === 'call') { kwsReport({ call: !!ev.on }) }
       else if (ev.type === 'error') { kwsState = 'failed'; kwsReport({ reason: ev.message }) }
     }
   })
@@ -380,16 +392,33 @@ async function ensureKws({ force = false } = {}) {
 
 function onWakeWord(word = '') {
   flog('[kws] 唤醒：', word)
-  kwsReport({ lastWord: word })
-  if (chatWin && !chatWin.isDestroyed() && chatVisible) {
-    try { chatWin.focus() } catch {}
-    return
-  }
+  kwsReport({ lastWord: word, session: true })
+  wakeSession = true
   const line = WAKE_REPLIES[Math.floor(Math.random() * WAKE_REPLIES.length)]
   try { win?.webContents.send('pet:say', { text: line, state: 'idle' }) } catch {}
-  setTimeout(() => {
-    try { if (!chatVisible) { hideTools?.(); void createChatWindow?.().then?.(() => showChatWindow()) } } catch {}
-  }, 260)
+  // 不弹输入条：唤醒后她答一声，接着就用麦克风直接聊（语音走 python 那边的 VAD+ASR）
+}
+
+/** 会话里的一轮：主人说完一句 → 交给大脑 → 她回答 */
+async function onWakeSpeech(ev) {
+  const text = String(ev?.text || '').trim()
+  if (!text) {
+    if (ev?.error) flog('[kws] 这句没识别出来：', ev.error)
+    return
+  }
+  flog('[kws] 听到：', text)
+  kwsReport({ heard: text })
+  try { win?.webContents.send('pet:say', { text: '「' + text + '」', state: 'thinking' }) } catch {}
+  try { await brainSay(text) } catch (e) { flog('[kws] brainSay 失败', String(e?.message || e)) }
+}
+
+function onSessionEnd(why) {
+  wakeSession = false
+  flog('[kws] 会话结束：', why)
+  kwsReport({ session: false })
+  if (why === 'call_off') return
+  const line = BYE_REPLIES[Math.floor(Math.random() * BYE_REPLIES.length)]
+  try { win?.webContents.send('pet:say', { text: line, state: 'idle' }) } catch {}
 }
 
 function abortTts() {
@@ -571,6 +600,8 @@ const DEFAULTS = {
   autoStart: false,      // 开机自启（Windows 登录时启动舞台）
   proactive: 'few',      // 主动开口频率：off / few / normal / many
   wakeOn: false,         // 关键词唤醒（常驻监听麦克风，默认关）
+
+  wakeIdleSec: 10,       // 唤醒会话里静默多少秒自动结束
   wakeWords: '大肥鱼,鲸鸢', // 唤醒词，逗号分隔
   wakeDevice: '',        // 麦克风设备（序号或名字片段，空=系统默认）
   awayTalk: true,        // 主人走开/回来时，她要不要嘀咕两句
@@ -2521,6 +2552,11 @@ function wireIpc() {
   })
   ipcMain.handle('tts:stop', () => { abortTts(); return { ok: true } })
   // 调试用：不接麦克风也能验证「唤醒 → 气泡 → 弹输入条」这条链
+  ipcMain.handle('kws:call', (_e, on) => {
+    kwsSend(on ? 'call on' : 'call off')
+    if (!on) wakeSession = false
+    return { ok: true, call: !!on }
+  })
   ipcMain.handle('kws:fake', (_e, word) => { onWakeWord(String(word || '调试')); return { ok: true } })
   ipcMain.handle('kws:status', () => ({
     state: kwsState, paused: kwsPaused, on: settings.wakeOn !== false,

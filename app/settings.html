@@ -194,7 +194,7 @@
         <div class="field">
           <div class="field-top"><span class="lbl">唤醒词</span><span id="wake-state" class="readout">关</span></div>
           <label class="check"><input type="checkbox" id="wake-on"> 叫她的名字就应一声（常驻监听麦克风）</label>
-          <p class="hint">打开后会一直听麦（CPU 约 2–3% 单核）。听到唤醒词 → 气泡冒一句 → 自动弹出输入条。她说话时自动暂停，不会自己唤醒自己。</p>
+          <p class="hint">打开后会一直听麦（CPU 约 2–3% 单核）。喊她一声 → 她应一句 → 你直接说话，不用点输入条。她说话时会自动暂停听，不会自己唤醒自己。</p>
         </div>
         <div class="field">
           <div class="field-top"><span class="lbl">唤醒词</span></div>
@@ -204,6 +204,21 @@
         <div class="field">
           <div class="field-top"><span class="lbl">麦克风设备</span></div>
           <input type="text" id="wake-device" placeholder="留空 = 系统默认（也可以填序号或名字片段）">
+        </div>
+        <div class="field">
+          <div class="field-top"><span class="lbl">静默多久自动结束</span></div>
+          <select id="wake-idle">
+            <option value="5">5 秒</option>
+            <option value="10">10 秒</option>
+            <option value="20">20 秒</option>
+            <option value="30">30 秒</option>
+          </select>
+          <p class="hint">唤醒后进入「会话」：你说一句她答一句，一直聊到静默超过这个时间就结束。说「再见 / 没事了」也会结束。</p>
+        </div>
+        <div class="field">
+          <div class="field-top"><span class="lbl">通话模式</span><span id="call-state" class="readout">关</span></div>
+          <label class="check"><input type="checkbox" id="call-on"> 一直在线（只有关掉才结束，不会因为静默退出）</label>
+          <p class="hint">和唤醒会话是两套：会话会被静默超时关掉，通话模式必须你手动关。</p>
         </div>
       </div>
     </section>
