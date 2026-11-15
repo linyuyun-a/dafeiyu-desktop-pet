@@ -383,9 +383,17 @@ function wire() {
   const wakeIdle = $('#wake-idle')
   if (wakeIdle) wakeIdle.onchange = () => { pushSettings({ wakeIdleSec: Number(wakeIdle.value) || 10 }); status('静默时长已保存') }
   const callOn = $('#call-on')
-  if (callOn) callOn.onchange = async () => {
-    try { await window.shell.kwsCall?.(!!callOn.checked) } catch {}
-    status(callOn.checked ? '通话模式已开（不会自动挂断）' : '通话模式已关')
+  const paintCallState = () => {
+    const el = $('#call-state')
+    if (el) el.textContent = callOn && callOn.checked ? '开（不会自动挂断）' : '关'
+  }
+  if (callOn) {
+    paintCallState()
+    callOn.onchange = async () => {
+      try { await window.shell.kwsCall?.(!!callOn.checked) } catch {}
+      paintCallState()
+      status(callOn.checked ? '通话模式已开（不会自动挂断）' : '通话模式已关')
+    }
   }
 
   $('#open-harness').onclick = () => shell.openHarness?.()
