@@ -93,6 +93,10 @@ function syncPetName(v) {
 }
 
 function paint() {
+  const _wo = $('#wake-on'); if (_wo) _wo.checked = !!settings.wakeOn
+  const _ww = $('#wake-words'); if (_ww) _ww.value = settings.wakeWords || '大肥鱼,鲸鸢'
+  const _wd = $('#wake-device'); if (_wd) _wd.value = settings.wakeDevice || ''
+  const _wi = $('#wake-idle'); if (_wi) _wi.value = String(settings.wakeIdleSec || 10)
   const zoom = Number(settings.zoom) || 1
   setRange('#zoom', zoom)
   $('#zoom-readout').textContent = `${Math.round(zoom * 100)}%`
@@ -363,8 +367,39 @@ function wire() {
   }
 
   $('#win-center').onclick = () => { shell.center?.(); status('覆盖层已居中') }
+  const wakeOn = $('#wake-on')
+  if (wakeOn) {
+    wakeOn.onchange = async () => {
+      const on = !!wakeOn.checked
+      paintWakeState({ state: on ? 'starting' : 'off' })
+      try { await window.shell.kwsSet?.({ on }) } catch (e) { status('唤醒开关失败：' + (e?.message || e), true) }
+      refreshWakeState()
+    }
+  }
+  const wakeWords = $('#wake-words')
+  if (wakeWords) wakeWords.onchange = () => { window.shell.kwsSet?.({ words: wakeWords.value }); status('唤醒词已保存') }
+  const wakeDev = $('#wake-device')
+  if (wakeDev) wakeDev.onchange = () => { window.shell.kwsSet?.({ device: wakeDev.value }); status('麦克风已保存') }
+  const wakeIdle = $('#wake-idle')
+  if (wakeIdle) wakeIdle.onchange = () => { pushSettings({ wakeIdleSec: Number(wakeIdle.value) || 10 }); status('静默时长已保存') }
+  const callOn = $('#call-on')
+  if (callOn) callOn.onchange = async () => {
+    try { await window.shell.kwsCall?.(!!callOn.checked) } catch {}
+    status(callOn.checked ? '通话模式已开（不会自动挂断）' : '通话模式已关')
+  }
+
   $('#open-harness').onclick = () => shell.openHarness?.()
-  $('#quit').onclick = () => shell.quit?.()
+  $('#save').onclick = async () => {
+    status('保存中…')
+    try {
+      await shell.set?.({})
+      await refreshWakeState()
+      status('已保存')
+      setTimeout(() => window.close(), 220)
+    } catch (e) {
+      status('保存失败：' + (e && e.message ? e.message : e), true)
+    }
+  }
 }
 
 // ---------- 模型表情 / 预设动作 ----------

@@ -227,7 +227,7 @@ function pyHasTts(py) {
  * 表面能找到、一跑就 ModuleNotFoundError（这就是"启动失败"最常见的真因）。
  * 所以逐个候选"真跑一次 import"，第一个通过的才用。
  */
-function pickPython() {
+function pythonCandidates() {
   const cands = []
   const push = (p) => { if (p && !cands.includes(p)) cands.push(p) }
   push(settings.ttsPython)
@@ -249,13 +249,33 @@ function pickPython() {
     push(path.join(process.env.LOCALAPPDATA || '', 'Programs', 'Python', v, 'python.exe'))
   }
   cands.push('python')
+  return cands
+}
 
-  for (const c of cands) {
+function pyHasKws(py) {
+  try {
+    const r = spawnSync(py, ['-c', 'import sherpa_onnx, sounddevice, numpy'], { timeout: 12000, windowsHide: true })
+    return r.status === 0
+  } catch { return false }
+}
+
+function pickPython() {
+  for (const c of pythonCandidates()) {
     if (c === 'python') return c
     try { if (!existsSync(c)) continue } catch { continue }
     if (pyHasTts(c)) return c
   }
   // 都不合格也返回 'python'，让 launch 去报真实错误（设置页会显示日志里的那行）
+  return 'python'
+}
+
+// KWS 需要的是 sherpa_onnx + sounddevice，和 TTS 的 torch 不是一回事
+function pickKwsPython() {
+  for (const c of pythonCandidates()) {
+    if (c === 'python') return c
+    try { if (!existsSync(c)) continue } catch { continue }
+    if (pyHasKws(c)) return c
+  }
   return 'python'
 }
 
@@ -331,8 +351,9 @@ function stopKws() {
 async function ensureKws({ force = false } = {}) {
   if (settings.wakeOn === false && !force) { kwsState = 'off'; kwsReport(); return }
   if (kwsChild) return
-  const py = pickPython()
-  if (!py) { kwsState = 'failed'; kwsReport({ reason: '没找到 python（设置里填 ttsPython）' }); return }
+  const py = pickKwsPython()
+  flog('[kws] python =', py)
+  if (!py) { kwsState = 'failed'; kwsReport({ reason: '没找到装着 sherpa-onnx 的 python（设置里填 ttsPython）' }); return }
   const dir = path.join(ROOT, 'app', 'tts', 'kws-models',
     'sherpa-onnx-kws-zipformer-wenetspeech-3.3M-2024-01-01')
   const modelDir = settings.wakeModel || dir
@@ -349,6 +370,7 @@ async function ensureKws({ force = false } = {}) {
     '--model-dir', modelDir,
     '--keywords', kwFile,
     '--threshold', String(settings.wakeThreshold ?? 0.25),
+    '--idle', String(Number(settings.wakeIdleSec ?? 10)),
   ]
   if (settings.wakeDevice) args.push('--device', String(settings.wakeDevice))
   let child = null
