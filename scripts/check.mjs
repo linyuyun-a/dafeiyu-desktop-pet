@@ -69,7 +69,7 @@ async function ensureApp() {
   if (await up()) return
   if (NO_SPAWN) throw new Error(`127.0.0.1:${PORT} 没有可连的窗口（--no-spawn 下不自动启动）`)
   if (!fs.existsSync(EXE)) throw new Error(`找不到 ${EXE}；先 npm run pack，或设 STAGE_APP_DEST`)
-  const env = { ...process.env }
+  const env = { ...process.env, PET_MULTI: '1' }
   delete env.ELECTRON_RUN_AS_NODE
   child = spawn(EXE, [`--remote-debugging-port=${PORT}`], { cwd: DEST, stdio: 'ignore', env })
   for (let i = 0; i < 60; i++) {
@@ -87,6 +87,13 @@ async function main() {
   const main = await connect('/app/')
   if (!main) throw new Error('连上了端口，但没找到舞台页面')
   await main.ready
+  // 模型加载 + 首帧渲染要几秒到十几秒：等到画布真的有尺寸、debug 钩子挂上再断言
+  for (let i = 0; i < 45; i++) {
+    const w = await main.ev("document.querySelector('canvas')?.width || 0").catch(() => 0)
+    const hook = await main.ev("typeof window.__bubbleShow").catch(() => 'undefined')
+    if (Number(w) > 10 && hook === 'function') break
+    await sleep(1000)
+  }
 
   // 1. 启动
   try {
