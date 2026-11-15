@@ -11,7 +11,7 @@ import os from 'node:os'
 import { fileURLToPath } from 'node:url'
 import { readFile, writeFile, mkdir, stat } from 'node:fs/promises'
 import { existsSync, mkdirSync, readdirSync, appendFileSync, statSync, renameSync, readFileSync, writeFileSync, openSync, readSync, closeSync } from 'node:fs'
-import { spawn } from 'node:child_process'
+import { spawn, spawnSync } from 'node:child_process'
 import { createStageServer } from '../src/server/stage-server.mjs'
 import { loadBrainConfig } from './brain/config.mjs'
 import { pickBrain, brainInfo } from './brain/index.mjs'
@@ -155,6 +155,11 @@ async function ensureTts({ force = false } = {}) {
   const py = settings.ttsPython || process.env.PET_TTS_PYTHON || pickPython()
   if (!py) { reportTtsState('failed', { reason: '没找到 python（设置里填 ttsPython）' }); return }
 
+  if (py !== settings.ttsPython && py !== 'python') {
+    settings.ttsPython = py
+    try { saveSettings() } catch {}
+    flog('[tts] 记住 python：', py)
+  }
   reportTtsState('starting', { python: py })
   try { writeFileSync(path.join(ROOT, '_data', 'env-dump.json'), JSON.stringify(childEnv(py), null, 2)) } catch {}
   const script = path.join(ROOT, 'app', 'tts', 'server.py')
@@ -170,7 +175,10 @@ async function ensureTts({ force = false } = {}) {
     ttsChild = spawn('powershell.exe', [
       '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', launcher,
       '-Python', py, '-Script', script, '-Log', logPath, '-WorkDir', ROOT,
-    ], { cwd: ROOT, windowsHide: true, stdio: 'ignore' })
+    ], {
+      cwd: ROOT, windowsHide: true, stdio: 'ignore',
+      env: { ...childEnv(py), ...(settings.ttsModel ? { PET_TTS_MODEL: settings.ttsModel } : {}) },
+    })
     // 注意：launch.ps1 用 Start-Process 起独立进程后自己就退出了，退出码 0 不代表服务没起；
     // 真正的判据是轮询 /health，所以这里只记日志。
     ttsChild.on('exit', (code) => { flog('[tts] 启动器退出', code); ttsChild = null })
@@ -186,20 +194,68 @@ async function ensureTts({ force = false } = {}) {
     if (info && info.ok && info.ready) { reportTtsState('ready', { voices: info.voices }); return }
     // 不再因启动器退出就判失败（见上）；服务真的没起会在下面超时兜底
   }
-  reportTtsState('failed', { reason: '90 秒还没监听端口（看 _data/tts.log）' })
+  const why = ttsLogTail()
+  reportTtsState('failed', { reason: why || '90 秒还没监听端口（看 _data/tts.log）' })
 }
 
+/** 从 _data/tts.log 末尾挑一行最像"错误"的，给设置页一个能看懂的理由。 */
+function ttsLogTail() {
+  try {
+    const p = path.join(ROOT, '_data', 'tts.log')
+    const raw = readFileSync(p, 'utf8')
+    const lines = raw.split(String.fromCharCode(10)).filter((l) => l.trim())
+    const errRe = /(ModuleNotFoundError|ImportError|SyntaxError|No such file|Traceback|✗|Error:|错误|失败)/i
+    for (let i = lines.length - 1; i >= 0 && i > lines.length - 40; i--) {
+      if (errRe.test(lines[i])) return lines[i].trim().slice(0, 160)
+    }
+  } catch {}
+  return ''
+}
+
+/** 这个 python 能不能真的跑 TTS：导入 torch 与 faster_qwen3_tts 试一次。 */
+function pyHasTts(py) {
+  try {
+    const r = spawnSync(py, ['-c', 'import torch, faster_qwen3_tts'], {
+      timeout: 12000, windowsHide: true, env: childEnv(py), stdio: 'ignore',
+    })
+    return r.status === 0
+  } catch { return false }
+}
+
+/**
+ * 找 python。**不能只看文件存在**：系统 python 通常没有 torch，
+ * 表面能找到、一跑就 ModuleNotFoundError（这就是"启动失败"最常见的真因）。
+ * 所以逐个候选"真跑一次 import"，第一个通过的才用。
+ */
 function pickPython() {
-  const cands = [
-    path.join(process.env.LOCALAPPDATA || '', 'Programs', 'Python', 'Python311', 'python.exe'),
-    // 也可以填自己的 venv：设置页「Python 解释器」或 PET_TTS_PYTHON
-    'python',
-  ]
-  for (const c of cands) {
-    if (!c) continue
-    if (c === 'python') return c
-    try { if (existsSync(c)) return c } catch {}
+  const cands = []
+  const push = (p) => { if (p && !cands.includes(p)) cands.push(p) }
+  push(settings.ttsPython)
+  push(process.env.PET_TTS_PYTHON)
+  // 项目内常见 venv
+  for (const rel of ['.venv', path.join('app', 'tts', '.venv')]) {
+    push(path.join(ROOT, rel, 'Scripts', 'python.exe'))
   }
+  // 项目同级/上级里名字带 venv 的目录（比如 D:oice-lab\qwen3tts-venv）
+  for (const base of [path.dirname(ROOT), ROOT]) {
+    try {
+      for (const name of readdirSync(base)) {
+        if (!/venv|env|tts/i.test(name)) continue
+        push(path.join(base, name, 'Scripts', 'python.exe'))
+      }
+    } catch {}
+  }
+  for (const v of ['Python313', 'Python312', 'Python311']) {
+    push(path.join(process.env.LOCALAPPDATA || '', 'Programs', 'Python', v, 'python.exe'))
+  }
+  cands.push('python')
+
+  for (const c of cands) {
+    if (c === 'python') return c
+    try { if (!existsSync(c)) continue } catch { continue }
+    if (pyHasTts(c)) return c
+  }
+  // 都不合格也返回 'python'，让 launch 去报真实错误（设置页会显示日志里的那行）
   return 'python'
 }
 
@@ -394,6 +450,7 @@ const DEFAULTS = {
   voice: true,           // 让她出声（本地 TTS）
   ttsUrl: TTS_URL,       // TTS 服务地址（app/tts/server.py 默认 :8769）
   asrEngine: 'sensevoice', // 语音转文字引擎：sensevoice（CPU，默认）/ qwen3（GPU，更准更慢）
+  ttsModel: '',          // 语音模型目录（留空则用 app/tts/models/qwen3tts-0.6B）
   ttsAutoStart: true,    // 启动时自动拉起本地语音服务（launch.ps1 起独立进程组，16–25s 就绪）
   player: true,          // 她点歌时弹「唱片机」小窗（关掉就只出声、不弹窗）
   pvStyle: 'ocean',      // 歌词 PV 配色（深海/夕焼/报纸/酸绿/墨朱）

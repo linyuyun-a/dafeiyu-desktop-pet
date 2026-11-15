@@ -86,6 +86,11 @@ def load_model() -> None:
 
     load_voices()
     print(f"  [engine] 加载 Qwen3-TTS: {MODEL_DIR}")
+    if not os.path.isdir(MODEL_DIR):
+        print(f"  ✗ 模型目录不存在：{MODEL_DIR}")
+        print("    请把 Qwen3-TTS 0.6B 放到 app/tts/models/qwen3tts-0.6B，")
+        print("    或在设置→声音→模型目录 / 环境变量 PET_TTS_MODEL 里指向它。")
+        raise SystemExit(1)
     if not torch.cuda.is_available():
         raise RuntimeError("CUDA 不可用")
     t0 = time.time()

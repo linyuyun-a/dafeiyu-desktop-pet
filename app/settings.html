@@ -164,6 +164,11 @@
           <div class="field-top"><span class="lbl">Python 解释器</span></div>
           <input type="text" id="tts-python" placeholder="留空自动找（含 faster-qwen3-tts 的 python.exe）">
         </div>
+        <div class="field">
+          <div class="field-top"><span class="lbl">语音模型目录</span></div>
+          <input type="text" id="tts-model" placeholder="留空用 app/tts/models/qwen3tts-0.6B" spellcheck="false">
+          <p class="hint">Qwen3-TTS 0.6B 所在的目录。留空则在 <code>app/tts/models/qwen3tts-0.6B</code> 找；找不到会写进 <code>_data/tts.log</code>。</p>
+        </div>
       </div>
 
       <div class="group">
