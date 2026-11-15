@@ -169,8 +169,149 @@ function makeGeoBrut() {
   }
 }
 
+
+// ---------------------------------------------------------------- 批 1：XM 原生滤镜（都是 1920×1080 舞台坐标）
+// 这批都刻意「轻」：低透明度、只画背景层，不压字。全部依赖 getXM()，拿不到就静默跳过。
+
+function makeHalftone() {
+  return {
+    id: 'halftone', name: '网点圆盘', family: 'blueprint',
+    when: { bpm: [80, 200], energy: [0.3, 1] },
+    draw(ctx, s) {
+      const XM = getXM()
+      if (!XM?.FX?.halftone) return
+      const bass = s.bass || 0
+      withSpace(ctx, s.clip, () => {
+        ctx.save()
+        ctx.globalAlpha = 0.09 + bass * 0.10
+        XM.FX.halftone(ctx, W / 2, H * 0.54, Math.min(W, H) * (0.34 + bass * 0.05), `hsl(${s.hue} 80% 72%)`, 28, 9)
+        ctx.restore()
+      })
+    },
+  }
+}
+
+function makeCorners() {
+  return {
+    id: 'corners', name: '取景框', family: 'blueprint',
+    when: { bpm: [70, 200] },
+    draw(ctx, s) {
+      const XM = getXM()
+      if (!XM?.FX?.bracket) return
+      const k = Math.min(1, Math.max(0, s.t / 0.6))
+      withSpace(ctx, s.clip, () => {
+        ctx.save()
+        ctx.globalAlpha = 0.28 * k
+        XM.FX.bracket(ctx, 90, 80, W - 180, H - 160, 110, `hsl(${s.hue} 70% 80%)`, 3)
+        ctx.globalAlpha = 0.18 * k
+        for (let i = 0; i < 9; i++) {
+          const x = 90 + (W - 180) * (i / 8)
+          ctx.fillStyle = `hsl(${s.hue} 70% 82%)`
+          ctx.fillRect(x - 1, 80, 2, 14)
+          ctx.fillRect(x - 1, H - 80 - 14, 2, 14)
+        }
+        ctx.restore()
+      })
+    },
+  }
+}
+
+function makeStars() {
+  const PTS = [[0.18, 0.3], [0.32, 0.66], [0.55, 0.22], [0.72, 0.58], [0.86, 0.36]]
+  return {
+    id: 'stars', name: '星屑', family: 'ink',
+    when: { bpm: [0, 118], mood: ['sleepy', 'missing', 'joy'] },
+    draw(ctx, s) {
+      const XM = getXM()
+      if (!XM?.FX?.star4) return
+      withSpace(ctx, s.clip, () => {
+        ctx.save()
+        PTS.forEach(([px, py], i) => {
+          const tw = 0.5 + 0.5 * Math.sin(s.t * 0.9 + i * 1.7)
+          ctx.globalAlpha = 0.10 + tw * 0.14
+          XM.FX.star4(ctx, W * px, H * py, 16 + tw * 10, `hsl(${s.hue} 75% 86%)`, 0.2, s.t * 0.1 + i)
+        })
+        ctx.restore()
+      })
+    },
+  }
+}
+
+function makeScanlines() {
+  return {
+    id: 'scanlines', name: '扫描线', family: 'neon',
+    when: { bpm: [110, 220], energy: [0.55, 1] },
+    draw(ctx, s) {
+      const clip = s.clip
+      const gap = 7
+      ctx.save()
+      ctx.beginPath(); ctx.rect(clip.x, clip.y, clip.w, clip.h); ctx.clip()
+      ctx.globalAlpha = 0.05
+      ctx.fillStyle = `hsl(${s.hue} 70% 88%)`
+      const off = (s.t * 26) % gap
+      for (let y = clip.y - gap + off; y < clip.y + clip.h; y += gap) ctx.fillRect(clip.x, y, clip.w, 1)
+      // 一道缓慢下移的亮带
+      const bandY = clip.y + ((s.t * 60) % (clip.h + 160)) - 80
+      const g = ctx.createLinearGradient(0, bandY - 40, 0, bandY + 40)
+      g.addColorStop(0, 'rgba(0,0,0,0)')
+      g.addColorStop(0.5, `hsla(${s.hue} 90% 70% / 0.10)`)
+      g.addColorStop(1, 'rgba(0,0,0,0)')
+      ctx.globalAlpha = 1
+      ctx.fillStyle = g
+      ctx.fillRect(clip.x, bandY - 40, clip.w, 80)
+      ctx.restore()
+    },
+  }
+}
+
+function makeThirds() {
+  return {
+    id: 'thirds', name: '三分线', family: 'paper',
+    when: { bpm: [60, 130], energy: [0, 0.55] },
+    draw(ctx, s) {
+      const clip = s.clip
+      const k = Math.min(1, Math.max(0, s.t / 0.8))
+      ctx.save()
+      ctx.globalAlpha = 0.12 * k
+      ctx.strokeStyle = `hsl(${s.hue} 55% 82%)`
+      ctx.lineWidth = 1
+      const xs = [clip.x + clip.w / 3, clip.x + (clip.w * 2) / 3]
+      const ys = [clip.y + clip.h / 3, clip.y + (clip.h * 2) / 3]
+      xs.forEach((x) => { ctx.beginPath(); ctx.moveTo(x, clip.y); ctx.lineTo(x, clip.y + clip.h); ctx.stroke() })
+      ys.forEach((y) => { ctx.beginPath(); ctx.moveTo(clip.x, y); ctx.lineTo(clip.x + clip.w, y); ctx.stroke() })
+      ctx.globalAlpha = 0.24 * k
+      ctx.fillStyle = `hsl(${s.hue} 60% 86%)`
+      xs.forEach((x) => ys.forEach((y) => ctx.fillRect(x - 3, y - 3, 6, 6)))
+      ctx.restore()
+    },
+  }
+}
+
+function makeBarcode() {
+  return {
+    id: 'barcode', name: '条码边', family: 'neon',
+    when: { bpm: [90, 200], energy: [0.4, 1] },
+    draw(ctx, s) {
+      const XM = getXM()
+      if (!XM?.FX?.barcode) return
+      withSpace(ctx, s.clip, () => {
+        ctx.save()
+        ctx.globalAlpha = 0.20
+        XM.FX.barcode(ctx, W * 0.06, H - 96, W * 0.26, 34, `hsl(${s.hue} 60% 84%)`, Math.floor(s.t / 38) + 1)
+        ctx.restore()
+      })
+    },
+  }
+}
+
+const EXTRA = []
 export function createFx({ log } = {}) {
-  const all = [makeInkDoodle(log), makePaperGrain(log), makeGeoBrut()]
+  const all = [
+    // 自动池：只放「气氛型」（点、线、尘），不带任何边框/构图线——它们会和 PV 的文字打架
+    makeStars(), makeHalftone(), makeScanlines(),
+    // 以下保留给手动指定（[[fx:名字]]）用，不参与自动挑选
+    // makeInkDoodle(log), makePaperGrain(log), makeGeoBrut(), makeCorners(), makeThirds(), makeBarcode(),
+  ] + EXTRA
   let current = all[0]
   let currentFor = ''
 

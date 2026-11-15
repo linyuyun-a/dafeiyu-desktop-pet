@@ -454,7 +454,8 @@ const DEFAULTS = {
   ttsAutoStart: true,    // 启动时自动拉起本地语音服务（launch.ps1 起独立进程组，16–25s 就绪）
   player: true,          // 她点歌时弹「唱片机」小窗（关掉就只出声、不弹窗）
   pvStyle: 'ocean',      // 歌词 PV 配色（深海/夕焼/报纸/酸绿/墨朱）
-  musicTalk: true,       // 她会不会对正在放的歌嘀咕一句（12 分钟一次、同一首只说一次）
+  musicTalk: true,
+  fxOn: true, // 画面装饰特效（FX）：只画在歌名下方那块空白，可关       // 她会不会对正在放的歌嘀咕一句（12 分钟一次、同一首只说一次）
   ttsPython: '',         // 指向装了 faster-qwen3-tts 的 python.exe；空 = 自动找
   model: null,           // 启动时由 resolveModel() 决定（发布版没有模型，要用户选）
   workLink: 'full',      // 工作联动：off / motion（只动作）/ full（动作+短句）
@@ -485,7 +486,8 @@ function ensureOnScreen(w) {
   } catch {}
 }
 
-const gotLock = app.requestSingleInstanceLock()
+// PET_MULTI=1：允许并存（npm run check 自检要用，否则会被单例锁踢掉）
+const gotLock = process.env.PET_MULTI === '1' ? true : app.requestSingleInstanceLock()
 if (!gotLock) {
   // 已经在跑了：把这个进程安静退出，由「第一个实例」把自己的窗口拎到最前面（见下面 second-instance）。
   // 注意：这里不能弹 dialog —— app 还没 ready 时 showMessageBoxSync 会抛，被 catch 掉就成了「双击没反应」。
@@ -2040,7 +2042,7 @@ function wireIpc() {
   })
   ipcMain.handle('music:close', () => { hidePlayer(); return { ok: true } })
   ipcMain.handle('music:player', () => showPlayer())
-  ipcMain.handle('player:config', () => ({ stage: srv?.url || '', token }))
+  ipcMain.handle('player:config', () => ({ stage: srv?.url || '', token, fxOn: settings.fxOn !== false }))
   let posterPrev = null
   ipcMain.on('player:close', () => hidePlayer())
   // 海报模式：把窗口铺满当前显示器的可用区（透明无边框窗用 setFullScreen 不总是生效）

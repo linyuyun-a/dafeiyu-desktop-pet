@@ -207,6 +207,57 @@ function bootPv() {
   return bootPromise
 }
 
+// ---------------------------------------------------------------- 装饰特效层（FX）
+// 只画在歌词区那块空白里，垫在歌词下面；拿不到 XM 运行时或用户关掉开关就什么都不画。
+let fx = null
+let fxCtx = null
+let fxCanvas = null
+let fxEnabled = false
+let fxLast = 0
+
+async function bootFx() {
+  if (fx) return fx
+  try {
+    const m = await import('./fx/index.mjs')
+    fx = m.createFx({ log: (msg, ...rest) => console.log(msg, ...rest) })
+    fxCanvas = $('fxCanvas')
+    if (!fxCanvas) return fx
+    fxCtx = fxCanvas.getContext('2d')
+    const cfg = await window.player?.config?.().catch(() => null)
+    fxEnabled = cfg ? cfg.fxOn !== false : true
+    resizeFx()
+    console.log('[fx] ready, on=' + fxEnabled)
+  } catch (e) {
+    console.warn('[fx] 加载失败', e.message)
+  }
+  return fx
+}
+
+function resizeFx() {
+  if (!fxCanvas || !fxCtx) return
+  const r = fxCanvas.getBoundingClientRect()
+  const dpr = Math.min(2, window.devicePixelRatio || 1)
+  fxCanvas.width = Math.max(1, Math.round(r.width * dpr))
+  fxCanvas.height = Math.max(1, Math.round(r.height * dpr))
+  fxCtx.setTransform(dpr, 0, 0, dpr, 0, 0)
+}
+
+function drawFx(bass, mid, t) {
+  if (!fx || !fxCtx) return
+  const now = performance.now()
+  if (now - fxLast < 33) return
+  fxLast = now
+  const r = fxCanvas.getBoundingClientRect()
+  if (r.width < 40 || r.height < 40) return
+  fxCtx.clearRect(0, 0, r.width, r.height)
+  try {
+    fx.draw(fxCtx, { t, hue: viz.hue || 200, clip: { x: 0, y: 0, w: r.width, h: r.height }, bass, mid })
+  } catch (e) {
+    console.warn('[fx] draw 失败', e.message)
+    fxEnabled = false
+  }
+}
+
 function syncPv() {
   if (!pv || !pv.ready) return
   const on = pv.draw(audio.currentTime)
@@ -230,15 +281,14 @@ function ensureAudioGraph() {
     if (!viz.on) syncPv()
     if (!analyser) return
     analyser.getByteFrequencyData(freq)
-    if (viz.on) {
-      let bass = 0
-      for (let i = 1; i < 6; i++) bass += freq[i] / 255
-      bass /= 5
-      let mids = 0
-      for (let i = 10; i < 40; i++) mids += freq[i] / 255
-      mids /= 30
-      drawViz(performance.now() / 1000, bass, mids)
-    }
+    let bass = 0
+    for (let i = 1; i < 6; i++) bass += freq[i] / 255
+    bass /= 5
+    let mids = 0
+    for (let i = 10; i < 40; i++) mids += freq[i] / 255
+    mids /= 30
+    if (viz.on) drawViz(performance.now() / 1000, bass, mids)
+    else if (fx && fxEnabled) drawFx(bass, mids, audio.currentTime)
     const n = spectra.length
     for (let i = 0; i < n; i++) {
       // 低频多分几档、高频少一点，看起来才像在「跳」
@@ -353,6 +403,7 @@ async function loadLyric(id) {
   // 想再打开自绘层，把下面两行换成 vizResize() + bootViz() + vizModeSet(...) + setVizOn(instrumental)。
   setVizOn(false)
   $('lyrics')?.classList.remove('vizon')
+  void bootFx().then(() => fx?.setSong({ ...(song || {}), mood: '' }))
   if (instrumental) coverHue(song?.pic || '')
 }
 
@@ -409,7 +460,6 @@ function renderLyric() {
 const viz = { on: false, cv: null, ctx: null, dpr: 1, w: 0, h: 0, dust: [], hue: 200, glow: 0 }
 let vizScene = null
 let vizMod = null
-let fx = null
 let fxAudio = { bpm: 0, energy: 0 }
 let vizBeat = 0
 let vizLastBass = 0
@@ -441,18 +491,6 @@ function vizResize() {
     viz.ctx.setTransform(viz.dpr, 0, 0, viz.dpr, 0, 0)
   }
   setVizOn(viz.on)
-}
-
-async function bootFx() {
-  if (fx) return fx
-  try {
-    const m = await import('./fx/index.mjs')
-    fx = m.createFx({ log: (x) => console.log(x) })
-    console.log('[fx] ready', fx.list.map((f) => f.id).join(','))
-  } catch (e) {
-    console.warn('[fx] 加载失败', e.message)
-  }
-  return fx
 }
 
 function vizModeSet(m) {
@@ -990,4 +1028,5 @@ $('plRefresh')?.addEventListener('click', () => void loadPlaylists(true))
 bindMore()
 initPvStyle()
 
+window.addEventListener('resize', () => resizeFx())
 window.addEventListener('resize', () => vizResize())

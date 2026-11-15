@@ -224,10 +224,12 @@ function wire() {
   if (roamSrc) {
     const tm = $('#tts-model')
   if (tm) tm.value = settings.ttsModel || ''
-  const mt = $('#music-talk'); if (mt) mt.checked = settings.musicTalk !== false
+  const fo = $('#fx-on'); if (fo) fo.checked = settings.fxOn !== false
+    const mt = $('#music-talk'); if (mt) mt.checked = settings.musicTalk !== false
     roamSrc.value = settings.roamSource || 'similar'
     roamSrc.onchange = (e) => pushSettings({ roamSource: e.target.value })
     $('#music-talk')?.addEventListener('change', (e) => pushSettings({ musicTalk: e.target.checked }))
+    $('#fx-on')?.addEventListener('change', (e) => pushSettings({ fxOn: e.target.checked }))
   $('#tts-model')?.addEventListener('change', (e) => pushSettings({ ttsModel: e.target.value.trim() }))
   }
   const deepRoam = $('#deep-roam')
