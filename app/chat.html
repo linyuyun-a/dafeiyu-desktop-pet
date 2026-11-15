@@ -38,12 +38,18 @@
       button:hover { background: rgba(255, 255, 255, 0.14); }
       #mic.rec { background: rgba(242, 120, 110, 0.9); border-color: rgba(255, 170, 160, 0.95); }
       #mic.busy { opacity: 0.5; cursor: default; }
+      /* 锁定录音（点一下开始、再点一下停）时呼吸一下，提示不用按着 */
+      #mic.latched { animation: micPulse 1.4s ease-in-out infinite; }
+      @keyframes micPulse {
+        0%, 100% { box-shadow: 0 0 0 0 rgba(255, 110, 110, 0.55); }
+        50% { box-shadow: 0 0 0 7px rgba(255, 110, 110, 0); }
+      }
     </style>
   </head>
   <body>
     <form id="bar" autocomplete="off">
       <input id="input" placeholder="和她说点什么…（Enter 发送 / Esc 关闭）" />
-      <button id="mic" type="button" title="按住说话">🎤</button>
+      <button id="mic" type="button" title="点一下开始 / 再点一下结束（也可以按住说）">🎤</button>
       <button id="send" type="submit" title="发送">↵</button>
       <button id="close" type="button" title="关闭（Esc）">✕</button>
     </form>

@@ -35,9 +35,14 @@ const MIN_MS = 300        // 短于这个时长当误触
 const MAX_MS = 30000      // 上限 30 秒，超了自动停
 
 let rec = null            // { ctx, node, stream, chunks, startedAt, timer }
+let starting = false      // startRec 还在等权限/建 AudioContext
+let wantRec = false       // 用户此刻是否想录音
+let latched = false       // 「点一下开始、再点一下停」的锁定态
+let downAt = 0
 
 async function startRec() {
-  if (rec) return
+  if (rec || starting) return
+  starting = true
   mic.classList.add('busy')
   try {
     const stream = await navigator.mediaDevices.getUserMedia({
@@ -54,10 +59,16 @@ async function startRec() {
     // 不连到 destination：只听不播，避免把麦克风回放出来
     rec = { ctx, node, stream, chunks, startedAt: performance.now(), timer: 0 }
     rec.timer = setTimeout(() => { void stopRec() }, MAX_MS)
+    starting = false
     mic.classList.remove('busy')
     mic.classList.add('rec')
     mic.textContent = '●'
+    // 关键：点击发生在「还没建好」的那几百毫秒里的话，pointerup 已经过去了，
+    // 这里必须自己收尾，否则会一直录到 30 秒上限（表现就是"点一下没反应，得按住"）
+    if (!wantRec && !latched) void stopRec()
   } catch (err) {
+    starting = false
+    wantRec = false
     mic.classList.remove('busy')
     input.placeholder = '麦克风打不开（权限或设备）'
     console.warn('[mic]', err)
@@ -70,6 +81,7 @@ async function stopRec() {
   rec = null
   clearTimeout(cur.timer)
   mic.classList.remove('rec')
+  mic.classList.remove('latched')
   mic.classList.add('busy')
   mic.textContent = '…'
   const held = performance.now() - cur.startedAt
@@ -82,7 +94,9 @@ async function stopRec() {
 
   if (held < MIN_MS) {
     mic.classList.remove('busy')
+    mic.classList.remove('latched')
     mic.textContent = '🎤'
+    input.placeholder = '太短了，再说一次？'
     return
   }
 
@@ -117,14 +131,50 @@ async function stopRec() {
   }
 }
 
+// 两种用法都支持：
+//   按住说 → 抬手就停（传统对讲机）
+//   点一下 → 锁定录音，再点一下停（省得一直按着）
+const HOLD_MS = 400
+
 mic.addEventListener('pointerdown', (e) => {
   e.preventDefault()
+  e.stopPropagation()
+  if (latched) {
+    // 锁定态下再点一次 = 停
+    latched = false
+    wantRec = false
+    void stopRec()
+    input.placeholder = '听着呢…'
+    return
+  }
+  wantRec = true
+  downAt = performance.now()
+  input.placeholder = '听着呢…（松手即停 / 点一下锁定）'
   void startRec()
-  // 合成事件/某些环境里 setPointerCapture 会抛（pointerId 无效），不能让它挡了录音
-  try { mic.setPointerCapture?.(e.pointerId) } catch {}
 })
-mic.addEventListener('pointerup', (e) => {
-  e.preventDefault()
+
+// 监听挂 window：指针滑出按钮也能收到 up，不会漏掉
+window.addEventListener('pointerup', (e) => {
+  if (!wantRec || latched) return
+  const held = performance.now() - downAt
+  if (held >= HOLD_MS) {
+    wantRec = false
+    void stopRec()
+  } else {
+    // 短点：锁定，继续录，等下一次点击
+    latched = true
+    input.placeholder = '在听…点麦克风结束'
+    mic.classList.add('latched')
+  }
+})
+
+window.addEventListener('pointercancel', () => {
+  wantRec = false
+  latched = false
   void stopRec()
 })
-mic.addEventListener('pointercancel', () => { void stopRec() })
+
+// 关掉输入条时别留下一个在录的流
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && rec) { wantRec = false; latched = false; void stopRec() }
+}, true)
