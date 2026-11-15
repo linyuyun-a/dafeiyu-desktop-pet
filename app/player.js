@@ -46,6 +46,16 @@ let analyser = null
 let freq = null
 let rafId = 0
 
+// 全局兜底：未捕获异常只留一行 message 定位不到引擎里的具体行，
+// 把 stack 也打出来（会被 main.mjs 的 console-message 转发进 main.log）。
+addEventListener('error', (e) => {
+  console.log('[pv] ERR ' + (e?.message || '') + ' @ ' + (e?.filename || '') + ':' + (e?.lineno || 0) + '\n' + String(e?.error?.stack || '').slice(0, 800))
+})
+addEventListener('unhandledrejection', (e) => {
+  const r = e?.reason
+  console.log('[pv] REJECT ' + (r?.message || r) + '\n' + String(r?.stack || '').slice(0, 1200))
+})
+
 // ---------- 歌词 PV（JIZURA 引擎，见 docs/设计-歌词PV.md） ----------
 let pv = null
 let pvTried = false
