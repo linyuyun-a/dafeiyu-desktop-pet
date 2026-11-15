@@ -116,7 +116,9 @@ def main():
         "mode": "idle",
         "paused": False,
         "running": True,
-        "last_voice": 0.0,     # 最后一次检测到人声的时间
+        "last_voice": 0.0,
+        "last_text": 0.0,
+        "loud_run": 0,
         "voiced": False,
         "buf": [],             # 当前这一句的音频块
         "silence": 0.0,        # 句尾静音累计
@@ -155,6 +157,8 @@ def main():
         S["mode"] = "idle"
         S["buf"] = []
         S["voiced"] = False
+        S["loud_run"] = 0
+        S["last_text"] = 0.0
         emit({"type": "session_end", "why": why})
 
     state = {"paused": False, "running": True}
@@ -173,7 +177,20 @@ def main():
             elif cmd == "call off":
                 if S["mode"] == "call":
                     S["mode"] = "session"
+                    S["last_voice"] = time.time()
+                    S["last_text"] = time.time()
                     emit({"type": "call", "on": False})
+            elif cmd == "fake":
+                # 测试用：不靠麦克风，直接把状态推到「会话开始」
+                S["mode"] = "session"
+                S["buf"] = []
+                S["voiced"] = False
+                S["silence"] = 0.0
+                S["last_voice"] = time.time()
+                S["last_text"] = time.time()
+                S["loud_run"] = 0
+                emit({"type": "session", "on": True})
+                print(f"[kws] fake wake, idle={S['idle_sec']}", file=sys.stderr, flush=True)
             elif cmd == "quit":
                 state["running"] = False
                 return
@@ -190,7 +207,16 @@ def main():
                     device = i
                     break
 
-    emit({"type": "ready", "model": args.model_dir, "device": device})
+    emit({"type": "ready", "model": args.model_dir, "device": device, "idle": S["idle_sec"]})
+
+    def maybe_timeout():
+        """会话超时：只看最后一次识别出真实文本的时间（噪声不会刷新它）。"""
+        if S["mode"] != "session":
+            return
+        d = time.time() - S["last_text"]
+        if d > S["idle_sec"]:
+            print(f"[kws] timeout d_text={d:.1f} idle={S['idle_sec']}", file=sys.stderr, flush=True)
+            end_session("timeout")
 
     stream = kw.create_stream()
 
@@ -212,6 +238,7 @@ def main():
                 try:
                     data = q.get(timeout=0.5)
                 except queue.Empty:
+                    maybe_timeout()
                     continue
                 if state["paused"]:
                     # 暂停期间把积压的块丢掉，避免恢复时把旧音频当成新声音
@@ -223,7 +250,9 @@ def main():
                 if S["mode"] in ("session", "call"):
                     # 会话：只做 VAD + 攒这句音频，不再跑唤醒词
                     blk = data.reshape(-1)
-                    loud = rms(blk) > 0.012
+                    lv = rms(blk) > 0.02
+                    S["loud_run"] = (S["loud_run"] + 1) if lv else 0
+                    loud = lv and (S["loud_run"] >= 2 or S["buf"])
                     now = time.time()
                     if loud:
                         S["voiced"] = True
@@ -239,9 +268,7 @@ def main():
                                 S["silence"] = 0.0
                                 flush_speech()
                                 S["last_voice"] = now
-                    if S["mode"] == "session" and not S["voiced"]:
-                        if now - S["last_voice"] > S["idle_sec"]:
-                            end_session("timeout")
+                    maybe_timeout()
                     continue
 
                 stream.accept_waveform(SR, data.reshape(-1))
@@ -259,6 +286,8 @@ def main():
                         S["voiced"] = False
                         S["silence"] = 0.0
                         S["last_voice"] = time.time()
+                        S["last_text"] = time.time()
+                        S["loud_run"] = 0
                         emit({"type": "session", "on": True})
     except Exception as e:  # 麦克风打不开、设备被占用…
         emit({"type": "error", "message": str(e)})

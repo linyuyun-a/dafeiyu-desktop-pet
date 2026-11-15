@@ -300,15 +300,19 @@ function kwsSend(cmd) {
   try { kwsChild?.stdin?.write(cmd + '\n') } catch {}
 }
 
+let kwsPauseWatchdog = null
 function kwsPause(ms = 0) {
   if (!kwsChild) return
   kwsPaused = true
   kwsSend('pause')
+  clearTimeout(kwsPauseWatchdog)
+  kwsPauseWatchdog = setTimeout(() => { flog('[kws] 暂停超过 45 秒，强制恢复'); kwsResume() }, 45000)
   if (kwsPauseTimer) clearTimeout(kwsPauseTimer)
   if (ms > 0) kwsPauseTimer = setTimeout(() => kwsResume(), ms)
 }
 
 function kwsResume() {
+  clearTimeout(kwsPauseWatchdog)
   if (!kwsChild) return
   if (kwsPauseTimer) { clearTimeout(kwsPauseTimer); kwsPauseTimer = null }
   kwsPaused = false
@@ -395,7 +399,7 @@ function onWakeWord(word = '') {
   kwsReport({ lastWord: word, session: true })
   wakeSession = true
   const line = WAKE_REPLIES[Math.floor(Math.random() * WAKE_REPLIES.length)]
-  try { win?.webContents.send('pet:say', { text: line, state: 'idle' }) } catch {}
+  try { win?.webContents.send('pet:say', { text: line, state: 'idle', speak: true }) } catch {}
   // 不弹输入条：唤醒后她答一声，接着就用麦克风直接聊（语音走 python 那边的 VAD+ASR）
 }
 
@@ -418,7 +422,7 @@ function onSessionEnd(why) {
   kwsReport({ session: false })
   if (why === 'call_off') return
   const line = BYE_REPLIES[Math.floor(Math.random() * BYE_REPLIES.length)]
-  try { win?.webContents.send('pet:say', { text: line, state: 'idle' }) } catch {}
+  try { win?.webContents.send('pet:say', { text: line, state: 'idle', speak: true }) } catch {}
 }
 
 function abortTts() {
@@ -2557,7 +2561,12 @@ function wireIpc() {
     if (!on) wakeSession = false
     return { ok: true, call: !!on }
   })
-  ipcMain.handle('kws:fake', (_e, word) => { onWakeWord(String(word || '调试')); return { ok: true } })
+  ipcMain.handle('kws:fake', (_e, word) => {
+    // 让 python 也真的进会话（否则假唤醒只会出气泡，10 秒超时测不出来）
+    kwsSend('fake')
+    onWakeWord(String(word || '调试'))
+    return { ok: true }
+  })
   ipcMain.handle('kws:status', () => ({
     state: kwsState, paused: kwsPaused, on: settings.wakeOn !== false,
     words: settings.wakeWords, device: settings.wakeDevice,

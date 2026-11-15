@@ -3880,6 +3880,18 @@ function bindChat() {
   // 唤醒词命中：她说一句（几条模板里随机，主进程已经选好），随后主进程会自动弹出输入条
   shell.onSay?.((d) => {
     if (!d || !d.text) return
+    // 唤醒应答 / 告别语要「出声」：走和回复一样的 TTS 队列（它会自己显示到气泡）
+    if (d.speak) {
+      state.trigger?.('surprise')
+      // 先让这句话上屏（否则被别人的台词占着），再交给 TTS 念
+      state.bubble?.lock?.('awake', { force: true })
+      state.bubble?.show?.(String(d.text), { state: d.state || 'idle', owner: 'awake', sticky: true, force: true })
+      setTimeout(() => state.bubble?.unlock?.('awake'), 900)
+      chatState.spokenChars = 0
+      resetFlow()
+      speakSentence(String(d.text))
+      return
+    }
     // 唤醒这一句要「压住」其他本地台词：工作联动的“快好了快好了”会在一秒内把它顶掉。
     // sticky 只认同一个 owner，所以顺手在 1.6 秒后自己收掉，避免挡住接下来的回复。
     state.bubble?.lock?.('awake', { force: true })
