@@ -3877,6 +3877,20 @@ function bindChat() {
     const shown = Math.max(6, Math.min(window.innerHeight - h - 6, top))
     if (Math.abs(shown - (parseFloat(bar.style.top) || 0)) >= 0.5) bar.style.top = shown + 'px'
   })
+  // 唤醒词命中：她说一句（几条模板里随机，主进程已经选好），随后主进程会自动弹出输入条
+  shell.onSay?.((d) => {
+    if (!d || !d.text) return
+    // 唤醒这一句要「压住」其他本地台词：工作联动的“快好了快好了”会在一秒内把它顶掉。
+    // sticky 只认同一个 owner，所以顺手在 1.6 秒后自己收掉，避免挡住接下来的回复。
+    state.bubble?.lock?.('awake', { force: true })
+      state.bubble?.show(String(d.text), { state: d.state || 'idle', owner: 'awake', sticky: true, force: true })
+      setTimeout(() => state.bubble?.unlock?.('awake'), 1800)
+    state.trigger?.('surprise')
+    clearTimeout(state.wakeBubbleTimer)
+    state.wakeBubbleTimer = setTimeout(() => {
+      if (chatState.source !== 'agent') state.bubble?.hide?.()
+    }, 1600)
+  })
   // 在场感：主人走开时把待机调慢、不再自言自语（省得对着空屋子演）；回来恢复
   shell.onPresence?.((p) => {
     const stage = p?.stage || 'here'

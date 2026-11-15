@@ -82,6 +82,20 @@ contextBridge.exposeInMainWorld('shell', {
     ipcRenderer.on('tts:state', h)
     return () => ipcRenderer.removeListener('tts:state', h)
   },
+  // 唤醒词命中时，主进程让她先说一句（气泡），随后自动弹输入条
+  onSay: (cb) => {
+    const h = (_e, d) => cb(d)
+    ipcRenderer.on('pet:say', h)
+    return () => ipcRenderer.removeListener('pet:say', h)
+  },
+  onKwsState: (cb) => {
+    const h = (_e, p) => cb(p)
+    ipcRenderer.on('kws:state', h)
+    return () => ipcRenderer.removeListener('kws:state', h)
+  },
+  kwsFake: (w) => ipcRenderer.invoke('kws:fake', w),
+  kwsStatus: () => ipcRenderer.invoke('kws:status'),
+  kwsSet: (patch) => ipcRenderer.invoke('kws:set', patch),
   openHistory: () => ipcRenderer.invoke('history:open'),  // ---- 音乐 / 唱片机 ----
   musicStatus: () => ipcRenderer.invoke('music:status'),
   musicQr: () => ipcRenderer.invoke('music:qr'),

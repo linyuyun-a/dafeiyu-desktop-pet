@@ -238,10 +238,15 @@ export function createBubble({ el, anchor, side = 'right', corner = false, onSpe
       if (visible) { layout(t); place() }
     },
     show(text, opts = {}) {
-      // 被锁住时：只有锁的主人能改字（防止待机台词 / 互动台词把 agent 的进度顶掉）
-      if (lockOwner && opts.owner !== lockOwner) return
-      // 粘住的台词同理：她还在说话/刚说完还没收起，本地台词不许抢
-      if (stickyOwner && opts.owner !== stickyOwner) return
+      // force：唤醒这类「必须先让她应一声」的场合，允许越过锁与粘住。
+      // 只给唤醒用——其他本地台词没有这个豁免，免得又把 agent 的进度顶掉。
+      if (!opts.force) {
+        // 被锁住时：只有锁的主人能改字（防止待机台词 / 互动台词把 agent 的进度顶掉）
+        if (lockOwner && opts.owner !== lockOwner) return
+        // 粘住的台词同理：她还在说话/刚说完还没收起，本地台词不许抢
+        if (stickyOwner && opts.owner !== stickyOwner) return
+      }
+      if (opts.force) { lockOwner = ''; stickyOwner = '' }
       if (opts.sticky) stickyOwner = opts.owner || 'agent'
       // 只在「新一条」时播入场动画：隐藏→出现，或状态变了（thinking → chat）。
       // 流式逐字会同一状态反复 show，不能每次都让气泡重播。

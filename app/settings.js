@@ -440,3 +440,15 @@ async function boot() {
 }
 
 void boot()
+
+const WAKE_TEXT = { off: '关', starting: '启动中', ready: '在听', failed: '启动失败' }
+function paintWakeState(st) {
+  const el = $('#wake-state')
+  if (!el || !st) return
+  const t = WAKE_TEXT[st.state] || st.state || ''
+  el.textContent = st.state === 'failed' && st.reason ? '失败：' + st.reason : t
+  el.classList.toggle('warn', st.state === 'failed')
+}
+async function refreshWakeState() {
+  try { paintWakeState(await window.shell.kwsStatus?.()) } catch {}
+}

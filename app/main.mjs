@@ -266,11 +266,138 @@ function stopTts() {
 }
 let ttsSeq = 0
 const ttsCtrls = new Map()   // id -> AbortController（一句一个请求，允许并行排队）
+// ---- 关键词唤醒（KWS）----------------------------------------------------
+// 常驻一个 python worker（app/tts/kws.py）：采麦 → sherpa-onnx → 命中打一行 JSON。
+// 不引 sherpa-onnx-node：那是原生模块，要 electron-rebuild + 跨 ABI，还会把包体撑大。
+let kwsChild = null
+let kwsState = 'off'        // off / starting / ready / failed
+let kwsPaused = false
+let kwsPauseTimer = null
+
+const WAKE_REPLIES = [
+  '嗯？',
+  '在呢。',
+  '唔……叫本鲸？',
+  '听着呢。',
+  '怎么了？',
+  '嗯，本鲸在。',
+  '叫我做什么？',
+]
+
+function kwsReport(extra = {}) {
+  try { win?.webContents.send('kws:state', { state: kwsState, ...extra }) } catch {}
+}
+
+function kwsSend(cmd) {
+  try { kwsChild?.stdin?.write(cmd + '\n') } catch {}
+}
+
+function kwsPause(ms = 0) {
+  if (!kwsChild) return
+  kwsPaused = true
+  kwsSend('pause')
+  if (kwsPauseTimer) clearTimeout(kwsPauseTimer)
+  if (ms > 0) kwsPauseTimer = setTimeout(() => kwsResume(), ms)
+}
+
+function kwsResume() {
+  if (!kwsChild) return
+  if (kwsPauseTimer) { clearTimeout(kwsPauseTimer); kwsPauseTimer = null }
+  kwsPaused = false
+  kwsSend('resume')
+}
+
+function stopKws() {
+  if (!kwsChild) return
+  try { kwsSend('quit') } catch {}
+  try { kwsChild.kill() } catch {}
+  kwsChild = null
+  kwsState = 'off'
+  kwsReport()
+}
+
+async function ensureKws({ force = false } = {}) {
+  if (settings.wakeOn === false && !force) { kwsState = 'off'; kwsReport(); return }
+  if (kwsChild) return
+  const py = pickPython()
+  if (!py) { kwsState = 'failed'; kwsReport({ reason: '没找到 python（设置里填 ttsPython）' }); return }
+  const dir = path.join(ROOT, 'app', 'tts', 'kws-models',
+    'sherpa-onnx-kws-zipformer-wenetspeech-3.3M-2024-01-01')
+  const modelDir = settings.wakeModel || dir
+  const kwFile = path.join(ROOT, 'app', 'tts', 'kws-models', 'keywords_zh.txt')
+  if (!existsSync(modelDir)) {
+    kwsState = 'failed'
+    kwsReport({ reason: '模型没放好：' + modelDir })
+    return
+  }
+  kwsState = 'starting'
+  kwsReport({ words: settings.wakeWords })
+  const args = [
+    path.join(ROOT, 'app', 'tts', 'kws.py'),
+    '--model-dir', modelDir,
+    '--keywords', kwFile,
+    '--threshold', String(settings.wakeThreshold ?? 0.25),
+  ]
+  if (settings.wakeDevice) args.push('--device', String(settings.wakeDevice))
+  let child = null
+  try {
+    child = spawn(py, args, { cwd: ROOT, env: childEnv(py), windowsHide: true })
+    kwsChild = child
+  } catch (e) {
+    flog('[kws] spawn 失败', String(e?.message || e))
+    kwsState = 'failed'
+    kwsReport({ reason: String(e?.message || e) })
+    return
+  }
+  let buf = ''
+  child.stdout.on('data', (d) => {
+    buf += d.toString('utf8')
+    let i
+    while ((i = buf.indexOf('\n')) >= 0) {
+      const line = buf.slice(0, i).trim()
+      buf = buf.slice(i + 1)
+      if (!line) continue
+      let ev = null
+      try { ev = JSON.parse(line) } catch { continue }
+      if (ev.type === 'ready') { kwsState = 'ready'; kwsReport({ device: ev.device }) }
+      else if (ev.type === 'wake') onWakeWord(ev.keyword)
+      else if (ev.type === 'error') { kwsState = 'failed'; kwsReport({ reason: ev.message }) }
+    }
+  })
+  child.stderr.on('data', (d) => flog('[kws]', d.toString('utf8').trim().slice(0, 200)))
+  child.on('error', (e) => { flog('[kws] spawn 错误', String(e?.message || e)) })
+  child.on('exit', (code, sig) => {
+    // 只认「当前这个」子进程的退出：重启时会先 kill 旧的，旧进程的 exit 事件
+    // 如果无条件写 kwsState，就会把新进程的 ready 覆盖成 failed（踩过）。
+    if (kwsChild !== child) return
+    kwsChild = null
+    if (kwsState === 'off') return
+    flog('[kws] 子进程退出 code=' + code + ' sig=' + (sig || ''))
+    kwsState = code === 0 ? 'off' : 'failed'
+    kwsReport({ code })
+  })
+}
+
+function onWakeWord(word = '') {
+  flog('[kws] 唤醒：', word)
+  kwsReport({ lastWord: word })
+  if (chatWin && !chatWin.isDestroyed() && chatVisible) {
+    try { chatWin.focus() } catch {}
+    return
+  }
+  const line = WAKE_REPLIES[Math.floor(Math.random() * WAKE_REPLIES.length)]
+  try { win?.webContents.send('pet:say', { text: line, state: 'idle' }) } catch {}
+  setTimeout(() => {
+    try { if (!chatVisible) { hideTools?.(); void createChatWindow?.().then?.(() => showChatWindow()) } } catch {}
+  }, 260)
+}
+
 function abortTts() {
   if (!ttsCtrls.size) return
   for (const c of ttsCtrls.values()) { try { c.abort() } catch {} }
   ttsCtrls.clear()
   try { win?.webContents.send('tts:end', { id: 0, aborted: true }) } catch {}
+  kwsResume()
 }
 // 主动开口：最近一次「用户在动」的时间（鼠标移动、打字、点她都会刷新）
 let lastActivityAt = Date.now()
@@ -443,6 +570,9 @@ const DEFAULTS = {
   theme: 'dark',         // 设置页主题：dark | light | system
   autoStart: false,      // 开机自启（Windows 登录时启动舞台）
   proactive: 'few',      // 主动开口频率：off / few / normal / many
+  wakeOn: false,         // 关键词唤醒（常驻监听麦克风，默认关）
+  wakeWords: '大肥鱼,鲸鸢', // 唤醒词，逗号分隔
+  wakeDevice: '',        // 麦克风设备（序号或名字片段，空=系统默认）
   awayTalk: true,        // 主人走开/回来时，她要不要嘀咕两句
   quietFrom: '23:30',    // 勿扰开始（她自己不会在这个时段开口）
   quietTo: '07:30',      // 勿扰结束
@@ -2380,6 +2510,7 @@ function wireIpc() {
           carry = buf.length & 1 ? Buffer.from(buf.subarray(even)) : Buffer.alloc(0)
         }
         if (!ctrl.signal.aborted) send('tts:end', {})
+        kwsResume()
       } catch (err) {
         if (!ctrl.signal.aborted) send('tts:error', { message: String(err?.message || err) })
       } finally {
@@ -2389,6 +2520,22 @@ function wireIpc() {
     return { ok: true, id }
   })
   ipcMain.handle('tts:stop', () => { abortTts(); return { ok: true } })
+  // 调试用：不接麦克风也能验证「唤醒 → 气泡 → 弹输入条」这条链
+  ipcMain.handle('kws:fake', (_e, word) => { onWakeWord(String(word || '调试')); return { ok: true } })
+  ipcMain.handle('kws:status', () => ({
+    state: kwsState, paused: kwsPaused, on: settings.wakeOn !== false,
+    words: settings.wakeWords, device: settings.wakeDevice,
+    model: existsSync(path.join(ROOT, 'app', 'tts', 'kws-models', 'sherpa-onnx-kws-zipformer-wenetspeech-3.3M-2024-01-01')),
+  }))
+  ipcMain.handle('kws:set', async (_e, patch = {}) => {
+    if (typeof patch.on === 'boolean') settings.wakeOn = patch.on
+    if (typeof patch.words === 'string') settings.wakeWords = patch.words.trim()
+    if (typeof patch.device === 'string') settings.wakeDevice = patch.device.trim()
+    saveSettings()
+    stopKws()
+    if (settings.wakeOn) await ensureKws({ force: true })
+    return { state: kwsState }
+  })
 
   /**
    * 让她主动开口：往对话里塞一段「旁白」去戳她，说什么由 AstrBot 现场生成。
@@ -2638,6 +2785,7 @@ app.whenReady().then(async () => {
   // 与其闷等 90 秒，不如直接告诉用户「服务没开，点启动」。
   // 语音：先从设置/探活决定，没起且允许自启就拉起来（异步，不挡窗口）
   void ensureTts({ force: settings.ttsAutoStart !== false })
+  if (settings.wakeOn) void ensureKws()
   ncm.initMusic(app.getPath('userData'))
   void ncm.refreshProfile()
   settings.model = await resolveModelOrPick()
