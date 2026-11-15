@@ -699,23 +699,52 @@ window.player?.onQueue?.((p) => {
   queuePos = p.pos
   paintQueue()
 })
-$('vol').addEventListener('input', (e) => { baseVol = Number(e.target.value) / 100; applyVolume() })
-// 音量条平时收起，鼠标进控制条才展开（用 class 驱动，比 :hover 稳，键盘 focus 也能展开）
+// 音量：上方竖直浮条。展开只由「喇叭 / 浮条本身 / 拖拽」决定，不再由整个控制条的 hover 触发。
+let mutedBefore = 0.8
+function paintVolume() {
+  const v = Math.round(baseVol * 100)
+  $('vol').value = String(v)
+  const tip = $('volTip')
+  if (tip) tip.textContent = v + '%'
+  const mute = $('mute')
+  if (mute) {
+    mute.classList.toggle('muted', baseVol <= 0.001)
+    mute.classList.toggle('low', baseVol > 0.001 && baseVol < 0.5)
+  }
+}
+$('vol').addEventListener('input', (e) => { baseVol = Number(e.target.value) / 100; applyVolume(); paintVolume() })
 {
   const wrap = $('volWrap')
-  const ctl = $('controls')
+  const pop = $('volPop')
   const open = () => wrap?.classList.add('vol-open')
-  const shut = () => { if (!wrap?.contains(document.activeElement)) wrap?.classList.remove('vol-open') }
-  ctl?.addEventListener('pointerenter', open)
-  ctl?.addEventListener('pointerleave', shut)
-  wrap?.addEventListener('focusin', open)
-  wrap?.addEventListener('focusout', () => setTimeout(shut, 0))
+  const shut = () => { if (!wrap?.classList.contains('vol-drag')) wrap?.classList.remove('vol-open') }
+  let shutTimer = 0
+  const laterShut = () => { clearTimeout(shutTimer); shutTimer = setTimeout(shut, 140) }
+  const keep = () => { clearTimeout(shutTimer); open() }
+  wrap?.addEventListener('pointerenter', keep)
+  wrap?.addEventListener('pointerleave', laterShut)
+  pop?.addEventListener('pointerdown', () => wrap?.classList.add('vol-drag'))
+  window.addEventListener('pointerup', () => { wrap?.classList.remove('vol-drag'); laterShut() })
+  wrap?.addEventListener('focusin', keep)
+  wrap?.addEventListener('focusout', () => { laterShut() })
+  // 滚轮微调（在喇叭上滚动 ±5%），不劫持页面其他滚动
+  wrap?.addEventListener('wheel', (e) => {
+    e.preventDefault()
+    baseVol = Math.max(0, Math.min(1, baseVol + (e.deltaY < 0 ? 0.05 : -0.05)))
+    applyVolume(); paintVolume(); keep(); laterShut()
+  }, { passive: false })
+  // 点喇叭 = 静音开关（记住上次音量）
+  $('mute')?.addEventListener('click', () => {
+    if (baseVol > 0.001) { mutedBefore = baseVol; baseVol = 0 } else { baseVol = mutedBefore || 0.8 }
+    applyVolume(); paintVolume()
+  })
 }
 audio.volume = 0.8
 // 她开口时压低音乐（main 发 0.28，4.2 秒后回 1）
 let duck = 1
 function applyVolume() { audio.volume = Math.max(0, Math.min(1, baseVol * duck)) }
 let baseVol = 0.8
+paintVolume()
 window.player.onDuck?.((v) => { duck = v > 0 && v < 1 ? v : 1; applyVolume() })
 // 键盘：空格播放暂停、←→ ±5 秒、↑↓ 音量（焦点在输入框里时让开）
 const isTyping = () => {
@@ -723,9 +752,8 @@ const isTyping = () => {
   return !!el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.isContentEditable)
 }
 function nudgeVolume(delta) {
-  const v = Math.max(0, Math.min(100, Number($('vol').value) + delta))
-  $('vol').value = String(v)
-  audio.volume = v / 100
+  baseVol = Math.max(0, Math.min(1, baseVol + delta / 100))
+  applyVolume(); paintVolume()
 }
 let posterOn = false
 function togglePoster(on) {

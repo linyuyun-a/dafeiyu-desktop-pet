@@ -64,7 +64,10 @@
         <button id="roam" title="漫游：按设置里的源自动续播"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 12c0-2 1.4-3.4 3.2-3.4 2.6 0 4.2 6.8 6.6 6.8 1.8 0 3.2-1.4 3.2-3.4s-1.4-3.4-3.2-3.4c-2.4 0-4 6.8-6.6 6.8C8.4 15.4 7 14 7 12z"/></svg></button>
         <button id="more" title="形象与配色"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5.5" cy="12" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="18.5" cy="12" r="1.7"/></svg></button>
 
-        <div id="volWrap"><span>♪</span><input id="vol" type="range" min="0" max="100" value="80" /></div>
+        <div id="volWrap">
+          <button id="mute" title="静音"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 9.5h3.2L12 5.4v13.2L7.2 14.5H4z"/><path id="waveA" d="M15.2 9.1a4 4 0 0 1 0 5.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path id="waveB" d="M17.6 6.9a7.4 7.4 0 0 1 0 10.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+          <div id="volPop"><span id="volTip">80%</span><input id="vol" type="range" min="0" max="100" value="80" aria-label="音量" /></div>
+        </div>
       </div>
 
       <div id="hint">她挑的歌会用这块小唱片放出来 · Esc 收起</div>

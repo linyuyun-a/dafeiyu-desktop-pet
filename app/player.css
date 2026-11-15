@@ -180,16 +180,43 @@ body {
 #roam.on { color: #6FD3FF; }
 #roam.on svg { color: #6FD3FF; }
 #more svg { width: 18px; height: 18px; }
-#volWrap {
-  margin-left: auto; display: flex; align-items: center; gap: 6px; color: var(--dim);
-  padding: 4px 6px; border-radius: 10px; cursor: pointer;
+/* 音量：喇叭 + 上方竖直浮条（浮层，不参与布局，绝不挤动其他按钮） */
+#volWrap { position: relative; margin-left: auto; display: flex; align-items: center; }
+#mute {
+  display: grid; place-items: center; width: 36px; height: 36px; padding: 0;
+  border: 0; border-radius: 50%; background: transparent; color: rgba(219, 232, 244, 0.72);
+  cursor: pointer; transition: color .16s ease, transform .12s cubic-bezier(.16,1,.3,1);
 }
-#volWrap:hover { color: var(--ink); }
+#mute svg { width: 19px; height: 19px; display: block; }
+#mute:hover { color: #fff; transform: scale(1.06); }
+#mute:active { transform: scale(.94); }
+#mute:focus { outline: none; }
+#mute.muted #waveA, #mute.muted #waveB { opacity: 0; }
+#mute.muted { color: #7f93ab; }
+#mute.low #waveB { opacity: 0; }
+
+#volPop {
+  position: absolute; left: 50%; bottom: calc(100% + 10px);
+  width: 34px; height: 110px; display: flex; align-items: center; justify-content: center;
+  background: rgba(10, 17, 30, .92); border: 1px solid rgba(120, 160, 200, .22);
+  border-radius: 17px; box-shadow: 0 10px 24px rgba(0, 0, 0, .45);
+  backdrop-filter: blur(8px);
+  opacity: 0; pointer-events: none; transform: translate(-50%, 4px);
+  transition: opacity .14s ease, transform .14s cubic-bezier(.16,1,.3,1);
+}
+#volWrap:hover #volPop, #volWrap.vol-open #volPop, #volWrap:focus-within #volPop {
+  opacity: 1; pointer-events: auto; transform: translate(-50%, 0);
+}
 #vol {
-  width: 0; opacity: 0; transition: width 0.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.16s ease;
+  width: 84px; height: 22px; transform: rotate(-90deg); transform-origin: center;
+  accent-color: #6fd3ff; cursor: pointer;
 }
-#controls:hover #vol, #volWrap:hover #vol, #volWrap.vol-open #vol, #vol:focus-visible { width: 84px; opacity: 1; }
-#vol { accent-color: #6fd3ff; }
+#volTip {
+  position: absolute; top: -16px; left: 50%; transform: translateX(-50%);
+  font-size: 10px; color: #cfe6ff; opacity: 0; transition: opacity .15s ease;
+  font-variant-numeric: tabular-nums; white-space: nowrap;
+}
+#volWrap.vol-drag #volTip { opacity: 1; }
 
 #hint { margin-top: auto; padding-top: 8px; text-align: center; font-size: 10.5px; color: rgba(127, 147, 171, 0.75); z-index: 2; }
 
@@ -362,3 +389,11 @@ body {
 #card.poster #artist { font-size: clamp(12px, 1.4vh, 15px); }
 #card.poster #lyrics { margin: 12px 0 4px; }
 #card.poster #hint { margin-top: 0; padding-top: 12px; opacity: 0.6; }
+
+/* 小窗：按钮收一点，底部提示让位 */
+@media (max-width: 420px) {
+  #controls { gap: 8px; margin-top: 8px; }
+  #play { width: 44px !important; height: 44px !important; margin: 0 2px; }
+  #controls button { width: 32px; height: 32px; }
+  #hint { display: none; }
+}
