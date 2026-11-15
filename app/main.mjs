@@ -1834,6 +1834,13 @@ async function ensurePlayerWindow() {
     },
   })
   playerWin.setAlwaysOnTop(true, 'screen-saver')
+  // 播放器窗口的 console 原来只有开 DevTools 才看得到；PV/FX 在打包版里偶尔不生效，
+  // 把关键日志转发到 main.log，省得为了一个 warn 去挂调试端口。
+  playerWin.webContents.on('console-message', (_e, level, message) => {
+    const m = String(message || '')
+    if (!/\[pv\]|\[fx\]|JIZURA|jizura|Uncaught|Failed to/i.test(m)) return
+    flog('[player]', (level === 2 ? 'warn ' : '') + m.slice(0, 300))
+  })
   // 拖过 / 拉过大小就记住，下次还在这
   const remember = () => {
     try {
