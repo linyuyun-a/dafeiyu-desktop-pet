@@ -1543,7 +1543,9 @@ function bindPointerHeld() {
     }
     window.__tapLast = { x: e.clientX, y: e.clientY, box, inside, panelWasOpen: d.panelWasOpen, suppressed: performance.now() < (state.tapSuppressUntil || 0), playing: !!state.voice?.playing }
     if (performance.now() < (state.tapSuppressUntil || 0)) return
-    if (state.voice?.playing) { state.voice.stop(); shell.ttsStop?.(); resetFlow() }
+    // 以前点她一下就会把正在说的话掐掉（连语音一起停）。
+    // 手滑点一下很常见，而说话被打断很讨厌——所以点不再等于打断：
+    // 想打断就按 Esc，或者在输入框里发新消息。
   }, true)
   window.addEventListener('pointercancel', () => { tap = null }, true)
   // 拖动过程中窗口失焦（用户顺手点了别的窗口）时不要清 pointerDown：清了就会重新按掩码判定，
@@ -3833,10 +3835,11 @@ function bindChat() {
     open()
   })
   window.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && chatState.open) {
+    if (e.key === 'Escape' && (chatState.open || state.voice?.playing)) {
+      // 点她不再打断（手滑太常见），所以 Esc 是唯一的「立刻闭嘴」
       // 先关输入条，再把正在说的那句掐掉：远端已经出队的字不能再往气泡里灌
       chatState.muted = true
-      close()
+      if (chatState.open) close()
       shell.brainInterrupt?.()
       state.voice?.stop?.()
       shell.ttsStop?.()
