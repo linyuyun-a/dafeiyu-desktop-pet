@@ -2428,6 +2428,9 @@ function wireFirstRunIpc() {
 
 // ---------- 生命周期 ----------
 app.whenReady().then(async () => {
+  // 每次启动清一次 HTTP 缓存：改了 resources/app 里的 html/js 后，
+  // 旧缓存会让界面停在上一版（表现是"功能没了"），而文件其实已经同步过。
+  try { await session.defaultSession.clearCache() } catch { /* 清不掉就算了，不影响启动 */ }
   // 桌宠不装箱单式菜单：引导窗口带边框，默认菜单会在顶上露一条 File/Edit/View
   try { Menu.setApplicationMenu(null) } catch {}
 
