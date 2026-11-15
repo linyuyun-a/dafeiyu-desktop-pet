@@ -1179,6 +1179,14 @@ function proactiveNudge({ kind = 'alone', awayMin = 0, extra = null } = {}) {
       `说一句很短的——别用系统腔，别解释技术原因；可以说「这首暂时没有」「换个别的吧」，也可以直接推荐一首你手上有把握的。${tail}）`
     )
   }
+  if (kind === 'musicpick') {
+    const opts = (extra?.options || []).map((x) => `「${String(x).slice(0, 24)}」`).join('、')
+    return (
+      `（旁白：他想让你放一个歌单，但你的歌单里有好几个都能对上：${opts || '（没拿到名字）'}。` +
+      `别自己挑，也别放任何一首——用一句话问他想听哪个，把候选名字念出来，越短越好。` +
+      `${clock}${wearing}${mood}真拿不准就只回一句反问。）`
+    )
+  }
   if (kind === 'music') {
     const nm = String(extra?.name || '').slice(0, 40)
     const ar = String(extra?.artists || '').split(' / ')[0].slice(0, 24)
@@ -1534,6 +1542,8 @@ async function roamRefill() {
 
 // 歌单缓存：进唱片机先给上次的，再后台刷；10 分钟内不重复请求
 let playlistsCache = { at: 0, uid: 0, items: [] }
+// 用户这次说的是「放歌单」时，她若又自己猜了个歌名，就忽略那次（20 秒窗口）
+let playTagMuteUntil = 0
 async function listPlaylists(force = false) {
   if (!ncm.hasLogin()) return { ok: false, error: '还没登录', items: [], at: 0 }
   const uid = Number(ncm.profileInfo()?.userId || 0)
@@ -1958,9 +1968,71 @@ function wireIpc() {
   })
   ipcMain.handle('music:logout', async () => { await ncm.logout(); return { ok: true } })
   ipcMain.handle('music:search', (_e, kw) => ncm.search(String(kw || ''), 12))
+  /**
+   * 「放我的某个歌单」：`#名字` 是歌单标记，`#名字 1` = 只随机抽一首。
+   * 命中 0 个 → 返回 null（让调用方退化成歌名搜索）；
+   * 命中多个 → 不瞎猜，回 ambiguous + 候选，让她去问用户「哪个」；
+   * 命中 1 个 → 拉曲目，按 single 决定「整单入队」还是「随机一首」。
+   */
+  async function resolvePlaylist(raw, single) {
+    const want = String(raw || '')
+      .replace(/^#/, '')
+      // 「我的喜欢歌单」「我喜欢的那个歌单」→ 去掉人称与后缀，只留核心词
+      .replace(/我的|我|你的|他|她|的|歌单|列表|里面|里边|里|下/g, '')
+      .replace(/[《》「」【】\s]/g, '')
+      .toLowerCase()
+    if (!want) return null
+    const r = await listPlaylists(false)
+    flog('[playlist] 列表', r.ok, (r.items || []).length)
+    if (!r.ok || !r.items?.length) return null
+    const hits = r.items
+      .map((p) => ({ ...p, key: String(p.name || '').replace(/[《》「」【】\s]/g, '').toLowerCase() }))
+      // 「我喜欢的音乐 / 红心 / 收藏」直接对到 specialType=5 那个歌单
+      .filter((p) => p.key.includes(want) || want.includes(p.key) ||
+        (p.special && /喜欢|红心|收藏|最爱/.test(want)))
+    flog('[playlist] 匹配', want, '→', hits.map((h) => h.name).join(' / ') || '(无)')
+    if (!hits.length) return null
+    if (hits.length > 1) {
+      // 名字更长的更具体；但如果几个长度相同（「我喜欢的音乐」和「我喜欢的歌单」），别猜
+      const top = Math.max(...hits.map((h) => h.key.length))
+      const best = hits.filter((h) => h.key.length === top)
+      if (best.length === 1) return { list: best[0], single: !!single }
+      return { ambiguous: hits.slice(0, 5).map((h) => h.name), single: !!single }
+    }
+    return { list: hits[0], single: !!single }
+  }
+
   ipcMain.handle('music:play', async (_e, arg) => {
-    const kw = String(arg?.keyword || '').trim()
+    const raw = String(arg?.keyword || '').trim()
     let song = arg?.song || null
+    if (!song && Date.now() < playTagMuteUntil && !raw.startsWith('#')) {
+      flog('[play] 忽略她猜的歌名（用户说的是歌单）：', raw)
+      return { ok: true, skipped: true }
+    }
+    // 「#歌单名 [1]」→ 走歌单
+    if (!song && raw.startsWith('#')) {
+      const m = raw.match(/^#\s*(.+?)(?:\s+(1|随机|random))?$\s*/i)
+      const name = (m?.[1] || '').trim()
+      const single = !!(m?.[2])
+      const hit = await resolvePlaylist(name, single)
+      if (hit?.ambiguous) return { ok: false, error: 'ambiguous', options: hit.ambiguous }
+      if (hit?.list) {
+        const tracks = await ncm.playlistTracks(hit.list.id, 500)
+        const list = tracks.filter((t) => t.id)
+        if (!list.length) return { ok: false, error: `歌单「${hit.list.name}」是空的` }
+        if (single) {
+          const pick = list[Math.floor(Math.random() * list.length)]
+          const r0 = await playSong(pick, { replaceQueue: true })
+          return { ...r0, playlist: hit.list.name, picked: pick.name, of: list.length }
+        }
+        setQueue(list)
+        const start = playMode === 'shuffle' ? Math.floor(Math.random() * list.length) : 0
+        const r0 = await playSong(queue[start], {})
+        return { ...r0, playlist: hit.list.name, of: list.length }
+      }
+      // 没命中歌单 → 退化成歌名搜索（去掉 #）
+    }
+    const kw = raw.replace(/^#/, '')
     if (!song && kw) song = ncm.pickBest(await ncm.search(kw, 12), kw)
     if (!song) return { ok: false, error: '没找到这首歌' }
     // 新点一首 = 重新起一个队列；以后「加进队列」走 music:enqueue
@@ -2183,6 +2255,42 @@ function wireIpc() {
     }
   })
 
+  /**
+   * 用户说「播放我的喜欢歌单」但模型没写标记时的本地兜底。
+   * 只认「明确提到歌单/列表」的句子；解析结果交给 resolvePlaylist，
+   * 命中 0 个就什么都不做（绝不瞎放），命中多个就让她问用户。
+   */
+  async function playlistFromUser(text) {
+    const t = String(text || '')
+    if (!/歌单|列表|收藏|红心/.test(t)) return
+    if (!/播|放|来|听|换/.test(t)) return
+    const single = /随机|随便|来一首|一首|任意/.test(t)
+    const core = t
+      .replace(/^(帮我|给我|麻烦|你|请)+/g, '')
+      .replace(/(播放|放|来|听|换)(一下|一首|点|个)?/g, '')
+      .replace(/歌单|列表|里面|里边|里的|中的|的/g, '')
+      .trim()
+    const hit = await resolvePlaylist(core || t, single)
+    if (!hit) return
+    if (hit.ambiguous) {
+      flog('[playlist] 用户提到多个歌单，让她问：', hit.ambiguous.join(' / '))
+      void runProactive({ kind: 'musicpick', extra: { options: hit.ambiguous } })
+      return
+    }
+    const tracks = (await ncm.playlistTracks(hit.list.id, 500)).filter((x) => x.id)
+    if (!tracks.length) return
+    flog('[playlist] 兜底执行', hit.list.name, single ? '随机一首' : '整单', tracks.length)
+    playTagMuteUntil = Date.now() + 20000
+    if (single) {
+      const pick = tracks[Math.floor(Math.random() * tracks.length)]
+      await playSong(pick, { replaceQueue: true })
+    } else {
+      setQueue(tracks)
+      const start = playMode === 'shuffle' ? Math.floor(Math.random() * tracks.length) : 0
+      await playSong(queue[start], {})
+    }
+  }
+
   async function brainSay(text) {
     const say = String(text || '').trim()
     if (!say) return { ok: false, error: 'empty' }
@@ -2190,6 +2298,8 @@ function wireIpc() {
     if (chatStreaming) { try { brain.interrupt() } catch {} chatStreaming = null }
     lastChatAt = Date.now()
     lastActivityAt = Date.now()
+    // 用户明说「放（我的 X）歌单」→ 本地先把歌单放起来，并让她这次猜的歌名作废
+    if (/歌单|列表/.test(say)) void playlistFromUser(say)
     const id = ++chatSeq
     chatStore?.append({ role: 'user', text: say })
     const send = (ev) => { try { win?.webContents.send('brain:ev', { id, ...ev }) } catch {} }
