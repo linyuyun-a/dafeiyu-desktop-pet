@@ -413,7 +413,11 @@ async function loadLyric(id) {
   // 想再打开自绘层，把下面两行换成 vizResize() + bootViz() + vizModeSet(...) + setVizOn(instrumental)。
   setVizOn(false)
   $('lyrics')?.classList.remove('vizon')
-  void bootFx().then(() => fx?.setSong({ ...(song || {}), mood: '' }))
+  // FX 只是装饰层：它抛错绝不能让 PV/歌词这条主线跟着断（曾经就是这样丢的 PV）。
+  void bootFx().then(() => {
+    try { fx?.setSong({ ...(song || {}), mood: '' }) }
+    catch (e) { console.warn('[fx] setSong 失败', e && e.message) }
+  })
   if (instrumental) coverHue(song?.pic || '')
 }
 

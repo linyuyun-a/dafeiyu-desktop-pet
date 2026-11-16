@@ -306,12 +306,16 @@ function makeBarcode() {
 
 const EXTRA = []
 export function createFx({ log } = {}) {
+  // 数组拼接必须用展开：`[...] + EXTRA` 会把数组相加成字符串，
+  // 于是后面的 all.map 直接 TypeError —— 曾因为它在 setSong 里抛出、
+  // 把 player 的 loadSong 后半段（喂歌词给 PV）整段打断，表现为"播放器没有 PV 动画"。
   const all = [
     // 自动池：只放「气氛型」（点、线、尘），不带任何边框/构图线——它们会和 PV 的文字打架
     makeStars(), makeHalftone(), makeScanlines(),
     // 以下保留给手动指定（[[fx:名字]]）用，不参与自动挑选
     // makeInkDoodle(log), makePaperGrain(log), makeGeoBrut(), makeCorners(), makeThirds(), makeBarcode(),
-  ] + EXTRA
+    ...EXTRA,
+  ]
   let current = all[0]
   let currentFor = ''
 
