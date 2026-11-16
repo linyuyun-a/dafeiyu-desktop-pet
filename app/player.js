@@ -905,7 +905,15 @@ window.player?.onIdle?.(() => {
   const lyrics = document.getElementById('lyrics')
   if (name) name.textContent = '还没点歌'
   if (artist) artist.textContent = '右键 →「唱片机」随时喊回来'
-  if (lyrics) lyrics.innerHTML = ''
+  // 只清文字层，绝不能 innerHTML='' —— 那会把 #fxCanvas / #pv 一起删掉，
+  // 之后 bootPv() 拿不到画布，整条 PV 链路就哑了（这就是"没有 PV"的真因）。
+  if (lyrics) {
+    lyrics.classList.remove('pvon', 'vizon')
+    const t = document.getElementById('lyricsText')
+    if (t) t.textContent = ''
+    const pvc = document.getElementById('pv')
+    if (pvc) pvc.classList.add('hidden')
+  }
   disc.classList.remove('spinning')
   discWrap.classList.remove('playing')
   queuePos = { i: 0, n: 1 }
