@@ -202,8 +202,25 @@ function initPvStyle() {
 function bootPv() {
   if (pv) return Promise.resolve(pv)
   if (bootPromise) return bootPromise
-  const canvas = $('pv')
-  if (!canvas) { console.log('[pv] 没有 #pv 画布'); return Promise.resolve(null) }
+  let canvas = $('pv')
+  if (!canvas) {
+    // 自愈：万一 #lyrics 的 DOM 被重建（或者老版本 HTML 没有这两个 canvas），
+    // 就在这里补出来，而不是让整条 PV 链路直接哑掉。
+    const host = $('lyrics')
+    console.log('[pv] 没有 #pv 画布 → 自愈',
+      '| #lyrics=' + !!host,
+      '| children=' + (host ? Array.from(host.children).map((el) => el.id || el.className || el.tagName).join(',') : '-'),
+      '| canvases=' + document.querySelectorAll('canvas').length)
+    if (host) {
+      const fx = document.createElement('canvas')
+      fx.id = 'fxCanvas'; fx.setAttribute('aria-hidden', 'true')
+      canvas = document.createElement('canvas')
+      canvas.id = 'pv'; canvas.className = 'hidden'
+      host.insertBefore(fx, host.firstChild)
+      host.insertBefore(canvas, fx.nextSibling)
+    }
+    if (!canvas) return Promise.resolve(null)
+  }
   bootPromise = import('./pv.mjs')
     .then((m) => {
       pv = m.createPv({ canvas, log: (msg) => console.log(msg) })
