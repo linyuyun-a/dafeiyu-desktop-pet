@@ -203,10 +203,14 @@ function bootPv() {
   if (pv) return Promise.resolve(pv)
   if (bootPromise) return bootPromise
   const canvas = $('pv')
-  if (!canvas) return Promise.resolve(null)
+  if (!canvas) { console.log('[pv] 没有 #pv 画布'); return Promise.resolve(null) }
   bootPromise = import('./pv.mjs')
     .then((m) => {
       pv = m.createPv({ canvas, log: (msg) => console.log(msg) })
+      console.log('[pv] createPv →', pv ? 'ok' : 'null',
+        '| J.plan=' + typeof globalThis.J?.plan,
+        '| canvas=' + canvas.clientWidth + 'x' + canvas.clientHeight,
+        '| cls=' + canvas.className)
       if (!pv) return
       pv.setStyle(pvStyle)
       paintDots()
@@ -403,10 +407,22 @@ async function loadLyric(id) {
   renderLyric()
   const instrumental = isInstrumental(lines)
   await bootPv()   // 动态 import 是异步的：不等它就 setInfo，会把第一次请求丢掉
+  console.log('[pv] setLyrics 前 lines=' + lines.length + ' 纯音=' + instrumental + ' pv=' + !!pv + ' ready=' + !!pv?.ready)
   if (pv && !instrumental) pv.setLyrics(lines)
   if (pv && instrumental) {
     // 纯音乐：模板照常演，把「歌词」换成歌曲信息反复滚（用户定的方案，见 docs/探索-纯音乐画面.md）
     pv.setLyrics(infoLines(song, Number(audio?.duration) > 20 ? Number(audio.duration) : 180))
+  }
+  console.log('[pv] setLyrics 后 ready=' + !!pv?.ready + ' plan=' + (pv?.ready ? 'yes' : 'no'))
+  // 兜底：首次 plan 可能因为画布还没量到尺寸而失败/为空，1.2s 后再喂一次
+  if (pv && !pv.ready) {
+    setTimeout(() => {
+      if (!pv || pv.ready) return
+      try {
+        pv.setLyrics(instrumental ? infoLines(song, Number(audio?.duration) > 20 ? Number(audio.duration) : 180) : lines)
+        console.log('[pv] 重试 setLyrics → ready=' + !!pv.ready)
+      } catch (e) { console.warn('[pv] 重试失败', e && e.message) }
+    }, 1200)
   }
 
   // 视觉层：自制动效（viz / FX）已停用 —— 纯音乐也交给 JIZURA 模板反复演歌曲信息。
